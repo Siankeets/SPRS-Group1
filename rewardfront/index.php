@@ -97,7 +97,7 @@ h1 {
   font-size: 14px;
   color: #fff;
   font-weight: 500;
-  background: #1e293b; /* same color as admin footer */
+  background: #1e293b;
   padding: 10px 0;
   z-index: 2;
 }

@@ -210,11 +210,7 @@
       <div class="logo"><img src="logorewards.jpg" alt="SPRS Logo"></div>
       <div class="title-wrap">
         <h1>Student Point-Reward System </h1>
-        <p class="lead">Dashboard • Manage Students • Manage Rewards</p>
       </div>
-    </div>
-    <div class="logged">
-      <span>Logged in as: <strong>Admin</strong></span>
     </div>
   </header>
 
@@ -229,9 +225,6 @@
             <div class="role">Administrator</div>
           </div>
         </div>
-        <div class="credits-card">
-          <div>Total Students: <span id="credits">250</span></div>
-        </div>
         <nav class="buttons" id="menu"></nav>
       </aside>
 
@@ -244,37 +237,8 @@
               Manage students, rewards, and events from this dashboard. Use the menu to access admin tools.
             </p>
           </div>
-          <div>
-            <div style="font-size:13px;color:var(--muted)">Role:</div>
-            <div style="font-weight:700">Admin</div>
-          </div>
         </div>
-        <div class="grid" id="panels">
-          <div class="panel">
-            <!-- Rewards Icon (Star) -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-width="1.5" d="M12 2.25l2.956 6.002 6.631.963-4.794 4.67 1.132 6.6L12 17.77l-5.925 3.115 1.132-6.6-4.794-4.67 6.631-.963L12 2.25z"/>
-            </svg>
-            <h3>Rewards</h3>
-            <p>Manage and assign rewards</p>
-          </div>
-          <div class="panel">
-            <!-- Events Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <h3>Events</h3>
-            <p>Create and manage events</p>
-          </div>
-          <div class="panel">
-            <!-- Inventory Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-width="2" d="M20 13V7a2 2 0 00-2-2h-3l-1-2h-4l-1 2H6a2 2 0 00-2 2v6m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0H4"/>
-            </svg>
-            <h3>Inventory</h3>
-            <p>Monitor redeemed items</p>
-          </div>
-        </div>
+
       </section>
     </div>
   </div>
@@ -309,11 +273,10 @@
   <script>
     // admin menu items
     const adminMenu = [
-      { key: 'students', title: 'Students', sub: 'Manage student accounts', icon: 'user' },
+      { key: 'points', title: 'Distrbute Points', sub: 'Generate points', icon: 'user' },
       { key: 'rewards', title: 'Rewards', sub: 'Manage rewards', icon: 'gift' },
       { key: 'events', title: 'Events', sub: 'Manage events', icon: 'calendar' },
       { key: 'reports', title: 'Reports', sub: 'View system reports', icon: 'box' },
-      { key: 'settings', title: 'Settings', sub: 'System settings', icon: 'settings' },
       { key: 'logout', title: 'Logout', sub: 'Sign out', icon: 'logout' }
     ];
 
@@ -324,7 +287,6 @@
         gift:`<svg viewBox="0 0 24 24" fill="none"><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" stroke="#fff" stroke-width="1.2"/><path d="M20 7v-1a2 2 0 0 0-2-2h-3.5" stroke="#fff" stroke-width="1.2"/></svg>`,
         calendar:`<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="#fff" stroke-width="1.2"/><path d="M16 3v4M8 3v4" stroke="#fff" stroke-width="1.2"/></svg>`,
         box:`<svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8L12 2 3 8v8l9 6 9-6z" stroke="#fff" stroke-width="0.8"/></svg>`,
-        settings:`<svg viewBox="0 0 24 24" fill="none"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" stroke="#fff" stroke-width="1.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2a2 2 0 0 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H4a2 2 0 0 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V4a2 2 0 0 1 4 0v.2a1.7 1.7 0 0 0 1 1.5h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H20a2 2 0 0 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z" stroke="#fff" stroke-width="1.2"/></svg>`,
         logout:`<svg viewBox="0 0 24 24" fill="none"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3" stroke="#fff" stroke-width="1.2"/><path d="M16 17l5-5-5-5M21 12H9" stroke="#fff" stroke-width="1.2"/></svg>`
       };
       return map[name] || '';

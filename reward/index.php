@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Student Point-Reward System — Dashboard</title>
+  <title>Student Point-Reward System — Student Dashboard</title>
 
   <!-- Optional: modern font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -210,11 +210,7 @@
       <div class="logo"><img src="logorewards.jpg" alt="SPRS Logo"></div>
       <div class="title-wrap">
         <h1>Student Point-Reward System</h1>
-        <p class="lead">QR Attendance • SMS Auth • Email Notifications</p>
       </div>
-    </div>
-    <div class="logged">
-      <span>Logged in as: <strong>Student</strong></span>
     </div>
   </header>
 
@@ -244,77 +240,43 @@
               This dashboard shows your credits, rewards, and events. Use the menu to redeem or view inventory.
             </p>
           </div>
-          <div>
-            <div style="font-size:13px;color:var(--muted)">Role:</div>
-            <div style="font-weight:700">Student</div>
-          </div>
-        </div>
-        <div class="grid" id="panels">
-       <div class="panel">
-  <!-- Rewards Icon (Star) -->
-  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-width="1.5" d="M12 2.25l2.956 6.002 6.631.963-4.794 4.67 1.132 6.6L12 17.77l-5.925 3.115 1.132-6.6-4.794-4.67 6.631-.963L12 2.25z"/>
-  </svg>
-  <h3>Rewards</h3>
-  <p>Redeem prizes with your credits</p>
-</div>
-          <div class="panel">
-            <!-- Events Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <h3>Events</h3>
-            <p>Attend events via QR code</p>
-          </div>
-          <div class="panel">
-            <!-- Inventory Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-width="2" d="M20 13V7a2 2 0 00-2-2h-3l-1-2h-4l-1 2H6a2 2 0 00-2 2v6m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0H4"/>
-            </svg>
-            <h3>Inventory</h3>
-            <p>Track redeemed items</p>
-          </div>
         </div>
       </section>
     </div>
   </div>
 
-<footer>
-  <div style="font-weight:700; font-size:16px; margin-bottom:12px;">Contact Us:</div>
-  <div style="font-size:13px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; color:#93c5fd;">
-    <div>📧 sprsystem@gmail.com</div>
-    <span style="color:#ccc;">|</span>
-    <div>📞 09123456789</div>
-    <span style="color:#ccc;">|</span>
-    <!-- Facebook -->
-    <div style="display:flex; align-items:center; gap:6px;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#93c5fd" viewBox="0 0 24 24">
-        <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 
-                 3.657 9.128 8.438 9.878v-6.987H8.078v-2.89h2.36V9.797
-                 c0-2.337 1.393-3.625 3.52-3.625.996 0 2.04.178 2.04.178v2.25
-                 h-1.151c-1.137 0-1.492.705-1.492 1.43v1.716h2.54l-.406 2.89
-                 h-2.134V21.9C18.343 21.128 22 16.991 22 12z"/>
-      </svg>
-      <a href="https://www.facebook.com/StudentPointRewardSystem" target="_blank" style="color:#93c5fd; text-decoration:none;">
-        Student Point Reward System
-      </a>
+  <!-- FOOTER -->
+  <footer>
+    <div style="font-weight:700; font-size:16px; margin-bottom:12px;">Contact Us:</div>
+    <div style="font-size:13px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; color:#93c5fd;">
+      <div>📧 sprsystem@gmail.com</div>
+      <span style="color:#ccc;">|</span>
+      <div>📞 09123456789</div>
+      <span style="color:#ccc;">|</span>
+      <!-- Facebook -->
+      <div style="display:flex; align-items:center; gap:6px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#93c5fd" viewBox="0 0 24 24">
+          <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12
+                   c0 4.991 3.657 9.128 8.438 9.878v-6.987H8.078v-2.89h2.36V9.797
+                   c0-2.337 1.393-3.625 3.52-3.625.996 0 2.04.178 2.04.178v2.25
+                   h-1.151c-1.137 0-1.492.705-1.492 1.43v1.716h2.54l-.406 2.89
+                   h-2.134V21.9C18.343 21.128 22 16.991 22 12z"/>
+        </svg>
+        <a href="https://www.facebook.com/StudentPointRewardSystem" target="_blank" style="color:#93c5fd; text-decoration:none;">
+          Student Point Reward System
+        </a>
+      </div>
     </div>
-  </div>
-  <div style="font-size:13px;color:#fff;">
-    © 2025 Student Point-Reward System. All rights reserved.
-  </div>
-</footer>
-
+    <div style="font-size:13px;color:#fff;">
+      © 2025 Student Point-Reward System. All rights reserved.
+    </div>
+  </footer>
 
   <script>
-    /***************
-     * Data & Helpers
-     ***************/
     const creditsEl = document.getElementById('credits');
-    let credits = 120;           // dynamic credits (can be fetched from API later)
+    let credits = 120;
     creditsEl.textContent = credits;
 
-    // student menu items (no view points)
     const studentMenu = [
       { key: 'profile', title: 'Profile', sub: 'View and update your profile', icon: 'user' },
       { key: 'redeem', title: 'Redeem', sub: 'Redeem rewards with credits', icon: 'gift' },
@@ -323,7 +285,6 @@
       { key: 'logout', title: 'Logout', sub: 'Sign out', icon: 'logout' }
     ];
 
-    // SVG icons map (inline)
     function iconSVG(name) {
       const map = {
         user: `<svg viewBox="0 0 24 24" fill="none"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12z" fill="#fff"/><path d="M4.2 20.6c0-3.2 2.6-5.8 5.8-5.8h4c3.2 0 5.8 2.6 5.8 5.8" stroke="#fff" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -335,7 +296,6 @@
       return map[name] || '';
     }
 
-    /* build menu dynamically */
     const menu = document.getElementById('menu');
     studentMenu.forEach(item=>{
       const btn = document.createElement('button');
@@ -347,69 +307,31 @@
       menu.appendChild(btn);
     });
 
-    /* panel appear animation (stagger) */
-    window.addEventListener('load', ()=>{
-      const panels = document.querySelectorAll('[data-anim]');
-      panels.forEach((p, i)=>{
-        setTimeout(()=> p.classList.add('visible'), 120 * i);
-      });
-    });
-
-    /* simple modal control */
-    const modal = document.getElementById('modalBackdrop');
-    document.getElementById('cancelModal').addEventListener('click', ()=> closeModal());
-    document.getElementById('saveModal').addEventListener('click', ()=>{
-      // placeholder save
-      alert('Saved (placeholder)');
-      closeModal();
-    });
-
-    function openModal(title){
-      document.getElementById('modalTitle').textContent = title;
-      modal.style.display = 'flex';
-      modal.setAttribute('aria-hidden','false');
-    }
-    function closeModal(){
-      modal.style.display = 'none';
-      modal.setAttribute('aria-hidden','true');
-    }
-
-    /* menu handler */
     function handleMenu(key){
       switch(key){
         case 'profile':
-          openModal('Profile');
+          alert('Open Profile (placeholder)');
           break;
         case 'redeem':
-          openModal('Redeem Rewards');
+          alert('Open Redeem Rewards');
           break;
         case 'inventory':
-          openModal('Inventory');
+          alert('Open Inventory');
           break;
         case 'events':
-          openModal('Events');
+          alert('View Events');
           break;
         case 'logout':
-          // simple logout placeholder
-          if(confirm('Logout?')) {
-            alert('Logged out (placeholder)');
-            // optionally redirect or clear session
-          }
+          if(confirm('Logout?')) alert('Logged out (placeholder)');
           break;
-        default:
-          openModal('Info');
       }
     }
 
-    /* Example: dynamic credits update function (call when needed) */
     function setCredits(n){
       credits = Number(n) || 0;
       creditsEl.textContent = credits;
     }
-
-    // Example: expose to global for quick testing in console
     window.setCredits = setCredits;
-
   </script>
 </body>
 </html>
