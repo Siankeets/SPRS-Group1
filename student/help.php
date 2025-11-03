@@ -198,7 +198,7 @@
         </div>
 
         <nav class="buttons">
-          <button class="menu-btn" onclick="window.location.href='index.php'">⬅ Back to Dashboard</button>
+          <button class="menu-btn" onclick="window.location.href='student_index.php'">⬅ Back to Dashboard</button>
         </nav>
       </aside>
 

@@ -323,7 +323,7 @@
         break;
       case 'logout':
         if(confirm('Logout?')) {
-          alert('Logged out (placeholder)');
+          window.location.href = '/SPRS/SPRS-Group1/login.php';
         }
         break;
       default:

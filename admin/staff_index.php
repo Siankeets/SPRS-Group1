@@ -309,17 +309,40 @@
       });
     });
 
-    function handleMenu(key){
-      switch(key){
-        case 'students': alert('Manage Students (placeholder)'); break;
-        case 'rewards': alert('Manage Rewards (placeholder)'); break;
-        case 'events': alert('Manage Events (placeholder)'); break;
-        case 'reports': alert('View Reports (placeholder)'); break;
-        case 'settings': alert('Settings (placeholder)'); break;
-        case 'logout': if(confirm('Logout?')) alert('Logged out (placeholder)'); break;
-        default: alert('Clicked: '+key);
+   function handleMenu(key) {
+  switch (key) {
+    case 'students':
+      alert('Manage Students (placeholder)');
+      break;
+
+    case 'rewards':
+      alert('Manage Rewards (placeholder)');
+      break;
+
+    case 'events':
+      alert('Manage Events (placeholder)');
+      break;
+
+    case 'reports':
+      alert('View Reports (placeholder)');
+      break;
+
+    case 'settings':
+      alert('Settings (placeholder)');
+      break;
+
+    case 'logout':
+      if (confirm('Logout?')) {
+        window.location.href = '/SPRS/SPRS-Group1/login.php';
       }
-    }
+      break;
+
+    default:
+      alert('Clicked: ' + key);
+      break;
+  }
+}
+
   </script>
 </body>
 </html>
