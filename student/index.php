@@ -278,19 +278,19 @@
     creditsEl.textContent = credits;
 
     const studentMenu = [
-      { key: 'profile', title: 'Profile', sub: 'View and update your profile', icon: 'user' },
       { key: 'redeem', title: 'Redeem', sub: 'Redeem rewards with credits', icon: 'gift' },
       { key: 'inventory', title: 'Inventory', sub: 'Track redeemed rewards', icon: 'box' },
       { key: 'events', title: 'Events List', sub: 'View upcoming events', icon: 'calendar' },
+       { key: 'help', title: 'Help Center', sub: 'Get assistance and FAQs', icon: 'help' },
       { key: 'logout', title: 'Logout', sub: 'Sign out', icon: 'logout' }
     ];
 
     function iconSVG(name) {
       const map = {
-        user: `<svg viewBox="0 0 24 24" fill="none"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12z" fill="#fff"/><path d="M4.2 20.6c0-3.2 2.6-5.8 5.8-5.8h4c3.2 0 5.8 2.6 5.8 5.8" stroke="#fff" stroke-width="0.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
         gift:`<svg viewBox="0 0 24 24" fill="none"><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 7v-1a2 2 0 0 0-2-2h-3.5c.6 0 1.1.3 1.5.8.6.8.4 1.9-.5 2.5L12 11" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 7v-1a2 2 0 0 1 2-2h3.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
         box:`<svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a1 1 0 0 0-.5-.86L12.5 2.5a1 1 0 0 0-.99 0L3.5 7.14A1 1 0 0 0 3 8v8a1 1 0 0 0 .5.86L11.5 21.5a1 1 0 0 0 .99 0L20.5 16.86A1 1 0 0 0 21 16z" stroke="#fff" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
         calendar:`<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="#fff" stroke-width="1.2"/><path d="M16 3v4M8 3v4" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+        help:`<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="1.2"/><path d="M12 17h.01M12 13a2 2 0 0 1 2-2c0-1.1-.9-2-2-2s-2 .9-2 2" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
         logout:`<svg viewBox="0 0 24 24" fill="none"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 17l5-5-5-5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12H9" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
       };
       return map[name] || '';
@@ -307,25 +307,29 @@
       menu.appendChild(btn);
     });
 
-    function handleMenu(key){
-      switch(key){
-        case 'profile':
-          alert('Open Profile (placeholder)');
-          break;
-        case 'redeem':
-          alert('Open Redeem Rewards');
-          break;
-        case 'inventory':
-          alert('Open Inventory');
-          break;
-        case 'events':
-          alert('View Events');
-          break;
-        case 'logout':
-          if(confirm('Logout?')) alert('Logged out (placeholder)');
-          break;
-      }
+      function handleMenu(key){
+    switch(key){
+      case 'redeem':
+         window.location.href = 'redeem.php';
+        break;
+      case 'inventory':
+         window.location.href = 'inventory.php';
+        break;
+      case 'events':
+       window.location.href = 'event.php';
+        break;
+      case 'help':
+          window.location.href = 'help.php';
+        break;
+      case 'logout':
+        if(confirm('Logout?')) {
+          alert('Logged out (placeholder)');
+        }
+        break;
+      default:
+        openModal('Info');
     }
+  }
 
     function setCredits(n){
       credits = Number(n) || 0;
