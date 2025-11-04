@@ -9,6 +9,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 $points = $_SESSION['points'];
+$name = $_SESSION['name']; // testing name column
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +24,7 @@ $points = $_SESSION['points'];
 </head>
 <body>
     <div class="card">
-        <h2>Welcome, <?= htmlspecialchars($username) ?>!</h2>
+        <h2>Welcome, <?= htmlspecialchars($name) ?>!</h2> <!--$username changed to $name for test-->
         <p>Role: <strong><?= htmlspecialchars($role) ?></strong></p>
         <?php if ($role == 'student'): ?>
             <p>Your current points: <strong><?= htmlspecialchars($points) ?></strong></p>

@@ -21,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['points'] = $user['points'];
+            $_SESSION['name'] = $user['name']; // testing name column
 
             header("Location: dummy_index.php");
             exit();
