@@ -310,6 +310,11 @@ function cancelEvent() {
 
 function startEvent() {
   flow.innerHTML = `
+    <h3>Choose an Event</h3>
+    <ul class="option-list">
+      <li class="option-item" onclick="chooseEvent('Leadership Seminar')">Leadership Seminar: <strong>+10 Points</strong></li>
+      <li class="option-item" onclick="chooseEvent('Tech Innovation Fair')">Tech Innovation Fair: <strong>+15 Points</strong></li>
+    </ul>
   `;
 }
 </script>
