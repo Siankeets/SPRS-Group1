@@ -21,17 +21,26 @@
   --transition: 240ms cubic-bezier(.2,.9,.3,1);
 }
 
+
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
 body {
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: url('bg.jpg') no-repeat center center fixed;
-  background-size: cover;
+  background: #0f172a; /* fallback background */
   color: #f2f6fb;
   line-height: 1.35;
 }
 
-.container { flex: 1; padding: 80px 18px 20px; display: flex; flex-direction: column; }
+.container {
+  flex: 1;
+  padding: 80px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  background: url('images/bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
 
 header {
   position: fixed; top: 0; left: 0; right: 0;
@@ -233,9 +242,10 @@ function handleMenu(key){
     case 'inventory': window.location.href = 'inventory.php'; break;
     case 'events': window.location.href = 'event.php'; break;
     case 'help': window.location.href = 'help.php'; break;
-    case 'logout':
-      if(confirm('Logout?')) window.location.href = '/SPRS/SPRS-Group1/login.php';
-      break;
+   case 'logout':
+  if (confirm('Logout?')) window.location.href = '../login.php';
+  break;
+
     default: alert('Info'); break;
   }
 }

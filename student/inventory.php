@@ -72,7 +72,10 @@
       font-size: 12px;
     }
 
-    .container { flex: 1; padding: 90px 18px 20px; display: flex; flex-direction: column; }
+    .container { flex: 1; padding: 90px 18px 20px; display: flex; flex-direction: column;   background: url('images/bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  background-attachment: fixed;
+  background-blend-mode: overlay; }
     .main { display: grid; grid-template-columns: 260px 1fr; gap: 16px; flex: 1; }
 
     .sidebar, .content {
