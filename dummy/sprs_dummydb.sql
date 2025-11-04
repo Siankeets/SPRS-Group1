@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 20, 2025 at 05:38 AM
+-- Generation Time: Nov 04, 2025 at 03:10 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,16 +32,20 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('student','admin') NOT NULL,
-  `points` int(11) DEFAULT 0
+  `points` int(11) DEFAULT 0,
+  `name` varchar(100) DEFAULT NULL,
+  `department` varchar(100) DEFAULT NULL,
+  `program` varchar(100) DEFAULT NULL,
+  `major` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `role`, `points`) VALUES
-(1, 'student1', '12345', 'student', 150),
-(2, 'admin1', 'admin123', 'admin', 0);
+INSERT INTO `users` (`id`, `username`, `password`, `role`, `points`, `name`, `department`, `program`, `major`) VALUES
+(1, 'student1', '12345', 'student', 150, 'Juan Dela Cruz', 'CICS - Lipa Campus', 'BS Information Technology - 3rd Year', 'Service Management'),
+(2, 'admin1', 'admin123', 'admin', 0, NULL, NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
