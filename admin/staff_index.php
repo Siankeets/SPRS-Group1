@@ -207,7 +207,7 @@
 <body>
   <header>
     <div class="brand">
-      <div class="logo"><img src="logorewards.jpg" alt="SPRS Logo"></div>
+      <div class="logo"><img src="images/logorewards.jpg" alt="SPRS Logo"></div>
       <div class="title-wrap">
         <h1>Student Point-Reward System </h1>
       </div>
@@ -311,7 +311,7 @@
 
    function handleMenu(key) {
   switch (key) {
-    case 'students':
+    case 'points':
       alert('Manage Students (placeholder)');
       break;
 
