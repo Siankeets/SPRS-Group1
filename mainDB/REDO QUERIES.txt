@@ -1,6 +1,6 @@
 CREATE DATABASE sprs_mainredo;
 
- -- new users table version makes old roles & studentprofiles table redundant, both are removed.
+ -- new users table version makes old roles, pointsledger & studentprofiles table redundant, all are removed.
  -- id should *maybe* have an AUTO_INCREMENT?, will not add and just match dummydb for now.
  -- backtick on table name because user is a default keyword (probably, issue before i realized i forgot "TABLE" on CREATE TABLE)
 CREATE TABLE `users` (
@@ -15,4 +15,6 @@ program VARCHAR(100) DEFAULT NULL,
 major VARCHAR(100) DEFAULT NULL
 );
 
+--forgot number column for SMS OTP
+ALTER TABLE users ADD COLUMN phone VARCHAR(15) AFTER password;
 
