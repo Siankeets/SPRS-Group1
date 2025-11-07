@@ -18,7 +18,7 @@
     body {
       margin: 0;
       font-family: 'Inter', system-ui;
-      background: url('bg.jpg') no-repeat center center fixed;
+      background: url('images/bg.jpg') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
       line-height: 1.4;
@@ -180,10 +180,10 @@
 <body>
   <header>
     <div class="left">
-      <img src="logorewards.jpg" alt="SPRS Logo">
+      <img src="images/logorewards.jpg" alt="SPRS Logo">
       <h1>Distribute Points</h1>
     </div>
-    <a href="index.php" class="back-btn">⬅ Back to Dashboard</a>
+    <a href="staff_index.php" class="back-btn">⬅ Back to Dashboard</a>
   </header>
 
   <div class="container">
@@ -239,7 +239,8 @@
       }
 
       try {
-        const response = await fetch('http://localhost/admin_dashboard/generate_qr.php', {
+        const response = await fetch('http://localhost/SPRS/SPRS-Group1/admin/generate_qr.php', {
+
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `points=${encodeURIComponent(points)}&reason=${encodeURIComponent(reason)}`
@@ -268,7 +269,8 @@
       if (!confirm('Are you sure you want to delete this QR code?')) return;
 
       try {
-        const response = await fetch('http://localhost/admin_dashboard/generate_qr.php', {
+        const response = await fetch('http://localhost/SPRS/SPRS-Group1/admin/generate_qr.php',
+ {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `delete=${encodeURIComponent(currentCode)}`

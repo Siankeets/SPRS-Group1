@@ -17,7 +17,7 @@ header('Content-Type: text/html; charset=utf-8');
 
   body {
     font-family: 'Inter', sans-serif;
-    background: url('bg.jpg') center/cover no-repeat fixed;
+    background: url('images/bg.jpg') center/cover no-repeat fixed;
     margin: 0;
     color: #fff;
     display: flex;
@@ -225,10 +225,10 @@ header('Content-Type: text/html; charset=utf-8');
 <body>
   <header>
     <div class="header-left">
-      <img src="logorewards.jpg" alt="Logo">
+      <img src="images/logorewards.jpg" alt="Logo">
       <h1>Manage Rewards</h1>
     </div>
-    <button class="back-btn" onclick="window.location.href='index.php'">← Back to Dashboard</button>
+    <button class="back-btn" onclick="window.location.href='staff_index.php'">← Back to Dashboard</button>
   </header>
 
   <div class="container">
