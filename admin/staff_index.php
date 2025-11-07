@@ -31,18 +31,21 @@
       flex-direction:column;
     }
     body {
-      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: url('bg.jpg') no-repeat center center fixed;
-      background-size: cover;
+     font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+     background-color: #0f172a; /* dark backdrop behind everything */
       color: #f2f6fb;
-      line-height: 1.35;
+     line-height: 1.35;
     }
 
     .container {
-      flex:1; 
+      flex: 1;
       padding: 100px 18px 20px;
       display: flex;
       flex-direction: column;
+      background: url('images/bg.jpg') no-repeat center center fixed;
+     background-size: cover;
+      border-radius: 12px;
+     box-shadow: 0 8px 24px rgba(0,0,0,0.45);
     }
 
     /* HEADER */
@@ -277,6 +280,7 @@
       { key: 'rewards', title: 'Rewards', sub: 'Manage rewards', icon: 'gift' },
       { key: 'events', title: 'Events', sub: 'Manage events', icon: 'calendar' },
       { key: 'reports', title: 'Reports', sub: 'View system reports', icon: 'box' },
+      { key: 'help', title: 'Help Desk', sub: 'View Student Chats', icon: 'help' },
       { key: 'logout', title: 'Logout', sub: 'Sign out', icon: 'logout' }
     ];
 
@@ -287,6 +291,7 @@
         gift:`<svg viewBox="0 0 24 24" fill="none"><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" stroke="#fff" stroke-width="1.2"/><path d="M20 7v-1a2 2 0 0 0-2-2h-3.5" stroke="#fff" stroke-width="1.2"/></svg>`,
         calendar:`<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="#fff" stroke-width="1.2"/><path d="M16 3v4M8 3v4" stroke="#fff" stroke-width="1.2"/></svg>`,
         box:`<svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8L12 2 3 8v8l9 6 9-6z" stroke="#fff" stroke-width="0.8"/></svg>`,
+        help:`<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="1.2"/><path d="M12 17h.01M12 13a2 2 0 0 1 2-2c0-1.1-.9-2-2-2s-2 .9-2 2" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
         logout:`<svg viewBox="0 0 24 24" fill="none"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3" stroke="#fff" stroke-width="1.2"/><path d="M16 17l5-5-5-5M21 12H9" stroke="#fff" stroke-width="1.2"/></svg>`
       };
       return map[name] || '';
@@ -312,23 +317,23 @@
    function handleMenu(key) {
   switch (key) {
     case 'points':
-      alert('Manage Students (placeholder)');
+      window.location.href = 'points.php';
       break;
 
     case 'rewards':
-      alert('Manage Rewards (placeholder)');
+           window.location.href = 'rewards.php';
       break;
 
     case 'events':
-      alert('Manage Events (placeholder)');
+            window.location.href = 'events.php';
       break;
 
     case 'reports':
-      alert('View Reports (placeholder)');
+            window.location.href = 'reports.php';
       break;
 
-    case 'settings':
-      alert('Settings (placeholder)');
+    case 'help':
+            window.location.href = 'help.php';
       break;
 
     case 'logout':

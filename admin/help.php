@@ -8,7 +8,7 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
   body{
-    background:url('bg.jpg') no-repeat center center fixed;
+    background:url('images/bg.jpg') no-repeat center center fixed;
     background-size:cover;
     display:flex;
     flex-direction:column;
@@ -212,7 +212,7 @@
 
 <header>
   <div class="logo">
-    <img src="logorewards.jpg" alt="Logo">
+    <img src="images/logorewards.jpg" alt="Logo">
     <div class="header-title">Student Point-Reward System</div>
   </div>
   <div class="admin-profile">👩‍💼 <span>Jane Admin</span></div>
@@ -240,7 +240,7 @@
     <div class="chat-area">
       <div class="chat-header-bar">
         <h3 id="chatName">John Student</h3>
-        <a href="admin_dashboard.html">← Back to Dashboard</a>
+        <a href="staff_index.php">← Back to Dashboard</a>
       </div>
 
       <div class="messages" id="chatMessages"></div>

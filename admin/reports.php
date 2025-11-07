@@ -13,7 +13,7 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background: url('bg.jpg') center/cover no-repeat fixed;
+    background: url('images/bg.jpg') center/cover no-repeat fixed;
     margin: 0;
     color: #fff;
     min-height: 100vh;
@@ -161,10 +161,10 @@
   <!-- HEADER -->
   <header>
     <div class="header-left">
-      <img src="logorewards.jpg" alt="SPRS Logo">
+      <img src="images/logorewards.jpg" alt="SPRS Logo">
       <h1>System Reports</h1>
     </div>
-    <button class="back-btn" onclick="window.location.href='index.php'">← Back to Dashboard</button>
+    <button class="back-btn" onclick="window.location.href='staff_index.php'">← Back to Dashboard</button>
   </header>
 
   <!-- MAIN CONTENT -->
