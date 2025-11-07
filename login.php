@@ -12,19 +12,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } elseif (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{5,}$/", $password)) {
     $error = "Password must be at least 5 characters and contain letters and numbers.";
   } else {
-    if ($username === "student_01" && $password === "pass123") {
-      $_SESSION['username'] = $username;
-      $_SESSION['role'] = "student";
-      header("Location: student/student_index.php");
-      exit();
-    } elseif ($username === "admin_01" && $password === "admin123") {
-      $_SESSION['username'] = $username;
-      $_SESSION['role'] = "admin";
-      header("Location: admin/staff_index.php");
-      exit();
-    } else {
-      $error = "Invalid username or password!";
-    }
+   if ($username === "student_01" && $password === "pass123") {
+  $_SESSION['username'] = $username;
+  $_SESSION['role'] = "student";
+  header("Location: /SPRS/SPRS-Group1/student/student_index.php");
+  exit();
+} elseif ($username === "admin_01" && $password === "admin123") {
+  $_SESSION['username'] = $username;
+  $_SESSION['role'] = "admin";
+  header("Location: /SPRS/SPRS-Group1/admin/staff_index.php");
+  exit();
+}
   }
 }
 ?>
@@ -184,10 +182,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="error-message"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form id="loginForm" method="POST" action="login.php" novalidate>
+    <form id="loginForm" method="POST" action="/SPRS/SPRS-Group1/login.php" novalidate>
       <input type="text" name="username" placeholder="Username" required />
       <input type="password" name="password" placeholder="Password" required />
-      <a href="#" class="forgot-password">Forgot password?</a>
+      <a href="forget/forgetpass.php" class="forgot-password">Forgot password?</a>
       <button type="submit">Log In</button>
     </form>
   </div>

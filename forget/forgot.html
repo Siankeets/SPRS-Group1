@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Point Reward System - Forgot Password</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("Background.png") no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+      padding: 60px;
+      width: 460px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      text-align: center;
+      color: #fff;
+      margin-top: 50px;
+    }
+    .login-card img {
+      width: 90px;
+      height: 90px;
+      margin-bottom: 10px;
+    }
+    .login-card h1 {
+      margin: 5px 0 2px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .login-card p.platform {
+      margin: 0 0 15px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+    .login-card p.subtitle {
+      font-size: 14px;
+      color: #cbd5e1;
+      margin-bottom: 20px;
+    }
+    .login-card h2 {
+      margin-bottom: 20px;
+      font-size: 26px;
+      color: #fff;
+    }
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .input-group label {
+      font-size: 15px;
+      color: #ddd;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #555;
+      border-radius: 25px;
+      outline: none;
+      font-size: 15px;
+      background: #1e293b;
+      color: #fff;
+      box-sizing: border-box;
+    }
+    .input-group input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 6px rgba(37,99,235,0.7);
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+      font-size: 15px;
+      background: linear-gradient(to right, #3b82f6, #2563eb);
+      color: #fff;
+      border: none;
+    }
+    .btn:hover {
+      background: linear-gradient(to right, #2563eb, #1d4ed8);
+    }
+    .extra-links {
+      margin: 15px 0;
+    }
+    .extra-links a {
+      font-size: 14px;
+      color: #60a5fa;
+      text-decoration: none;
+    }
+    .extra-links a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      width: 100%;
+      text-align: center;
+      color: #fff;
+      padding: 20px 10px;
+      background: rgba(15, 23, 42, 0.95);
+      font-size: 14px;
+    }
+    footer .contact-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    footer .contact-info {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="login-card">
+      <img src="RewardLogo.png" alt="System Logo">
+      <h1>STUDENT POINT REWARD SYSTEM</h1>
+      <p class="platform">The Official Reward Platform</p>
+      <p class="subtitle">Reset your password and regain access to your account.</p>
+      <h2>Forgot Password</h2>
+
+     <form id="forgotForm" action="send_reset_code.php" method="POST">
+  <div class="input-group">
+    <label for="phone">Enter your registered Mobile Number:</label>
+    <input type="tel" id="phone" name="phone" placeholder="09XXXXXXXXX" required>
+  </div>
+  <button type="submit" class="btn">Send Reset Code via SMS</button>
+  <div class="extra-links">
+    <a href="login.html">Back to Login</a>
+  </div>
+</form>
+
+  </main>
+
+  <footer>
+    <div class="contact-title">Contact Us:</div>
+    <div class="contact-info">
+      <span>📧 sprsystem@gmail.com</span>
+      <span>📱 09123456789</span>
+      <span>🏫 Student Point Reward System</span>
+    </div>
+    <p>© 2025 Student Point-Reward System. All rights reserved.</p> 
+  </footer>
+
+</body>
+</html>
