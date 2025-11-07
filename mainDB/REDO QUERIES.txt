@@ -15,6 +15,38 @@ program VARCHAR(100) DEFAULT NULL,
 major VARCHAR(100) DEFAULT NULL
 );
 
---forgot number column for SMS OTP
+--forgot number column for SMS OTP + PKey needed for event tables + id auto_increment (dblchkd dummyDB)
 ALTER TABLE users ADD COLUMN phone VARCHAR(15) AFTER password;
+ALTER TABLE users ADD PRIMARY KEY (id); 
+ALTER TABLE users MODIFY id INT AUTO_INCREMENT;
+
+-- references userID(Pkey) in users table for creatorID(Fkey), should only allow admin roles for this, probably make a check in php.
+CREATE TABLE schoolEvents(
+eventID INT PRIMARY KEY AUTO_INCREMENT,
+eventName VARCHAR(128) NOT NULL,
+eventDescription TEXT DEFAULT NULL,
+eventCreatorID INT NOT NULL,
+eventMinCap INT NOT NULL,
+eventMaxCap INT NOT NULL,
+eventStartDate DATETIME NOT NULL,
+eventEndDate DATETIME NOT NULL,
+eventCreationDate DATETIME DEFAULT current_timestamp() ,
+FOREIGN KEY (eventCreatorID) REFERENCES users(id)
+);
+
+-- "composite key" for similar function as primay key both will be unique. just search users(id) and eventID to check attendance or something.
+CREATE TABLE eventParticipants(
+eventID INT NOT NULL,
+id INT NOT NULL,
+attended BOOLEAN DEFAULT FALSE,
+PRIMARY KEY (eventID, id),
+FOREIGN KEY (eventID) REFERENCES schoolevents(eventID),    -- Referential integrity example
+FOREIGN KEY (id) REFERENCES users(id)    -- Referential integrity example
+)
+## personal notes "Referential integrity guarantees that you cannot insert an eventID into the eventParticipants table
+ if that eventID does not exist in the schoolEvents table, and you cannot insert an id into 
+ the eventParticipants table if that id does not exist in the users table e.g FOREIGN KEY (eventID) REFERENCES schoolEvents(eventID)
+
+ For example, if you wanted to automatically delete all participant records when an event is deleted, 
+ you’d modify the foreign key like this: FOREIGN KEY (eventID) REFERENCES schoolEvents(eventID) ON DELETE CASCADE"
 

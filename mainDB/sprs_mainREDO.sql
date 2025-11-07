@@ -1,105 +1,133 @@
--- Database: `sprs_maindb`
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Nov 07, 2025 at 08:25 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-SET NAMES utf8mb4;
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `sprs_mainredo`
+--
 
 -- --------------------------------------------------------
--- Table structure for table `roles`
--- --------------------------------------------------------
-CREATE TABLE `roles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `role_name` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
+
+--
+-- Table structure for table `eventparticipants`
+--
+
+CREATE TABLE `eventparticipants` (
+  `eventID` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `attended` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `roles` (`id`, `role_name`) VALUES
-(1, 'student'),
-(2, 'professor'),
-(3, 'council'),
-(4, 'staff');
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `schoolevents`
+--
+
+CREATE TABLE `schoolevents` (
+  `eventID` int(11) NOT NULL,
+  `eventName` varchar(128) NOT NULL,
+  `eventDescription` text DEFAULT NULL,
+  `eventCreatorID` int(11) NOT NULL,
+  `eventMinCap` int(11) NOT NULL,
+  `eventMaxCap` int(11) NOT NULL,
+  `eventStartDate` datetime NOT NULL,
+  `eventEndDate` datetime NOT NULL,
+  `eventCreationDate` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
--- --------------------------------------------------------
+--
+
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `srcode` varchar(15) NOT NULL,
-  `username` varchar(50) DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role_id` int(11) NOT NULL,
-  `email` varchar(50) DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `srcode` (`srcode`),
-  KEY `role_id` (`role_id`),
-  CONSTRAINT `users_fk_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-INSERT INTO `users` (`id`, `srcode`, `username`, `password`, `role_id`, `email`, `phone`) VALUES
-(1, 'admin', 'admin1', 'admin123', 3, NULL, NULL);
-
--- --------------------------------------------------------
--- Table structure for table `school_events`
--- --------------------------------------------------------
-CREATE TABLE `school_events` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `event_name` varchar(128) NOT NULL,
-  `event_description` text DEFAULT NULL,
-  `event_creator_id` int(11) NOT NULL,
-  `min_capacity` int(11) NOT NULL,
-  `max_capacity` int(11) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `event_creator_id` (`event_creator_id`),
-  CONSTRAINT `event_creator_fk` FOREIGN KEY (`event_creator_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
--- Table structure for table `event_participants`
--- --------------------------------------------------------
-CREATE TABLE `event_participants` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `event_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `attended` tinyint(1) DEFAULT 0,
-  `points_earned` int(11) DEFAULT 0,
-  PRIMARY KEY (`id`),
-  KEY `event_id` (`event_id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `event_fk` FOREIGN KEY (`event_id`) REFERENCES `school_events` (`id`),
-  CONSTRAINT `participant_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
--- Table structure for table `points_ledger`
--- --------------------------------------------------------
-CREATE TABLE `points_ledger` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `points_change` int(11) NOT NULL,
-  `reason` varchar(255) DEFAULT NULL,
-  `change_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `ledger_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
--- Table structure for table `student_profiles`
--- --------------------------------------------------------
-CREATE TABLE `student_profiles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `role` enum('student','admin') NOT NULL,
+  `points` int(11) DEFAULT 0,
+  `name` varchar(100) DEFAULT NULL,
+  `department` varchar(100) DEFAULT NULL,
   `program` varchar(100) DEFAULT NULL,
-  `year_level` int(11) DEFAULT NULL,
-  `section` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_id` (`user_id`),
-  CONSTRAINT `student_profile_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  `major` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `eventparticipants`
+--
+ALTER TABLE `eventparticipants`
+  ADD PRIMARY KEY (`eventID`,`id`),
+  ADD KEY `id` (`id`);
+
+--
+-- Indexes for table `schoolevents`
+--
+ALTER TABLE `schoolevents`
+  ADD PRIMARY KEY (`eventID`),
+  ADD KEY `eventCreatorID` (`eventCreatorID`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `schoolevents`
+--
+ALTER TABLE `schoolevents`
+  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `eventparticipants`
+--
+ALTER TABLE `eventparticipants`
+  ADD CONSTRAINT `eventparticipants_ibfk_1` FOREIGN KEY (`eventID`) REFERENCES `schoolevents` (`eventID`),
+  ADD CONSTRAINT `eventparticipants_ibfk_2` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `schoolevents`
+--
+ALTER TABLE `schoolevents`
+  ADD CONSTRAINT `schoolevents_ibfk_1` FOREIGN KEY (`eventCreatorID`) REFERENCES `users` (`id`);
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
