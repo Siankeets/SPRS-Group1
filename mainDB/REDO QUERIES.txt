@@ -1,0 +1,18 @@
+CREATE DATABASE sprs_mainredo;
+
+ -- new users table version makes old roles & studentprofiles table redundant, both are removed.
+ -- id should *maybe* have an AUTO_INCREMENT?, will not add and just match dummydb for now.
+ -- backtick on table name because user is a default keyword (probably, issue before i realized i forgot "TABLE" on CREATE TABLE)
+CREATE TABLE `users` (
+id INT(11) NOT NULL, 
+username VARCHAR(50) NOT NULL, 
+password VARCHAR(255) NOT NULL, 
+role ENUM ('student','admin') NOT NULL, 
+points INT(11) DEFAULT 0, 
+name VARCHAR(100) DEFAULT NULL, 
+department VARCHAR(100) DEFAULT NULL, 
+program VARCHAR(100) DEFAULT NULL, 
+major VARCHAR(100) DEFAULT NULL
+);
+
+

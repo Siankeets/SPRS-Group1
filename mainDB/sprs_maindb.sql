@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 05, 2025 at 10:55 AM
+-- Generation Time: Nov 07, 2025 at 05:13 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,7 +54,7 @@ CREATE TABLE `pointsledger` (
 --
 -- Table structure for table `roles`
 --
-
+/*!!! roles go away since new users table will have required info !!!*/
 CREATE TABLE `roles` (
   `roleID` int(11) NOT NULL,
   `roleName` varchar(50) NOT NULL
@@ -93,7 +93,7 @@ CREATE TABLE `schoolevents` (
 --
 -- Table structure for table `studentprofiles`
 --
-
+/*!!! student profiles go away since new users table will have required info !!!*/
 CREATE TABLE `studentprofiles` (
   `profileID` int(11) NOT NULL,
   `userID` int(11) DEFAULT NULL,
@@ -109,10 +109,10 @@ CREATE TABLE `studentprofiles` (
 --
 
 CREATE TABLE `users` (
-  `userID` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `srCode` varchar(15) NOT NULL,
-  `userName` varchar(50) DEFAULT NULL,
-  `userPass` varchar(30) NOT NULL,
+  `username` varchar(50) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
   `roleID` int(11) NOT NULL,
   `email` varchar(50) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL
@@ -122,7 +122,7 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`userID`, `srCode`, `userName`, `userPass`, `roleID`, `email`, `phone`) VALUES
+INSERT INTO `users` (`id`, `srCode`, `username`, `password`, `roleID`, `email`, `phone`) VALUES
 (1, 'admin', 'admin', 'admin', 3, NULL, NULL);
 
 --
@@ -168,7 +168,7 @@ ALTER TABLE `studentprofiles`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`userID`),
+  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `srCode` (`srCode`),
   ADD KEY `roleID` (`roleID`);
 
@@ -207,12 +207,6 @@ ALTER TABLE `studentprofiles`
   MODIFY `profileID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- Constraints for dumped tables
 --
 
@@ -221,25 +215,25 @@ ALTER TABLE `users`
 --
 ALTER TABLE `eventparticipants`
   ADD CONSTRAINT `eventparticipants_ibfk_1` FOREIGN KEY (`eventID`) REFERENCES `schoolevents` (`eventID`),
-  ADD CONSTRAINT `eventparticipants_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`);
+  ADD CONSTRAINT `eventparticipants_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `pointsledger`
 --
 ALTER TABLE `pointsledger`
-  ADD CONSTRAINT `pointsledger_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`);
+  ADD CONSTRAINT `pointsledger_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `schoolevents`
 --
 ALTER TABLE `schoolevents`
-  ADD CONSTRAINT `schoolevents_ibfk_1` FOREIGN KEY (`eventCreatorID`) REFERENCES `users` (`userID`);
+  ADD CONSTRAINT `schoolevents_ibfk_1` FOREIGN KEY (`eventCreatorID`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `studentprofiles`
 --
 ALTER TABLE `studentprofiles`
-  ADD CONSTRAINT `studentprofiles_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`);
+  ADD CONSTRAINT `studentprofiles_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `users`
