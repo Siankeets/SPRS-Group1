@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('db_connect-test.php');
+// echo 'Session save path: ' . session_save_path(); // This will show where PHP is saving sessions.
 
 $error = "";
   //gets data from form
@@ -26,12 +27,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_fetch($stmt);
         
         //password verification
-        if (password_verify($password, $db_password)){
+        if ($password === $db_password){
           $_SESSION['username'] = $username;
           $_SESSION['role'] = $role;
 
           if ($role === "admin"){
             $_SESSION['admin_logged_in'] = true; // admin session tracker
+            // session_write_close(); // attempt to maintain session
             header("Location: /SPRS/SPRS-Group1/admin/staff_index.php");
             exit();
 
@@ -212,7 +214,7 @@ mysqli_close($conn);
       <div class="error-message"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form id="loginForm" method="POST" action="/SPRS/SPRS-Group1/login.php" novalidate>
+    <form id="loginForm" method="POST" action="/SPRS/SPRS-Group1/login-test.php" novalidate> <!-- ETOO UNG ISSUE PUTA now redirecting to login-TEST.php -->
       <input type="text" name="username" placeholder="Username" required />
       <input type="password" name="password" placeholder="Password" required />
       <a href="forget/forgetpass.php" class="forgot-password">Forgot password?</a>

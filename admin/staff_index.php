@@ -1,19 +1,16 @@
-<?php //testing
-  session_start();
-    // db connection + session
+  <?php 
+    session_start();
+
+    if ($_SESSION['admin_logged_in'] != true) {
+      // Redirect to login page if the user is not logged in as admin
+      header("Location: /SPRS/SPRS-Group1/login-test.php");
+      exit();
+  }
+    else{
+          echo "<script>alert('You are successfully logged in as admin!');</script>";
+    }
   include ('../db_connect-test.php');
-  //check session tracking issues
-  echo "<pre>";
-  print_r($_SESSION);
-  echo "<pre>";
-
-  if ($_SESSION['admin_logged_in'] !== true) {
-    // Redirect to login page if the user is not logged in as admin
-    header("Location: /SPRS/SPRS-Group1/login-test.php");
-    exit();
-}
-
-?>
+  ?>
 
 <!doctype html>
 <html lang="en">
