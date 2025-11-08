@@ -9,3 +9,9 @@ CREATE TABLE rewards(
 // is just something to read(a description), points will be qr'd and merch, etc is physically handed out.
 // students' redeem page will just pull from rewards table + php in the related img i guess.
 ALTER TABLE schoolevents ADD COLUMN eventRewards TEXT;
+
+// added in the same credentials into sprs_mainREDO.sql referenced in login.php which is hardcoded info
+INSERT INTO users(username, password, phone, role, points, name, department, program, major)
+VALUES
+('admin_01', 'admin123', NULL, 'admin', 0, 'Jane Admin', 'CICS', NULL, NULL),
+('student_01', 'pass123', NULL, 'student', 120, 'John Student', 'CICS', 'BSIT', 'Service Management');

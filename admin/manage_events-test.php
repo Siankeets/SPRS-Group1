@@ -1,5 +1,6 @@
 <?php
 include ('../db_connect-test.php'); //testing db connection
+session_start();
 
 header('Content-Type: application/json');
 $file = __DIR__.'/events.json';
@@ -50,20 +51,20 @@ elseif($act === 'delReward' && isset($_GET['id'])) { //edited for admin
 
 elseif($act === 'saveReward'){ //edited for admin 
   // add in a reward to  the table
-  $id = $_POST['rewardID'];
-  $title = $_POST['rewardName'];
-  $description = $_POST['rewardDescription'];
-  $points = $_POST['rewardPoints'];
+  $id = $_POST['id'];
+  $title = $_POST['title'];
+  $description = $_POST['description'];
+  $points = $_POST['points'];
 
   if (empty($id)){
     //new reward 
     $stmt = $pdo->prepare("INSERT INTO rewards (rewardName, rewardDescription, rewardPoints) VALUES (?,?,?)");
-    $stmt->execute([$rewardName, $rewardDescription, $rewardPoints]);
+    $stmt->execute([$title, $description, $points]);
     $message = "Reward added successfully!";
   }
   else {
     $stmt = $pdo->prepare("UPDATE rewards SET rewardName = ?, rewardDescription = ?, rewardPoints = ? WHERE rewardID = ?");
-    $stmt->execute([$rewardName, $rewardDescription, $rewardPoints]);
+    $stmt->execute([$title, $description, $points]);
     $message = "Reward updated successfully!";
   }
   echo json_encode(['message'=>$message]);
