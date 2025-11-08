@@ -1,0 +1,11 @@
+CREATE TABLE rewards(
+    rewardID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    rewardName VARCHAR(255) NOT NULL,
+    rewardDescription TEXT,
+    rewardPointsRequired INT NOT NULL
+)
+
+// for manage events 4th input "rewards"(text variable), assumed as description of avaiable rewards.
+// is just something to read(a description), points will be qr'd and merch, etc is physically handed out.
+// students' redeem page will just pull from rewards table + php in the related img i guess.
+ALTER TABLE schoolevents ADD COLUMN eventRewards TEXT;
