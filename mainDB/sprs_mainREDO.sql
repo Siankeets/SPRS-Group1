@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2025 at 08:25 AM
+-- Generation Time: Nov 08, 2025 at 08:02 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,6 +36,19 @@ CREATE TABLE `eventparticipants` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rewards`
+--
+
+CREATE TABLE `rewards` (
+  `rewardID` int(11) NOT NULL,
+  `rewardName` varchar(255) NOT NULL,
+  `rewardDescription` text DEFAULT NULL,
+  `rewardPointsRequired` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `schoolevents`
 --
 
@@ -48,7 +61,8 @@ CREATE TABLE `schoolevents` (
   `eventMaxCap` int(11) NOT NULL,
   `eventStartDate` datetime NOT NULL,
   `eventEndDate` datetime NOT NULL,
-  `eventCreationDate` datetime DEFAULT current_timestamp()
+  `eventCreationDate` datetime DEFAULT current_timestamp(),
+  `eventRewards` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -82,6 +96,12 @@ ALTER TABLE `eventparticipants`
   ADD KEY `id` (`id`);
 
 --
+-- Indexes for table `rewards`
+--
+ALTER TABLE `rewards`
+  ADD PRIMARY KEY (`rewardID`);
+
+--
 -- Indexes for table `schoolevents`
 --
 ALTER TABLE `schoolevents`
@@ -97,6 +117,12 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `rewards`
+--
+ALTER TABLE `rewards`
+  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `schoolevents`
