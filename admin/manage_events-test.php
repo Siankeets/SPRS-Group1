@@ -23,7 +23,7 @@ elseif($act === 'save'){
 } 
 
 // Rewards actions // manage rewards, editing this
-elseif($act === 'listRewards'){ //revised for admin
+elseif($act === 'listRewards'){ //!WORKING! 
   // pull all rewards from table and insert into $rewards array then echo it
   $query = "SELECT * FROM rewards";
   $result = mysqli_query($conn, $query);
@@ -36,7 +36,7 @@ elseif($act === 'listRewards'){ //revised for admin
   exit;
 }
 
-elseif($_GET['action'] == 'getReward'){  //revised for admin 
+elseif($_GET['action'] == 'getReward'){  //REVISING!! 
   $id = $_GET['id']; // pull the id value from the hidden field
 
   $stmt= mysqli_prepare($conn, "SELECT * FROM rewards WHERE rewardID = ?");
@@ -44,10 +44,16 @@ elseif($_GET['action'] == 'getReward'){  //revised for admin
   mysqli_stmt_execute($stmt);
   $result = mysqli_stmt_get_result($stmt);
   $reward = mysqli_fetch_assoc($result);
-  echo json_encode($reward);
+    if ($reward) {
+        echo json_encode($reward);
+    } else {
+        echo json_encode(['error' => 'Reward not found']);
+    }
+exit;
+  
 }
 
-elseif($act === 'delReward' && isset($_GET['id'])) { //revised for admin
+elseif($act === 'delReward' && isset($_GET['id'])) { //REVISING!!
   $id = $_GET['id'];
 
   $stmt= mysqli_prepare($conn, "DELETE FROM rewards WHERE rewardID = ?");
@@ -62,23 +68,23 @@ elseif($act === 'delReward' && isset($_GET['id'])) { //revised for admin
   }
 }
 
-elseif($act === 'saveReward'){ //revised for admin 
+elseif($act === 'saveReward'){ //!WORKING! 
   // get data from form with POST
-  $id = $_POST['id'];
-  $title = $_POST['title'];
-  $description = $_POST['description'];
-  $points = $_POST['points'];
+  $id = $_POST['rewardId'];
+  $title = $_POST['rewardName'];
+  $description = $_POST['rewardDescription'];
+  $points = $_POST['rewardPointsRequired'];
 
-  if (empty($id)){ // hidden id field means if you save a new reward, it detects this no id and starts this section
+  if (empty($id)){ // no id detected = new reward
     //new reward , Line 67 "insert data type SSI -> s = string,text,var(char), etc + i = integer)"
-    $stmt = mysqli_prepare($conn,"INSERT INTO rewards (rewardName, rewardDescription, rewardPoints) VALUES (?,?,?)");
+    $stmt = mysqli_prepare($conn,"INSERT INTO rewards (rewardName, rewardDescription, rewardPointsRequired) VALUES (?,?,?)");
     mysqli_stmt_bind_param($stmt, "ssi", $title, $description, $points);
     mysqli_stmt_execute($stmt);
     $message = "Reward added successfully!";
   }
   else {
     //update new reward, get the POST'ed hidden $id value when edit is clicked in rewards management page.
-    $stmt = mysqli_prepare($conn, "UPDATE rewards SET rewardName = ?, rewardDescription = ?, rewardPoints = ? WHERE rewardID = ?");
+    $stmt = mysqli_prepare($conn, "UPDATE rewards SET rewardName = ?, rewardDescription = ?, rewardPointsRequired = ? WHERE rewardID = ?");
     mysqli_stmt_bind_param($stmt, "ssii", $title, $description, $points, $id);
     mysqli_stmt_execute($stmt);
     $message = "Reward updated successfully!";

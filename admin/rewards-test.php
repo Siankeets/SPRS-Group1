@@ -237,16 +237,16 @@ include ('../db_connect-test.php');
   <div class="container">
     <h2>Rewards Management</h2>
 
-    <form id="rewardForm">
-      <input type="hidden" id="id" name="id">
+    <form id="rewardForm"> <!--changed input field names to match database naming-->
+      <input type="hidden" id="id" name="rewardId">
       <label>Reward Name</label>
-      <input type="text" id="title" name="title" required>
+      <input type="text" id="title" name="rewardName" required>
 
       <label>Description</label>
-      <textarea id="description" name="description" required></textarea>
+      <textarea id="description" name="rewardDescription" required></textarea>
 
       <label>Points Required</label>
-      <input type="number" id="points" name="points" required>
+      <input type="number" id="points" name="rewardPointsRequired" required>
 
       <button type="submit">Save Reward</button>
     </form>
@@ -274,12 +274,12 @@ include ('../db_connect-test.php');
 const form = document.getElementById('rewardForm');
 const list = document.getElementById('rewardList');
 
-async function loadRewards(){ // working!!, -revised the fetched file name (switched to test file) 
+async function loadRewards(){ //!WORKING! displaying rewards table, -revised the fetched file name (switched to test file) 
   const res = await fetch('manage_events-test.php?action=listRewards'); // manage rewards, editing this
   const data = await res.json();
   list.innerHTML = '';
 
-  //renamed r.variableNames to database tables
+  //renamed r.variableNames to database tables, r.rewardID changed edit and delete
   data.forEach(r => {
     const tr = document.createElement('tr'); 
     tr.innerHTML = `
@@ -287,22 +287,26 @@ async function loadRewards(){ // working!!, -revised the fetched file name (swit
       <td data-label="Description">${r.rewardDescription}</td>
       <td data-label="Points">${r.rewardPointsRequired}</td>
       <td data-label="Actions">
-        <button class="btn-action edit-btn" onclick="editReward('${r.id}')">Edit</button>
-        <button class="btn-action delete-btn" onclick="delReward('${r.id}')">Delete</button>
+        <button class="btn-action edit-btn" onclick="editReward('${r.rewardId}')">Edit</button> 
+        <button class="btn-action delete-btn" onclick="delReward('${r.rewardId}')">Delete</button>
       </td>
     `;
     list.appendChild(tr);
   });
 }
 
-form.addEventListener('submit', async e => {
+form.addEventListener('submit', async e => { //!WORKING! save rewards
   e.preventDefault();
   const fd = new FormData(form);
+
+  // console.log(..fd.entries()); // tester if data is collected/submitting
   const res = await fetch('manage_events-test.php?action=saveReward', {
     method: 'POST',
     body: fd
   });
+
   const msg = await res.json();
+  // console.log(msg); // tester if server is responding
   alert(msg.message);
   form.reset();
   loadRewards();

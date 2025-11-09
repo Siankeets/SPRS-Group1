@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2025 at 09:54 AM
+-- Generation Time: Nov 09, 2025 at 10:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -45,6 +45,14 @@ CREATE TABLE `rewards` (
   `rewardDescription` text DEFAULT NULL,
   `rewardPointsRequired` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `rewards`
+--
+
+INSERT INTO `rewards` (`rewardID`, `rewardName`, `rewardDescription`, `rewardPointsRequired`) VALUES
+(1, 'Hamburger', 'only for students', 20),
+(2, 'test', 'test123', 20);
 
 -- --------------------------------------------------------
 
@@ -130,7 +138,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `rewards`
 --
 ALTER TABLE `rewards`
-  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `schoolevents`
