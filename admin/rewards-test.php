@@ -1,7 +1,9 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 session_start();
+include ('../db_connect-test.php');
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -272,8 +274,8 @@ session_start();
 const form = document.getElementById('rewardForm');
 const list = document.getElementById('rewardList');
 
-async function loadRewards(){
-  const res = await fetch('manage_events.php?action=listRewards'); // manage rewards, editing this
+async function loadRewards(){ // revised the fetched file name (switched to test file) 
+  const res = await fetch('manage_events-test.php?action=listRewards'); // manage rewards, editing this
   const data = await res.json();
   list.innerHTML = '';
 
@@ -295,7 +297,7 @@ async function loadRewards(){
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const fd = new FormData(form);
-  const res = await fetch('manage_events.php?action=saveReward', {
+  const res = await fetch('manage_events-test.php?action=saveReward', {
     method: 'POST',
     body: fd
   });
@@ -305,8 +307,8 @@ form.addEventListener('submit', async e => {
   loadRewards();
 });
 
-async function editReward(id){
-  const res = await fetch('manage_events.php?action=getReward&id='+id);
+async function editReward(id){ // revised the fetched file name (switched to test file)
+  const res = await fetch('manage_events-test.php?action=getReward&id='+id);
   const r = await res.json();
   document.getElementById('id').value = r.id;
   document.getElementById('title').value = r.title;
@@ -316,7 +318,7 @@ async function editReward(id){
 
 async function delReward(id){
   if(!confirm("Delete this reward?")) return;
-  const res = await fetch('manage_events.php?action=delReward&id='+id);
+  const res = await fetch('manage_events-test.php?action=delReward&id='+id);
   const msg = await res.json();
   alert(msg.message);
   loadRewards();

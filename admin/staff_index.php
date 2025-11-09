@@ -6,9 +6,9 @@
       header("Location: /SPRS/SPRS-Group1/login-test.php");
       exit();
   }
-    else{
-          echo "<script>alert('You are successfully logged in as admin!');</script>";
-    }
+    // else{
+    //       echo "<script>alert('You are successfully logged in as admin!');</script>";
+    // }
   include ('../db_connect-test.php');
   ?>
 
@@ -335,7 +335,7 @@
       break;
 
     case 'rewards':
-           window.location.href = 'rewards.php';
+           window.location.href = 'rewards-test.php';
       break;
 
     case 'events':

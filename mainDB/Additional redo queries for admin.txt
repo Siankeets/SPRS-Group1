@@ -15,3 +15,7 @@ INSERT INTO users(username, password, phone, role, points, name, department, pro
 VALUES
 ('admin_01', 'admin123', NULL, 'admin', 0, 'Jane Admin', 'CICS', NULL, NULL),
 ('student_01', 'pass123', NULL, 'student', 120, 'John Student', 'CICS', 'BSIT', 'Service Management');
+
+// sample reward data
+INSERT INTO rewards (rewardName, rewardDescription, rewardPoints) VALUES
+('Hamburger', 'only for students', 20);
