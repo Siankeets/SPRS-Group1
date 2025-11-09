@@ -3,7 +3,7 @@ session_start();
 include ('../db_connect-test.php');
 
 header('Content-Type: application/json');
-// $file = __DIR__.'/events.json'; // json read/write, databaseless testing. delete after event and rewards are working.
+// $file = __DIR__.'/events.json'; // old json read for databaseless testing
 // if(!file_exists($file)) file_put_contents($file, json_encode(['events'=>[],'rewards'=>[]]));
 // $data = json_decode(file_get_contents($file), true);
 $act = $_GET['action'] ?? ($_POST['action'] ?? '');
@@ -88,7 +88,8 @@ elseif($act === 'saveReward'){ //revised for admin
 }
 else echo json_encode(['error'=>'Invalid action']);
 
-function save($d,$f){file_put_contents($f,json_encode($d,JSON_PRETTY_PRINT));}
-function findById($arr,$id){foreach($arr as $a) if($a['id']===$id) return $a; return [];}
-function updateById(&$arr,$new){foreach($arr as &$a) if($a['id']===$new['id']){$a=$new;return;}}
+// old json write/read for databaseless testing
+// function save($d,$f){file_put_contents($f,json_encode($d,JSON_PRETTY_PRINT));}
+// function findById($arr,$id){foreach($arr as $a) if($a['id']===$id) return $a; return [];}
+// function updateById(&$arr,$new){foreach($arr as &$a) if($a['id']===$new['id']){$a=$new;return;}}
 ?>

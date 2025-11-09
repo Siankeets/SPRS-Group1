@@ -274,17 +274,18 @@ include ('../db_connect-test.php');
 const form = document.getElementById('rewardForm');
 const list = document.getElementById('rewardList');
 
-async function loadRewards(){ // revised the fetched file name (switched to test file) 
+async function loadRewards(){ // working!!, -revised the fetched file name (switched to test file) 
   const res = await fetch('manage_events-test.php?action=listRewards'); // manage rewards, editing this
   const data = await res.json();
   list.innerHTML = '';
 
+  //renamed r.variableNames to database tables
   data.forEach(r => {
-    const tr = document.createElement('tr');
+    const tr = document.createElement('tr'); 
     tr.innerHTML = `
-      <td data-label="Name">${r.title}</td>
-      <td data-label="Description">${r.description}</td>
-      <td data-label="Points">${r.points}</td>
+      <td data-label="Name">${r.rewardName}</td> 
+      <td data-label="Description">${r.rewardDescription}</td>
+      <td data-label="Points">${r.rewardPointsRequired}</td>
       <td data-label="Actions">
         <button class="btn-action edit-btn" onclick="editReward('${r.id}')">Edit</button>
         <button class="btn-action delete-btn" onclick="delReward('${r.id}')">Delete</button>
@@ -310,10 +311,12 @@ form.addEventListener('submit', async e => {
 async function editReward(id){ // revised the fetched file name (switched to test file)
   const res = await fetch('manage_events-test.php?action=getReward&id='+id);
   const r = await res.json();
-  document.getElementById('id').value = r.id;
-  document.getElementById('title').value = r.title;
-  document.getElementById('description').value = r.description;
-  document.getElementById('points').value = r.points;
+  
+  //renamed r.variableNames to database tables
+  document.getElementById('id').value = r.rewardId; 
+  document.getElementById('title').value = r.rewardName;
+  document.getElementById('description').value = r.rewardDescription;
+  document.getElementById('points').value = r.rewardPointsRequired;
 }
 
 async function delReward(id){

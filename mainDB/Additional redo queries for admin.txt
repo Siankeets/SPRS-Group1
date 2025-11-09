@@ -17,5 +17,5 @@ VALUES
 ('student_01', 'pass123', NULL, 'student', 120, 'John Student', 'CICS', 'BSIT', 'Service Management');
 
 // sample reward data
-INSERT INTO rewards (rewardName, rewardDescription, rewardPoints) VALUES
+INSERT INTO rewards (rewardName, rewardDescription, rewardPointsRequired) VALUES
 ('Hamburger', 'only for students', 20);
