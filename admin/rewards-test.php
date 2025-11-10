@@ -238,7 +238,7 @@ include ('../db_connect-test.php');
     <h2>Rewards Management</h2>
 
     <form id="rewardForm"> <!--changed input field names to match database naming-->
-      <input type="hidden" id="id" name="rewardId">
+      <input type="hidden" id="id" name="rewardID"> <!-- //changed Id to ID -->
       <label>Reward Name</label>
       <input type="text" id="title" name="rewardName" required>
 
@@ -282,13 +282,14 @@ async function loadRewards(){ //!WORKING! displaying rewards table, -revised the
   //renamed r.variableNames to database tables, r.rewardID changed edit and delete
   data.forEach(r => {
     const tr = document.createElement('tr'); 
+    //changed Id to ID for edit and del
     tr.innerHTML = `
       <td data-label="Name">${r.rewardName}</td> 
       <td data-label="Description">${r.rewardDescription}</td>
       <td data-label="Points">${r.rewardPointsRequired}</td>
       <td data-label="Actions">
-        <button class="btn-action edit-btn" onclick="editReward('${r.rewardId}')">Edit</button> 
-        <button class="btn-action delete-btn" onclick="delReward('${r.rewardId}')">Delete</button>
+        <button class="btn-action edit-btn" onclick="editReward('${r.rewardID}')">Edit</button> 
+        <button class="btn-action delete-btn" onclick="delReward('${r.rewardID}')">Delete</button>
       </td>
     `;
     list.appendChild(tr);
@@ -317,7 +318,7 @@ async function editReward(id){ // revised the fetched file name (switched to tes
   const r = await res.json();
   
   //renamed r.variableNames to database tables
-  document.getElementById('id').value = r.rewardId; 
+  document.getElementById('id').value = r.rewardID; //changed Id to ID
   document.getElementById('title').value = r.rewardName;
   document.getElementById('description').value = r.rewardDescription;
   document.getElementById('points').value = r.rewardPointsRequired;

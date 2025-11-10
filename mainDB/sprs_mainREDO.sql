@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 09, 2025 at 10:10 AM
+-- Generation Time: Nov 10, 2025 at 08:48 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,7 +52,7 @@ CREATE TABLE `rewards` (
 
 INSERT INTO `rewards` (`rewardID`, `rewardName`, `rewardDescription`, `rewardPointsRequired`) VALUES
 (1, 'Hamburger', 'only for students', 20),
-(2, 'test', 'test123', 20);
+(3, 'Full Test Complete', 'Full Rewards Testing at 3:45PM (og desc & 20  pts req)\r\nedit: name (Full Test 11/10/2025) -> Full Test Complete + changing pts req -> 40.\r\nedit#2: not gonna test delete a 2nd time, it works 1st time so its probably good already. Create, Read and Update is tested a 2nd time with Full Test Complete.', 20);
 
 -- --------------------------------------------------------
 
@@ -138,7 +138,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `rewards`
 --
 ALTER TABLE `rewards`
-  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `schoolevents`

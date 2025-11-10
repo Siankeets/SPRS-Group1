@@ -36,10 +36,10 @@ elseif($act === 'listRewards'){ //!WORKING!
   exit;
 }
 
-elseif($_GET['action'] == 'getReward'){  //REVISING!! 
+elseif($act === 'getReward'){  //!WORKING!
   $id = $_GET['id']; // pull the id value from the hidden field
 
-  $stmt= mysqli_prepare($conn, "SELECT * FROM rewards WHERE rewardID = ?");
+  $stmt= mysqli_prepare($conn, "SELECT * FROM rewards WHERE rewardID = ?"); //changed Id to ID
   mysqli_stmt_bind_param($stmt, "i", $id);
   mysqli_stmt_execute($stmt);
   $result = mysqli_stmt_get_result($stmt);
@@ -53,7 +53,7 @@ exit;
   
 }
 
-elseif($act === 'delReward' && isset($_GET['id'])) { //REVISING!!
+elseif($act === 'delReward' && isset($_GET['id'])) { //!WORKING!
   $id = $_GET['id'];
 
   $stmt= mysqli_prepare($conn, "DELETE FROM rewards WHERE rewardID = ?");
@@ -70,7 +70,7 @@ elseif($act === 'delReward' && isset($_GET['id'])) { //REVISING!!
 
 elseif($act === 'saveReward'){ //!WORKING! 
   // get data from form with POST
-  $id = $_POST['rewardId'];
+  $id = $_POST['rewardID']; //changed Id to ID
   $title = $_POST['rewardName'];
   $description = $_POST['rewardDescription'];
   $points = $_POST['rewardPointsRequired'];
