@@ -153,7 +153,7 @@ $conn->close();
 </head>
 <body>
   <form class="login-container" method="POST" action="">
-    <h2>SPRS Dummy Login</h2>
+    <h2>Login</h2>
     <?php if ($error): ?>
       <p class="error"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
