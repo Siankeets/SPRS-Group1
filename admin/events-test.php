@@ -258,7 +258,7 @@ async function loadEvents(){ // !!WORKING!! list events
   });
 }
 
-form.addEventListener('submit',async e=>{ // !testing! save events
+form.addEventListener('submit',async e=>{ // !WORKING! save events
   e.preventDefault();
   const fd=new FormData(form);
 
@@ -273,17 +273,17 @@ form.addEventListener('submit',async e=>{ // !testing! save events
   loadEvents();
 });
 
-async function edit(id){
+async function edit(id){ // !TESTING! edit events
   const res=await fetch('manage_events-test.php?action=get&id='+id); //changed to test file
   const e=await res.json();
-  document.getElementById('id').value=e.id;
-  document.getElementById('title').value=e.title;
-  document.getElementById('description').value=e.description;
-  document.getElementById('requirements').value=e.requirements;
-  document.getElementById('rewards').value=e.rewards;
+  document.getElementById('id').value=e.eventID;
+  document.getElementById('title').value=e.eventName;
+  document.getElementById('description').value=e.eventDescription;
+  document.getElementById('requirements').value=e.eventRequirements;
+  document.getElementById('rewards').value=e.eventRewards;
 }
 
-async function del(id){
+async function del(id){ // !WORKING! delete events
   if(!confirm('Delete event?'))return;
   const res=await fetch('manage_events-test.php?action=delete&id='+id); //changed to test file
   const msg=await res.json();

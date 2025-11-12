@@ -6,7 +6,6 @@ header('Content-Type: application/json');
 $act = $_GET['action'] ?? ($_POST['action'] ?? '');
 
 // Event actions
-// if($act === 'list') echo json_encode($data['events']);
 if($act === 'list'){ //!WORKING! 
   $query = "SELECT * FROM schoolevents";
   $result = mysqli_query($conn, $query);
@@ -19,11 +18,36 @@ if($act === 'list'){ //!WORKING!
   exit;
 }
 
-elseif($act === 'get' && isset($_GET['id'])) echo json_encode(findById($data['events'], $_GET['id']));
+// elseif($act === 'get' && isset($_GET['id'])) echo json_encode(findById($data['events'], $_GET['id']));
+elseif($act === 'get'){  //!WORKING!
+  $id = $_GET['id']; // pull the id value from the hidden field using id attribute
 
-elseif($act === 'delete' && isset($_GET['id'])) {
-  $data['events'] = array_values(array_filter($data['events'], fn($e)=>$e['id']!==$_GET['id']));
-  save($data,$file); echo json_encode(['message'=>'Event deleted']);
+  $stmt= mysqli_prepare($conn, "SELECT * FROM schoolevents WHERE eventID = ?"); //changed Id to ID
+  mysqli_stmt_bind_param($stmt, "i", $id);
+  mysqli_stmt_execute($stmt);
+  $result = mysqli_stmt_get_result($stmt);
+  $reward = mysqli_fetch_assoc($result);
+    if ($reward) {
+        echo json_encode($reward);
+    } else {
+        echo json_encode(['error' => 'Event not found']);
+    }
+  exit;
+}
+
+elseif($act === 'delete' && isset($_GET['id'])) { //!WORKING!
+  $id = $_GET['id']; // pull the id value from the hidden field using id attribute
+
+  $stmt= mysqli_prepare($conn, "DELETE FROM schoolevents WHERE eventID = ?");
+  mysqli_stmt_bind_param($stmt, "i", $id);
+  mysqli_stmt_execute($stmt);
+
+  if (mysqli_stmt_affected_rows($stmt)> 0){
+    echo json_encode(['message' => 'Event deleted successfully!']);
+  }
+  else {
+    echo json_encode(['message' => 'No event found']);
+  }
 }
 
 elseif($act === 'save'){ //!WORKING! 
@@ -80,8 +104,7 @@ elseif($act === 'getReward'){  //!WORKING!
     } else {
         echo json_encode(['error' => 'Reward not found']);
     }
-exit;
-  
+  exit;
 }
 
 elseif($act === 'delReward' && isset($_GET['id'])) { //!WORKING!
