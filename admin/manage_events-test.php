@@ -3,9 +3,6 @@ session_start();
 include ('../db_connect-test.php');
 
 header('Content-Type: application/json');
-// $file = __DIR__.'/events.json'; // old json read for databaseless testing
-// if(!file_exists($file)) file_put_contents($file, json_encode(['events'=>[],'rewards'=>[]]));
-// $data = json_decode(file_get_contents($file), true);
 $act = $_GET['action'] ?? ($_POST['action'] ?? '');
 
 // Event actions
@@ -22,7 +19,7 @@ elseif($act === 'save'){
   save($data,$file); echo json_encode(['message'=>'Event saved']); exit;
 } 
 
-// Rewards actions // manage rewards, editing this
+// Rewards actions // manage rewards
 elseif($act === 'listRewards'){ //!WORKING! 
   // pull all rewards from table and insert into $rewards array then echo it
   $query = "SELECT * FROM rewards";
@@ -37,7 +34,7 @@ elseif($act === 'listRewards'){ //!WORKING!
 }
 
 elseif($act === 'getReward'){  //!WORKING!
-  $id = $_GET['id']; // pull the id value from the hidden field
+  $id = $_GET['id']; // pull the id value from the hidden field using id attribute
 
   $stmt= mysqli_prepare($conn, "SELECT * FROM rewards WHERE rewardID = ?"); //changed Id to ID
   mysqli_stmt_bind_param($stmt, "i", $id);
@@ -54,7 +51,7 @@ exit;
 }
 
 elseif($act === 'delReward' && isset($_GET['id'])) { //!WORKING!
-  $id = $_GET['id'];
+  $id = $_GET['id']; // pull the id value from the hidden field using id attribute
 
   $stmt= mysqli_prepare($conn, "DELETE FROM rewards WHERE rewardID = ?");
   mysqli_stmt_bind_param($stmt, "i", $id);
@@ -69,7 +66,7 @@ elseif($act === 'delReward' && isset($_GET['id'])) { //!WORKING!
 }
 
 elseif($act === 'saveReward'){ //!WORKING! 
-  // get data from form with POST
+  // get data from form with POST using name attribute
   $id = $_POST['rewardID']; //changed Id to ID
   $title = $_POST['rewardName'];
   $description = $_POST['rewardDescription'];
@@ -93,9 +90,4 @@ elseif($act === 'saveReward'){ //!WORKING!
   exit;
 }
 else echo json_encode(['error'=>'Invalid action']);
-
-// old json write/read for databaseless testing
-// function save($d,$f){file_put_contents($f,json_encode($d,JSON_PRETTY_PRINT));}
-// function findById($arr,$id){foreach($arr as $a) if($a['id']===$id) return $a; return [];}
-// function updateById(&$arr,$new){foreach($arr as &$a) if($a['id']===$new['id']){$a=$new;return;}}
 ?>
