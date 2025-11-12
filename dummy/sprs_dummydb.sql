@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 11, 2025 at 04:16 AM
+-- Generation Time: Nov 12, 2025 at 05:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,15 +46,13 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `password`, `role`, `points`, `name`, `department`, `program`, `major`) VALUES
 (1, 'admin1', 'admin123', 'admin', NULL, 'Alice Dela Cruz', 'IT Department', NULL, NULL),
 (2, 'admin2', 'admin456', 'admin', NULL, 'Bob Santos', 'Engineering Department', NULL, NULL),
-(3, 'teacher1', 'teach123', 'teacher', NULL, 'Mr. Ramon Reyes', 'Computer Science', 'BSCS', NULL),
-(4, 'teacher2', 'teach456', 'teacher', NULL, 'Ms. Angela Flores', 'Engineering', 'BSEE', NULL),
-(5, 'student1', 'stud123', 'student', 120, 'Juan Dela Cruz', 'Computer Science', 'BSCS', 'Software Development'),
+(5, 'student1', 'stud123', 'student', 60, 'Juan Dela Cruz', 'Computer Science', 'BSCS', 'Software Development'),
 (6, 'student2', 'stud456', 'student', 95, 'Maria Lopez', 'Engineering', 'BSEE', 'Power Systems'),
 (7, 'student3', 'stud789', 'student', 80, 'Jose Lim', 'Business', 'BSBA', 'Marketing'),
 (8, 'student4', 'stud101', 'student', 110, 'Anna Reyes', 'Computer Science', 'BSCS', 'Data Science'),
 (9, 'student5', 'stud102', 'student', 75, 'Mark Tan', 'Engineering', 'BSEE', 'Electronics'),
 (10, 'student6', 'stud103', 'student', 90, 'Sofia Cruz', 'Business', 'BSBA', 'Finance'),
-(11, 'student7', 'stud104', 'student', 130, 'Leo Santos', 'Computer Science', 'BSCS', 'AI & Machine Learning'),
+(11, 'student7', 'stud104', 'student', 10, 'Leo Santos', 'Computer Science', 'BSCS', 'AI & Machine Learning'),
 (12, 'student8', 'stud105', 'student', 85, 'Clara Mendoza', 'Engineering', 'BSEE', 'Robotics'),
 (13, 'student9', 'stud106', 'student', 100, 'Rafael Gomez', 'Business', 'BSBA', 'Entrepreneurship'),
 (14, 'student10', 'stud107', 'student', 70, 'Isabel Torres', 'Computer Science', 'BSCS', 'Cybersecurity');
