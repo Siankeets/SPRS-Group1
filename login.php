@@ -1,31 +1,64 @@
 <?php
 session_start();
+include('db_connect.php'); // Make sure this connects to your DB
 
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $username = trim($_POST['username']);
-  $password = trim($_POST['password']);
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-  if (!preg_match("/^[A-Za-z0-9_]{3,20}$/", $username)) {
-    $error = "Username must be 3–20 characters long and contain only letters, numbers, and underscores.";
-  } elseif (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{5,}$/", $password)) {
-    $error = "Password must be at least 5 characters and contain letters and numbers.";
-  } else {
-   if ($username === "student_01" && $password === "pass123") {
-  $_SESSION['username'] = $username;
-  $_SESSION['role'] = "student";
-  header("Location: /SPRS/SPRS-Group1/student/student_index.php");
-  exit();
-} elseif ($username === "admin_01" && $password === "admin123") {
-  $_SESSION['username'] = $username;
-  $_SESSION['role'] = "admin";
-  header("Location: /SPRS/SPRS-Group1/admin/staff_index.php");
-  exit();
-}
-  }
+    // --- Basic validation ---
+    if (!preg_match("/^[A-Za-z0-9_]{3,20}$/", $username)) {
+        $error = "Username must be 3–20 characters long and contain only letters, numbers, and underscores.";
+    } elseif (!preg_match("/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{5,}$/", $password)) {
+        $error = "Password must be at least 5 characters and contain letters and numbers.";
+    } else {
+        // --- Check database ---
+        $conn->select_db('sprs_dummydb');
+
+        $stmt = $conn->prepare("SELECT id, username, password, role, points, name, department, program, major 
+                                FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($user) {
+            // Assuming passwords are stored as plain text (not recommended for production)
+            // If hashed, use password_verify($password, $user['password'])
+            if ($password === $user['password']) {
+                // Set session
+                $_SESSION['userID'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['points'] = $user['points'];
+                $_SESSION['name'] = $user['name'];
+                $_SESSION['department'] = $user['department'];
+                $_SESSION['program'] = $user['program'];
+                $_SESSION['major'] = $user['major'];
+
+                // Redirect based on role
+                if ($user['role'] === 'student') {
+                    header("Location: /SPRS/SPRS-Group1/student/student_index.php");
+                    exit();
+                } elseif ($user['role'] === 'admin') {
+                    header("Location: /SPRS/SPRS-Group1/admin/staff_index.php");
+                    exit();
+                } else {
+                    $error = "Unknown role assigned to this user.";
+                }
+            } else {
+                $error = "Incorrect password.";
+            }
+        } else {
+            $error = "Username not found.";
+        }
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
