@@ -339,7 +339,7 @@
       break;
 
     case 'events':
-            window.location.href = 'events.php';
+            window.location.href = 'events-test.php'; // testing
       break;
 
     case 'reports':

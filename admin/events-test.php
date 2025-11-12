@@ -208,7 +208,7 @@ include ('../db_connect-test.php');
       <label>Description</label>
       <textarea id="description" name="eventDescription" required></textarea>
       <label>Requirements</label>
-      <textarea id="requirements" name="requirements" required></textarea>
+      <textarea id="requirements" name="eventRequirements" required></textarea>
       <label>Rewards</label>
       <input type="text" id="rewards" name="eventRewards" required>
       <button type="submit">Save Event</button>
@@ -238,7 +238,7 @@ include ('../db_connect-test.php');
 const form=document.getElementById('eventForm');
 const list=document.getElementById('eventList');
 
-async function loadEvents(){
+async function loadEvents(){ // !!WORKING!! list events
   const res=await fetch('manage_events-test.php?action=list'); //changed to test file
   const data=await res.json();
   list.innerHTML='';
@@ -248,7 +248,7 @@ async function loadEvents(){
     tr.innerHTML=`
       <td data-label="Title">${e.eventName}</td>
       <td data-label="Description">${e.eventDescription}</td>
-      <td data-label="Requirements">${e.requirements}</td>
+      <td data-label="Requirements">${e.eventRequirements}</td>
       <td data-label="Rewards">${e.eventRewards}</td>
       <td data-label="Actions">
         <button onclick="edit('${e.eventID}')">Edit</button>
@@ -258,10 +258,15 @@ async function loadEvents(){
   });
 }
 
-form.addEventListener('submit',async e=>{
+form.addEventListener('submit',async e=>{ // !testing! save events
   e.preventDefault();
   const fd=new FormData(form);
-  const res=await fetch('manage_events-test.php?action=save',{method:'POST',body:fd}); //changed to test file
+
+  const res=await fetch('manage_events-test.php?action=save',{ //changed to test file
+  method:'POST',
+  body:fd
+  }); 
+  
   const msg=await res.json();
   alert(msg.message);
   form.reset();

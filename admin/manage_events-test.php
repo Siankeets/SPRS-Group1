@@ -6,18 +6,52 @@ header('Content-Type: application/json');
 $act = $_GET['action'] ?? ($_POST['action'] ?? '');
 
 // Event actions
-if($act === 'list') echo json_encode($data['events']);
+// if($act === 'list') echo json_encode($data['events']);
+if($act === 'list'){ //!WORKING! 
+  $query = "SELECT * FROM schoolevents";
+  $result = mysqli_query($conn, $query);
+  
+  $events = [];
+  while ($row = mysqli_fetch_assoc($result)){
+      $events[] = $row;
+  }
+  echo json_encode($events);
+  exit;
+}
+
 elseif($act === 'get' && isset($_GET['id'])) echo json_encode(findById($data['events'], $_GET['id']));
+
 elseif($act === 'delete' && isset($_GET['id'])) {
   $data['events'] = array_values(array_filter($data['events'], fn($e)=>$e['id']!==$_GET['id']));
   save($data,$file); echo json_encode(['message'=>'Event deleted']);
 }
-elseif($act === 'save'){
-  $id = $_POST['id'] ?? '';
-  $event = ['id'=>$id ?: uniqid('ev_'), 'title'=>$_POST['title'], 'description'=>$_POST['description'], 'requirements'=>$_POST['requirements'], 'rewards'=>$_POST['rewards']];
-  if($id) updateById($data['events'],$event); else $data['events'][]=$event;
-  save($data,$file); echo json_encode(['message'=>'Event saved']); exit;
-} 
+
+elseif($act === 'save'){ //!WORKING! 
+  // get data from form with POST using name attribute
+  $id = $_POST['eventID']; 
+  $title = $_POST['eventName'];
+  $description = $_POST['eventDescription'];
+  $requirements = $_POST['eventRequirements'];
+  $rewards = $_POST['eventRewards'];
+
+  if (empty($id)){ // no id detected = new event
+    //new event, rewards is just description of whats being given out so its string.
+    $stmt = mysqli_prepare($conn,"INSERT INTO schoolevents (eventName, eventDescription, eventRequirements, eventRewards) VALUES (?,?,?,?)");
+    mysqli_stmt_bind_param($stmt, "ssss", $title, $description, $requirements, $rewards);
+    mysqli_stmt_execute($stmt);
+    $message = "Event added successfully!";
+  }
+  else {
+    //update new event, get the POST'ed hidden $id value when edit is clicked in rewards management page.
+    $stmt = mysqli_prepare($conn, "UPDATE schoolevents SET eventName = ?, eventDescription = ?, eventRequirements = ?, eventRewards = ? WHERE eventID = ?");
+    mysqli_stmt_bind_param($stmt, "ssssi", $title, $description, $requirements, $rewards, $id);
+    mysqli_stmt_execute($stmt);
+    $message = "Event updated successfully!";
+  }
+  echo json_encode(['message'=>$message]);
+  exit;
+}
+
 
 // Rewards actions // manage rewards
 elseif($act === 'listRewards'){ //!WORKING! 

@@ -274,7 +274,7 @@ include ('../db_connect-test.php');
 const form = document.getElementById('rewardForm');
 const list = document.getElementById('rewardList');
 
-async function loadRewards(){ //!WORKING! displaying rewards table, -revised the fetched file name (switched to test file) 
+async function loadRewards(){ //!WORKING! list events
   const res = await fetch('manage_events-test.php?action=listRewards'); // manage rewards, editing this
   const data = await res.json();
   list.innerHTML = '';
@@ -300,14 +300,12 @@ form.addEventListener('submit', async e => { //!WORKING! save rewards
   e.preventDefault();
   const fd = new FormData(form);
 
-  // console.log(..fd.entries()); // tester if data is collected/submitting
   const res = await fetch('manage_events-test.php?action=saveReward', {
     method: 'POST',
     body: fd
   });
 
   const msg = await res.json();
-  // console.log(msg); // tester if server is responding
   alert(msg.message);
   form.reset();
   loadRewards();
