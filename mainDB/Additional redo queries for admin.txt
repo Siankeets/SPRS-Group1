@@ -19,3 +19,11 @@ VALUES
 // sample reward data
 INSERT INTO rewards (rewardName, rewardDescription, rewardPointsRequired) VALUES
 ('Hamburger', 'only for students', 20);
+==================================================================================================
+EVENTS SECTION
+// added in requirements (no idea on specifics, will just make it TEXT)
+ALTER TABLE schoolevents  
+ADD COLUMN eventRequirements TEXT AFTER eventDescription;
+
+ALTER TABLE schoolevents
+MODIFY COLUMN eventRewards TEXT AFTER eventRequirements;

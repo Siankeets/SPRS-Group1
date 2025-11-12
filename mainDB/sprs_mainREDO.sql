@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2025 at 08:48 AM
+-- Generation Time: Nov 12, 2025 at 04:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -64,13 +64,14 @@ CREATE TABLE `schoolevents` (
   `eventID` int(11) NOT NULL,
   `eventName` varchar(128) NOT NULL,
   `eventDescription` text DEFAULT NULL,
+  `eventRequirements` text DEFAULT NULL,
+  `eventRewards` text DEFAULT NULL,
   `eventCreatorID` int(11) NOT NULL,
   `eventMinCap` int(11) NOT NULL,
   `eventMaxCap` int(11) NOT NULL,
   `eventStartDate` datetime NOT NULL,
   `eventEndDate` datetime NOT NULL,
-  `eventCreationDate` datetime DEFAULT current_timestamp(),
-  `eventRewards` text DEFAULT NULL
+  `eventCreationDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

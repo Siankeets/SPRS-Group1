@@ -1,4 +1,7 @@
-<?php header('Content-Type: text/html; charset=utf-8'); ?>
+<?php header('Content-Type: text/html; charset=utf-8'); 
+session_start();
+include ('../db_connect-test.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -198,16 +201,16 @@
 
   <div class="container">
     <h2>Event Management</h2>
-    <form id="eventForm">
-      <input type="hidden" id="id" name="id">
+    <form id="eventForm"> <!--changed input field names to match database naming-->
+      <input type="hidden" id="id" name="eventID">
       <label>Title</label>
-      <input type="text" id="title" name="title" required>
+      <input type="text" id="title" name="eventName" required>
       <label>Description</label>
-      <textarea id="description" name="description" required></textarea>
+      <textarea id="description" name="eventDescription" required></textarea>
       <label>Requirements</label>
       <textarea id="requirements" name="requirements" required></textarea>
       <label>Rewards</label>
-      <input type="text" id="rewards" name="rewards" required>
+      <input type="text" id="rewards" name="eventRewards" required>
       <button type="submit">Save Event</button>
     </form>
 
@@ -236,19 +239,20 @@ const form=document.getElementById('eventForm');
 const list=document.getElementById('eventList');
 
 async function loadEvents(){
-  const res=await fetch('manage_events.php?action=list');
+  const res=await fetch('manage_events-test.php?action=list'); //changed to test file
   const data=await res.json();
   list.innerHTML='';
+  //renamed e.variableNames to database tables,
   data.forEach(e=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`
-      <td data-label="Title">${e.title}</td>
-      <td data-label="Description">${e.description}</td>
+      <td data-label="Title">${e.eventName}</td>
+      <td data-label="Description">${e.eventDescription}</td>
       <td data-label="Requirements">${e.requirements}</td>
-      <td data-label="Rewards">${e.rewards}</td>
+      <td data-label="Rewards">${e.eventRewards}</td>
       <td data-label="Actions">
-        <button onclick="edit('${e.id}')">Edit</button>
-        <button class="delete" onclick="del('${e.id}')">Delete</button>
+        <button onclick="edit('${e.eventID}')">Edit</button>
+        <button class="delete" onclick="del('${e.eventID}')">Delete</button>
       </td>`;
     list.appendChild(tr);
   });
@@ -257,7 +261,7 @@ async function loadEvents(){
 form.addEventListener('submit',async e=>{
   e.preventDefault();
   const fd=new FormData(form);
-  const res=await fetch('manage_events.php?action=save',{method:'POST',body:fd});
+  const res=await fetch('manage_events-test.php?action=save',{method:'POST',body:fd}); //changed to test file
   const msg=await res.json();
   alert(msg.message);
   form.reset();
@@ -265,7 +269,7 @@ form.addEventListener('submit',async e=>{
 });
 
 async function edit(id){
-  const res=await fetch('manage_events.php?action=get&id='+id);
+  const res=await fetch('manage_events-test.php?action=get&id='+id); //changed to test file
   const e=await res.json();
   document.getElementById('id').value=e.id;
   document.getElementById('title').value=e.title;
@@ -276,7 +280,7 @@ async function edit(id){
 
 async function del(id){
   if(!confirm('Delete event?'))return;
-  const res=await fetch('manage_events.php?action=delete&id='+id);
+  const res=await fetch('manage_events-test.php?action=delete&id='+id); //changed to test file
   const msg=await res.json();
   alert(msg.message);
   loadEvents();
