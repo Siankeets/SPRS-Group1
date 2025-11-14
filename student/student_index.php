@@ -1,15 +1,12 @@
 <?php
 session_start();
 
-include('../db_connect.php'); // <-- adjust path to where your connection file is
-// Redirect to login if not logged in or not a student
+include('../db_connect.php');
+// Redirect if not logged in or not a student
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'student') {
     header("Location: ../login.php");
     exit();
 }
-
-
-
 
 // Get user info from session
 $username = $_SESSION['username'];
@@ -28,13 +25,12 @@ $stmt->bind_result($credits);
 $stmt->fetch();
 $stmt->close();
 
-
 // Generate initials for avatar
 $names = explode(' ', $name);
 $initials = '';
 foreach ($names as $n) {
     $initials .= strtoupper($n[0]);
-    if (strlen($initials) >= 2) break; // max 2 letters
+    if (strlen($initials) >= 2) break;
 }
 ?>
 
@@ -45,6 +41,12 @@ foreach ($names as $n) {
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Student Point-Reward System — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<!-- QR-Scanner library -->
+<script src="https://unpkg.com/qr-scanner/qr-scanner.umd.min.js"></script>
+<script>
+QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner/qr-scanner-worker.min.js';
+</script>
 
 <style>
 :root {
@@ -280,13 +282,20 @@ footer {
       <strong><?= htmlspecialchars($name) ?></strong>
       <span><?= htmlspecialchars(ucfirst($role)) ?></span>
     </div>
-<div class="credits" id="headerCredits">
-  Credits: <?= htmlspecialchars($credits) ?>
-</div>
-</div>
-
+    <div class="credits" id="headerCredits">
+      Credits: <?= htmlspecialchars($credits) ?>
+    </div>
   </div>
 </header>
+
+<div id="scanModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
+  <div style="background:#1e293b; padding:20px; border-radius:12px; text-align:center; position:relative;">
+    <button id="closeScan" style="position:absolute; top:10px; right:10px; background:#f00;color:#fff;padding:4px 8px;border:none;border-radius:6px;cursor:pointer;">X</button>
+    <h3 style="color:#fff;">Scan QR Code</h3>
+    <video id="qrVideo" autoplay muted playsinline style="width:300px;height:300px;border-radius:12px;border:2px solid #2563eb;margin:auto;"></video>
+    <p id="scanResult" style="margin-top:10px; color:#10b981;"></p>
+  </div>
+</div>
 
 <div class="container">
   <div class="main">
@@ -301,24 +310,13 @@ footer {
           <p id="heroDesc">Here's your dashboard. Check your rewards, events, and more.</p>
         </div>
 
-        <!-- User Image Placeholder beside welcome area -->
         <div class="user-image"><?= htmlspecialchars($initials) ?></div>
       </div>
 
-      <!-- Info cards -->
       <div class="info-cards">
-        <div class="card">
-          <h3>Department</h3>
-          <p><?= htmlspecialchars($department) ?></p>
-        </div>
-        <div class="card">
-          <h3>Program</h3>
-          <p><?= htmlspecialchars($program) ?></p>
-        </div>
-        <div class="card">
-          <h3>Major</h3>
-          <p><?= htmlspecialchars($major) ?></p>
-        </div>
+        <div class="card"><h3>Department</h3><p><?= htmlspecialchars($department) ?></p></div>
+        <div class="card"><h3>Program</h3><p><?= htmlspecialchars($program) ?></p></div>
+        <div class="card"><h3>Major</h3><p><?= htmlspecialchars($major) ?></p></div>
       </div>
     </section>
   </div>
@@ -352,6 +350,7 @@ const creditsEl = document.getElementById('headerCredits');
 let credits = <?= json_encode($credits) ?>;
 
 const studentMenu = [
+  { key: 'scan', title: 'Scan Points', sub: 'Scan QR to add points', icon: 'scan' },
   { key: 'redeem', title: 'Redeem', sub: 'Redeem rewards with credits', icon: 'gift' },
   { key: 'inventory', title: 'Inventory', sub: 'Track redeemed rewards', icon: 'box' },
   { key: 'events', title: 'Events List', sub: 'View upcoming events', icon: 'calendar' },
@@ -361,7 +360,8 @@ const studentMenu = [
 
 function iconSVG(name) {
   const map = {
-    gift:`<svg viewBox="0 0 24 24" fill="none"><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 7v-1a2 2 0 0 0-2-2h-3.5c.6 0 1.1.3 1.5.8.6.8.4 1.9-.5 2.5L12 11" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 7v-1a2 2 0 0 1 2-2h3.5" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    scan:`<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" stroke="#fff" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" stroke="#fff" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" stroke="#fff" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" stroke="#fff" stroke-width="1.5"/></svg>`,
+    gift:`<svg viewBox="0 0 24 24" fill="none"><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 7v-1a2 2 0 0 0-2-2h-3.5c.6 0 1.1.3 1.5.8.6.8.4 1.9-.5 2.5L12 11" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     box:`<svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a1 1 0 0 0-.5-.86L12.5 2.5a1 1 0 0 0-.99 0L3.5 7.14A1 1 0 0 0 3 8v8a1 1 0 0 0 .5.86L11.5 21.5a1 1 0 0 0 .99 0L20.5 16.86A1 1 0 0 0 21 16z" stroke="#fff" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     calendar:`<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="#fff" stroke-width="1.2"/><path d="M16 3v4M8 3v4" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg>`,
     help:`<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="1.2"/><path d="M12 17h.01M12 13a2 2 0 0 1 2-2c0-1.1-.9-2-2-2s-2 .9-2 2" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
@@ -381,14 +381,35 @@ studentMenu.forEach(item => {
   menu.appendChild(btn);
 });
 
+let qrScanner = null;
+const scanModal = document.getElementById('scanModal');
+const scanResult = document.getElementById('scanResult');
+const qrVideo = document.getElementById('qrVideo');
+
+document.getElementById('closeScan').addEventListener('click', () => {
+    scanModal.style.display = 'none';
+    if(qrScanner){
+        qrScanner.stop();
+        qrScanner.destroy();
+        qrScanner = null;
+    }
+});
+
 function handleMenu(key){
   switch(key){
+    case 'scan':
+      scanModal.style.display = 'flex';
+      scanResult.textContent = '';
+      qrScanner = new QrScanner(qrVideo, result => {
+          scanResult.textContent = `✅ Points Added: ${result}`;
+      });
+      qrScanner.start();
+      break;
     case 'redeem': window.location.href = 'redeem.php'; break;
     case 'inventory': window.location.href = 'inventory.php'; break;
     case 'events': window.location.href = 'event.php'; break;
     case 'help': window.location.href = 'help.php'; break;
     case 'logout': if(confirm('Logout?')) window.location.href = '../login.php'; break;
-    default: alert('Info'); break;
   }
 }
 </script>
