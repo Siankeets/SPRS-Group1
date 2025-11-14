@@ -139,17 +139,22 @@
       <p class="subtitle">Reset your password and regain access to your account.</p>
       <h2>Forgot Password</h2>
 
-     <form id="forgotForm" action="send_reset_code.php" method="POST">
-  <div class="input-group">
-    <label for="phone">Enter your registered Mobile Number:</label>
-    <input type="tel" id="phone" name="phone" placeholder="09XXXXXXXXX" required>
-  </div>
-  <button type="submit" class="btn">Send Reset Code via SMS</button>
-  <div class="extra-links">
-    <a href="login.html">Back to Login</a>
-  </div>
-</form>
+      <!-- FORM FIXED (Correct action + clean formatting) -->
+      <form id="forgotForm" action="send_reset_code.php" method="POST">
+        <div class="input-group">
+          <label for="phone">Enter your registered Mobile Number:</label>
+          <input type="tel" id="phone" name="phone" placeholder="09XXXXXXXXX" required>
+        </div>
 
+        <button type="submit" class="btn">Send Reset Code via SMS</button>
+
+        <div class="extra-links">
+         <a href="/SPRS/SPRS-Group1/login.php">Back to Login</a>
+
+        </div>
+      </form>
+
+    </div>
   </main>
 
   <footer>
@@ -159,7 +164,7 @@
       <span>📱 09123456789</span>
       <span>🏫 Student Point Reward System</span>
     </div>
-    <p>© 2025 Student Point-Reward System. All rights reserved.</p> 
+    <p>© 2025 Student Point-Reward System. All rights reserved.</p>
   </footer>
 
 </body>

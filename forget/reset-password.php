@@ -1,31 +1,53 @@
 <?php
 session_start();
-include('db_connect.php'); // ✅ make sure meron kang db_connect.php with $conn = new mysqli(...);
 
-$phone = isset($_GET['phone']) ? htmlspecialchars($_GET['phone']) : '';
+// Connect directly to sprs_dummydb
+$conn = new mysqli("localhost", "root", "", "sprs_dummydb");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Phone must come from session
+if (!isset($_SESSION['verified_phone'])) {
+    echo "<script>alert('Unauthorized access. Please verify again.'); window.location.href='forgot.html';</script>";
+    exit;
+}
+
+$phone = $_SESSION['verified_phone'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
     $new = trim($_POST["new_password"]);
     $confirm = trim($_POST["confirm_password"]);
-    $phone = trim($_POST["phone"]);
 
     if ($new === $confirm) {
-        // Hash password securely
-        $hash = password_hash($new, PASSWORD_BCRYPT);
 
-        // Update in database
-        $stmt = $conn->prepare("UPDATE users SET password_hash = ? WHERE phone = ?");
-        $stmt->bind_param("ss", $hash, $phone);
+        // Use contact_number column in dummydb
+        $stmt = $conn->prepare("UPDATE users SET password = ? WHERE contact_number = ?");
+       $stmt->bind_param("ss", $new, $phone);
 
-        if ($stmt->execute()) {
-            echo "<script>
-                    alert('✅ Password successfully reset! You may now log in.');
-                    window.location.href='login.php';
-                  </script>";
-            exit;
-        } else {
-            echo "<script>alert('Database error. Please try again later.');</script>";
-        }
+
+if ($new === $confirm) {
+
+    // Do NOT hash for now
+    // $hash = password_hash($new, PASSWORD_BCRYPT);
+
+    $stmt = $conn->prepare("UPDATE users SET password = ? WHERE contact_number = ?");
+    $stmt->bind_param("ss", $new, $phone); // store raw password
+
+    if ($stmt->execute()) {
+        unset($_SESSION['verified_phone']);
+        echo "<script>
+                alert('✅ Password successfully reset! You may now log in.');
+                window.location.href='../login.php';
+              </script>";
+        exit;
+    }
+
+    $stmt->close();
+}
+
+
 
         $stmt->close();
     } else {
@@ -33,6 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -89,9 +113,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
       <button type="submit" class="btn">Update Password</button>
 
-      <div class="extra-links">
-        <a href="login.php">← Back to Login</a>
-      </div>
+     <div class="extra-links">
+  <a href="../login.php">← Back to Login</a>
+</div>
+
     </form>
   </div>
 </main>
