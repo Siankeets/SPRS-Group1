@@ -1,17 +1,3 @@
-  <?php 
-    session_start();
-
-    if ($_SESSION['admin_logged_in'] != true) {
-      // Redirect to login page if the user is not logged in as admin
-      header("Location: /SPRS/SPRS-Group1/login-test.php");
-      exit();
-  }
-    // else{
-    //       echo "<script>alert('You are successfully logged in as admin!');</script>";
-    // }
-  include ('../db_connect-test.php');
-  ?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -335,11 +321,11 @@
       break;
 
     case 'rewards':
-           window.location.href = 'rewards-test.php';
+           window.location.href = 'rewards.php';
       break;
 
     case 'events':
-            window.location.href = 'events-test.php'; // testing
+            window.location.href = 'events.php';
       break;
 
     case 'reports':
@@ -352,7 +338,7 @@
 
     case 'logout':
       if (confirm('Logout?')) {
-        window.location.href = '/SPRS/SPRS-Group1/login-test.php'; //set to test ver, revert when done
+        window.location.href = '/SPRS/SPRS-Group1/login.php';
       }
       break;
 

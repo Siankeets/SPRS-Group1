@@ -2,30 +2,56 @@
 session_start();
 
 $message = "";
-$phone = isset($_POST['phone']) ? trim($_POST['phone']) : (isset($_GET['phone']) ? $_GET['phone'] : "");
 
-// If form is submitted (OTP verification)
+// Receive phone from POST or GET
+$phone = isset($_POST['phone']) ? trim($_POST['phone']) : (isset($_GET['phone']) ? trim($_GET['phone']) : "");
+
+// If phone is empty and no session value, block access
+if (empty($phone) && !isset($_SESSION['otp_phone'])) {
+    die("<script>
+            alert('❌ No phone number found. Please request a reset code again.');
+            window.location.href='forgot.html';
+        </script>");
+}
+
+// Always trust the session-stored phone more than GET
+if (isset($_SESSION['otp_phone'])) {
+    $phone = $_SESSION['otp_phone'];
+}
+
+// Form submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
+
     $otp = trim($_POST['otp']);
 
-    // Check if OTP session exists
+    // SESSION checks
     if (!isset($_SESSION['otp']) || !isset($_SESSION['otp_phone']) || !isset($_SESSION['otp_expires'])) {
         $message = "No reset code requested yet.";
-    } elseif ($phone !== $_SESSION['otp_phone']) {
+    }
+    elseif ($phone !== $_SESSION['otp_phone']) {
         $message = "Phone number mismatch.";
-    } elseif (time() > $_SESSION['otp_expires']) {
+    }
+    elseif (time() > $_SESSION['otp_expires']) {
         $message = "Reset code expired. Please request again.";
-        session_unset();
-    } elseif ($otp === (string)$_SESSION['otp']) {
-        // ✅ Verified successfully
-        $_SESSION['verified_phone'] = $phone;
-        session_unset();
+        session_unset(); // SAFE here
+    }
+    elseif ($otp === (string)$_SESSION['otp']) {
+
+        // SUCCESS —
+        // Store verified phone in session for reset-password.php
+        $_SESSION['verified_phone'] = $_SESSION['otp_phone'];
+
+        // Remove ONLY OTP data — keep verified phone alive
+        unset($_SESSION['otp']);
+        unset($_SESSION['otp_expires']);
+
         echo "<script>
                 alert('✅ Code verified successfully!');
-                window.location.href = 'reset-password.php?phone=" . urlencode($phone) . "';
+                window.location.href = 'reset-password.php';
               </script>";
         exit;
-    } else {
+    }
+    else {
         $message = "❌ Invalid code. Please try again.";
     }
 }
@@ -85,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['otp'])) {
       <button type="submit" class="btn">Verify Code</button>
 
       <div class="extra-links">
-        <a href="forgetpass.php">← Back to Forgot Password</a>
+        <a href="forgot.html">← Back to Forgot Password</a>
       </div>
     </form>
   </div>

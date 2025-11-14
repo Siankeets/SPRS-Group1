@@ -218,7 +218,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form id="loginForm" method="POST" action="/SPRS/SPRS-Group1/login.php" novalidate>
       <input type="text" name="username" placeholder="Username" required />
       <input type="password" name="password" placeholder="Password" required />
-      <a href="forget/forgetpass.php" class="forgot-password">Forgot password?</a>
+      <a href="forget/forgot.html" class="forgot-password">Forgot password?</a>
       <button type="submit">Log In</button>
     </form>
   </div>

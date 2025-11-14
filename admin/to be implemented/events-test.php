@@ -1,6 +1,6 @@
 <?php header('Content-Type: text/html; charset=utf-8'); 
 session_start();
-include ('../db_connect-test.php');
+include ('../db_connect.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">
