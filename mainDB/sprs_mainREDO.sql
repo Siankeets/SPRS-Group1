@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2025 at 05:51 AM
+-- Generation Time: Nov 12, 2025 at 07:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,14 +73,23 @@ CREATE TABLE `schoolevents` (
   `eventID` int(11) NOT NULL,
   `eventName` varchar(128) NOT NULL,
   `eventDescription` text DEFAULT NULL,
-  `eventCreatorID` int(11) NOT NULL,
-  `eventMinCap` int(11) NOT NULL,
-  `eventMaxCap` int(11) NOT NULL,
-  `eventStartDate` datetime NOT NULL,
-  `eventEndDate` datetime NOT NULL,
-  `eventCreationDate` datetime DEFAULT current_timestamp(),
-  `eventRewards` text DEFAULT NULL
+  `eventRequirements` text DEFAULT NULL,
+  `eventRewards` text DEFAULT NULL,
+  `eventCreatorID` int(11) DEFAULT NULL,
+  `eventMinCap` int(11) DEFAULT NULL,
+  `eventMaxCap` int(11) DEFAULT NULL,
+  `eventStartDate` datetime DEFAULT NULL,
+  `eventEndDate` datetime DEFAULT NULL,
+  `eventCreationDate` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `schoolevents`
+--
+
+INSERT INTO `schoolevents` (`eventID`, `eventName`, `eventDescription`, `eventRequirements`, `eventRewards`, `eventCreatorID`, `eventMinCap`, `eventMaxCap`, `eventStartDate`, `eventEndDate`, `eventCreationDate`) VALUES
+(1, 'Campus Clean-Up Drive', 'A collaborative event where students help clean designated campus areas.', 'Bring your own gloves and trash bags; wear proper shoes.', '50 Points', 1, 10, 100, '2025-11-15 08:00:00', '2025-11-15 12:00:00', '2025-11-12 13:01:04'),
+(2, 'test 3', 'test 3', 'test 3', 'test 3', NULL, NULL, NULL, NULL, NULL, '2025-11-12 14:05:08');
 
 -- --------------------------------------------------------
 
@@ -186,13 +195,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `rewards`
 --
 ALTER TABLE `rewards`
-  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `schoolevents`
 --
 ALTER TABLE `schoolevents`
-  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `student_inventory`
