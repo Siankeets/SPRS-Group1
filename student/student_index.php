@@ -1,3 +1,43 @@
+<?php
+session_start();
+
+include('../db_connect.php'); // <-- adjust path to where your connection file is
+// Redirect to login if not logged in or not a student
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'student') {
+    header("Location: ../login.php");
+    exit();
+}
+
+
+
+
+// Get user info from session
+$username = $_SESSION['username'];
+$name = $_SESSION['name'];
+$role = $_SESSION['role'];
+$credits = $_SESSION['points'];
+$department = $_SESSION['department'];
+$program = $_SESSION['program'];
+$major = $_SESSION['major'];
+
+$conn->select_db('sprs_dummydb');
+$stmt = $conn->prepare("SELECT points FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($credits);
+$stmt->fetch();
+$stmt->close();
+
+
+// Generate initials for avatar
+$names = explode(' ', $name);
+$initials = '';
+foreach ($names as $n) {
+    $initials .= strtoupper($n[0]);
+    if (strlen($initials) >= 2) break; // max 2 letters
+}
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -21,12 +61,11 @@
   --transition: 240ms cubic-bezier(.2,.9,.3,1);
 }
 
-
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
 body {
   font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: #0f172a; /* fallback background */
+  background: #0f172a;
   color: #f2f6fb;
   line-height: 1.35;
 }
@@ -42,6 +81,50 @@ body {
   background-blend-mode: overlay;
 }
 
+.credits {
+  background-color: #10b981;
+  color: #fff;             
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.credits:hover {
+  transform: scale(1.05);
+}
+.credits-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.credits-label {
+  color: #ccc; /* muted label */
+}
+
+.credits-value {
+  background-color: #10b981; /* green pill */
+  color: #fff;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.credits-value:hover {
+  transform: scale(1.05);
+}
+
+
+
 header {
   position: fixed; top: 0; left: 0; right: 0;
   width: 100%; z-index: 100;
@@ -54,7 +137,6 @@ header {
 .brand { display: flex; gap: 14px; align-items: center; }
 .logo img { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; }
 .title-wrap h1 { font-size: 16px; margin: 0; font-weight: 600; }
-.title-wrap p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
 
 .profile-info {
   display: flex; align-items: center; gap: 12px;
@@ -75,11 +157,6 @@ header {
 }
 .profile-info .user-details strong { font-size: 14px; }
 .profile-info .user-details span { font-size: 12px; color: #ccc; }
-.profile-info .credits {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff; font-weight: 600;
-  padding: 4px 10px; border-radius: 10px; font-size: 12px;
-}
 
 .main { display: grid; grid-template-columns: 260px 1fr; gap: 16px; flex: 1; }
 
@@ -111,7 +188,8 @@ header {
 .menu-btn .text .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
 .content {
-  padding: 14px; border-radius: 12px;
+  padding: 20px;
+  border-radius: 12px;
   background: var(--glass);
   border: 1px solid rgba(255,255,255,0.04);
   box-shadow: 0 6px 18px rgba(3,7,18,0.45);
@@ -120,13 +198,57 @@ header {
 
 .hero {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 18px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.06);
+  padding: 20px; border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  margin-bottom: 20px;
 }
-.hero .info { max-width: 70%; }
-.hero h2 { margin: 0; font-size: 20px; font-weight: 700; }
-.hero p { margin: 6px 0 0; color: #fff; text-shadow: 0 1px 4px rgba(2,6,23,0.6); }
+.hero .info h2 { margin: 0; font-size: 20px; font-weight: 700; }
+.hero .info p { margin-top: 6px; font-size: 14px; opacity: 0.9; }
+
+.user-image {
+  width: 120px;
+  height: 120px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+}
+.card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #93c5fd;
+  margin-bottom: 6px;
+}
+.card p {
+  font-size: 13px;
+  color: #f2f6fb;
+  opacity: 0.9;
+}
 
 footer {
   width: 100%; background: #1e293b; text-align: center; padding: 20px 10px; margin-top: auto;
@@ -136,9 +258,9 @@ footer {
 @media (max-width:600px){
   header{padding:6px 14px}
   .logo img{width:42px;height:42px}
-  .title-wrap h1{font-size:15px}
-  .title-wrap p{font-size:11px}
   .container{padding-top:95px!important;padding-left:14px;padding-right:14px;padding-bottom:20px;}
+  .hero { flex-direction: column; align-items: flex-start; }
+  .user-image { margin-top: 16px; }
 }
 </style>
 </head>
@@ -153,12 +275,16 @@ footer {
   </div>
 
   <div class="profile-info">
-    <div class="avatar">ST</div>
+    <div class="avatar"><?= htmlspecialchars($initials) ?></div>
     <div class="user-details">
-      <strong>John Student</strong>
-      <span>Student</span>
+      <strong><?= htmlspecialchars($name) ?></strong>
+      <span><?= htmlspecialchars(ucfirst($role)) ?></span>
     </div>
-    <div class="credits">Credits: <span id="headerCredits">120</span></div>
+<div class="credits" id="headerCredits">
+  Credits: <?= htmlspecialchars($credits) ?>
+</div>
+</div>
+
   </div>
 </header>
 
@@ -171,8 +297,27 @@ footer {
     <section class="content">
       <div class="hero">
         <div class="info">
-          <h2 id="dashboardTitle">Welcome, John</h2>
-          <p id="heroDesc">This dashboard shows your credits, rewards, and events. Use the menu to redeem or view inventory.</p>
+          <h2 id="dashboardTitle">Welcome, <?= htmlspecialchars($name) ?></h2>
+          <p id="heroDesc">Here's your dashboard. Check your rewards, events, and more.</p>
+        </div>
+
+        <!-- User Image Placeholder beside welcome area -->
+        <div class="user-image"><?= htmlspecialchars($initials) ?></div>
+      </div>
+
+      <!-- Info cards -->
+      <div class="info-cards">
+        <div class="card">
+          <h3>Department</h3>
+          <p><?= htmlspecialchars($department) ?></p>
+        </div>
+        <div class="card">
+          <h3>Program</h3>
+          <p><?= htmlspecialchars($program) ?></p>
+        </div>
+        <div class="card">
+          <h3>Major</h3>
+          <p><?= htmlspecialchars($major) ?></p>
         </div>
       </div>
     </section>
@@ -204,7 +349,7 @@ footer {
 
 <script>
 const creditsEl = document.getElementById('headerCredits');
-let credits = 120;
+let credits = <?= json_encode($credits) ?>;
 
 const studentMenu = [
   { key: 'redeem', title: 'Redeem', sub: 'Redeem rewards with credits', icon: 'gift' },
@@ -242,10 +387,7 @@ function handleMenu(key){
     case 'inventory': window.location.href = 'inventory.php'; break;
     case 'events': window.location.href = 'event.php'; break;
     case 'help': window.location.href = 'help.php'; break;
-   case 'logout':
-  if (confirm('Logout?')) window.location.href = '../login.php';
-  break;
-
+    case 'logout': if(confirm('Logout?')) window.location.href = '../login.php'; break;
     default: alert('Info'); break;
   }
 }

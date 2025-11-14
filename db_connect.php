@@ -1,11 +1,11 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+error_reporting(E_ALL);         // for development, (E_ALL -> 0) disable for final product 
+ini_set('display_errors', 1);   // ('display_errors', 1 -> 0)
 
 $host = "localhost";
 $user = "root";
 $pass = "";
-$dbname = "sprsystem";
+$dbname = "sprs_mainredo";
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 

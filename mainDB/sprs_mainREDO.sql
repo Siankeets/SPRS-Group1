@@ -43,16 +43,25 @@ CREATE TABLE `rewards` (
   `rewardID` int(11) NOT NULL,
   `rewardName` varchar(255) NOT NULL,
   `rewardDescription` text DEFAULT NULL,
-  `rewardPointsRequired` int(11) NOT NULL
+  `rewardPointsRequired` int(11) NOT NULL,
+  `rewardType` enum('Ticket','Supplies','Tshirts','IDs','Points') NOT NULL DEFAULT 'Supplies'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rewards`
 --
 
-INSERT INTO `rewards` (`rewardID`, `rewardName`, `rewardDescription`, `rewardPointsRequired`) VALUES
-(1, 'Hamburger', 'only for students', 20),
-(3, 'Full Test Complete', 'Full Rewards Testing at 3:45PM (og desc & 20  pts req)\r\nedit: name (Full Test 11/10/2025) -> Full Test Complete + changing pts req -> 40.\r\nedit#2: not gonna test delete a 2nd time, it works 1st time so its probably good already. Create, Read and Update is tested a 2nd time with Full Test Complete.', 20);
+INSERT INTO `rewards` (`rewardID`, `rewardName`, `rewardDescription`, `rewardPointsRequired`, `rewardType`) VALUES
+(3, 'Full Test Complete', 'Full Rewards Testing at 3:45PM (og desc & 20  pts req)\r\nedit: name (Full Test 11/10/2025) -> Full Test Complete + changing pts req -> 40.\r\nedit#2: not gonna test delete a 2nd time, it works 1st time so its probably good already. Create, Read and Update is tested a 2nd time with Full Test Complete.', 20, 'Supplies'),
+(4, 'Test1', 'Description for test 1\r\n', 200, 'Supplies'),
+(5, 'test2', 'test2', 200, 'Supplies'),
+(6, 'test 4', 'changed test 3 edit part of crud', 200, 'Tshirts'),
+(7, '50% discount ticket for CICS event week', 'For behaved students only', 200, 'Ticket'),
+(8, 'Hamburger', '2 hamburgers for best students', 350, 'Supplies'),
+(9, 'hamrbuer', 'qw2134', 500, 'Ticket'),
+(10, 'test 5', 'test 5', 35, 'IDs'),
+(11, 'test 6 ', 'test 6', 55, 'Ticket'),
+(12, 'test 7 ', 'test 7', 10, 'Points');
 
 -- --------------------------------------------------------
 
@@ -81,6 +90,37 @@ CREATE TABLE `schoolevents` (
 INSERT INTO `schoolevents` (`eventID`, `eventName`, `eventDescription`, `eventRequirements`, `eventRewards`, `eventCreatorID`, `eventMinCap`, `eventMaxCap`, `eventStartDate`, `eventEndDate`, `eventCreationDate`) VALUES
 (1, 'Campus Clean-Up Drive', 'A collaborative event where students help clean designated campus areas.', 'Bring your own gloves and trash bags; wear proper shoes.', '50 Points', 1, 10, 100, '2025-11-15 08:00:00', '2025-11-15 12:00:00', '2025-11-12 13:01:04'),
 (2, 'test 3', 'test 3', 'test 3', 'test 3', NULL, NULL, NULL, NULL, NULL, '2025-11-12 14:05:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_inventory`
+--
+
+CREATE TABLE `student_inventory` (
+  `inventoryID` int(11) NOT NULL,
+  `studentID` int(11) DEFAULT NULL,
+  `rewardID` int(11) DEFAULT NULL,
+  `dateRedeemed` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_inventory`
+--
+
+INSERT INTO `student_inventory` (`inventoryID`, `studentID`, `rewardID`, `dateRedeemed`) VALUES
+(2, 5, 3, '2025-11-12 12:09:48'),
+(3, 5, 3, '2025-11-12 12:14:13'),
+(4, 5, 3, '2025-11-12 12:18:46'),
+(5, 5, 3, '2025-11-12 12:21:16'),
+(6, 5, 7, '2025-11-12 12:31:54'),
+(7, 5, 6, '2025-11-12 12:31:56'),
+(8, 5, 3, '2025-11-12 12:42:00'),
+(9, 5, 3, '2025-11-12 12:43:58'),
+(10, 11, 3, '2025-11-12 12:44:34'),
+(11, 11, 12, '2025-11-12 12:46:04'),
+(12, 11, 11, '2025-11-12 12:46:11'),
+(13, 11, 10, '2025-11-12 12:46:15');
 
 -- --------------------------------------------------------
 
@@ -134,6 +174,14 @@ ALTER TABLE `schoolevents`
   ADD KEY `eventCreatorID` (`eventCreatorID`);
 
 --
+-- Indexes for table `student_inventory`
+--
+ALTER TABLE `student_inventory`
+  ADD PRIMARY KEY (`inventoryID`),
+  ADD KEY `studentID` (`studentID`),
+  ADD KEY `rewardID` (`rewardID`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -154,6 +202,12 @@ ALTER TABLE `rewards`
 --
 ALTER TABLE `schoolevents`
   MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `student_inventory`
+--
+ALTER TABLE `student_inventory`
+  MODIFY `inventoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -177,6 +231,12 @@ ALTER TABLE `eventparticipants`
 --
 ALTER TABLE `schoolevents`
   ADD CONSTRAINT `schoolevents_ibfk_1` FOREIGN KEY (`eventCreatorID`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `student_inventory`
+--
+ALTER TABLE `student_inventory`
+  ADD CONSTRAINT `student_inventory_ibfk_2` FOREIGN KEY (`rewardID`) REFERENCES `rewards` (`rewardID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
