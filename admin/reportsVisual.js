@@ -1,12 +1,22 @@
 window.onload = function () {
-    
-    // Example static data (replace with DB-driven later)
-    const reportData = {
-        labels: ["Active Students", "Events", "Rewards Redeemed"],
-        values: [120, 14, 89]
-    };
+    Promise.all([ //multi fetch, theres also async na ginamit already kung saan man sa system di ko tanda.
+        fetch("reportStudentCount.php").then(response => response.json()),
+        fetch("reportAdminCount.php").then(response => response.json())
+    ])
 
-    generateReportChart(reportData);
+    .then(([studCount, adminCount]) => {
+        console.log(studentCount, adminCount); // Log to ensure the data is correct
+        const studentTotal = studCount.totalStudents;
+        const adminTotal = adminCount.totalAdmins;
+        
+        const reportCount = {
+            labels: ["Total Students", "Total Admins"],
+            values: [studentTotal, adminTotal]
+        };
+        console.log(reportData); // Log to check the data before passing it to the chart
+        generateReportChart(reportCount);
+    })
+    .catch(err => console.error("Data not found",err));
 };
 
 function generateReportChart(data) {
@@ -16,12 +26,12 @@ function generateReportChart(data) {
         data: {
             labels: data.labels,
             datasets: [{
-                label: "System Overview",
+                label: "Users per Roles",
                 data: data.values,
                 backgroundColor: [
                     "rgba(75, 192, 192, 0.7)",
                     "rgba(153, 102, 255, 0.7)",
-                    "rgba(255, 159, 64, 0.7)"
+                    // "rgba(255, 159, 64, 0.7)" uncomment these when adding more datas (e.g # of distributed points / redeemed rewards)
                 ]
             }]
         },
@@ -29,7 +39,7 @@ function generateReportChart(data) {
             plugins: {
                 title: {
                     display: true,
-                    text: "System Report Summary"
+                    text: "Total Registered Users by Role"
                 },
                 legend: { display: false }
             },
