@@ -336,7 +336,7 @@ $admin_user = $_SESSION['username'];
       break;
 
     case 'reports':
-            window.location.href = 'reports.php';
+            window.location.href = 'reports-test.php'; // revert to og file after testing.
       break;
 
     case 'help':
