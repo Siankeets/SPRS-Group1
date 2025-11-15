@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('db_connect.php'); // Make sure this connects to your DB
+// include('dummy/connection_dummydb.php');
 
 $error = "";
 
