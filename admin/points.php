@@ -209,15 +209,31 @@
     </div>
   </div>
 
-  <footer>
-    <div style="font-weight:700; font-size:16px; margin-bottom:12px;">Contact Us:</div>
-    <div style="font-size:13px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; color:#93c5fd;">
-      <div>📧 sprsystem@gmail.com</div>
-      <span style="color:#ccc;">|</span>
-      <div>📞 09123456789</div>
+ <footer>
+  <div style="font-weight:700; font-size:16px; margin-bottom:12px;">Contact Us:</div>
+  <div style="font-size:13px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; color:#93c5fd;">
+    <div>📧 sprsystem@gmail.com</div>
+    <span style="color:#ccc;">|</span>
+    <div>📞 09123456789</div>
+    <span style="color:#ccc;">|</span>
+    <!-- Facebook -->
+    <div style="display:flex; align-items:center; gap:6px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#93c5fd" viewBox="0 0 24 24">
+        <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 
+                 3.657 9.128 8.438 9.878v-6.987H8.078v-2.89h2.36V9.797
+                 c0-2.337 1.393-3.625 3.52-3.625.996 0 2.04.178 2.04.178v2.25
+                 h-1.151c-1.137 0-1.492.705-1.492 1.43v1.716h2.54l-.406 2.89
+                 h-2.134V21.9C18.343 21.128 22 16.991 22 12z"/>
+      </svg>
+      <a href="https://www.facebook.com/StudentPointRewardSystem" target="_blank" style="color:#93c5fd; text-decoration:none;">
+        Student Point Reward System
+      </a>
     </div>
-    <div style="font-size:13px;color:#fff;">© 2025 Student Point-Reward System. All rights reserved.</div>
-  </footer>
+  </div>
+  <div style="font-size:13px;color:#fff;">
+    © 2025 Student Point-Reward System. All rights reserved.
+  </div>
+</footer>
 
   <script>
     const form = document.getElementById('givePointsForm');

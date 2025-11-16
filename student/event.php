@@ -1,3 +1,59 @@
+<?php
+session_start();
+include('../db_connect.php'); // DB connection
+
+// --- Ensure student is logged in ---
+if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
+    header("Location: ../login.php");
+    exit();
+}
+
+$studentID = $_SESSION['userID'];
+$fullName = $_SESSION['name'] ?? 'Student';
+$points   = $_SESSION['points'] ?? 0;
+
+// --- Generate initials for avatar ---
+$names = explode(' ', $fullName);
+$initials = '';
+foreach ($names as $n) {
+    if ($n === '') continue;
+    $initials .= strtoupper($n[0]);
+    if (strlen($initials) >= 2) break;
+}
+
+// --- Fetch events with registration and attendance info ---
+$query = "
+    SELECT e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType,
+           COUNT(DISTINCT r.id) AS totalRegistered,
+           COUNT(DISTINCT p.id) AS totalAttended,
+           IF(er.id IS NULL, 0, 1) AS eventRegistered,
+           IF(ep.attended IS NULL, 0, ep.attended) AS attended
+    FROM schoolevents e
+    LEFT JOIN event_registrations r ON e.eventID = r.eventID
+    LEFT JOIN eventparticipants p ON e.eventID = p.eventID AND p.attended = 1
+    LEFT JOIN event_registrations er ON e.eventID = er.eventID AND er.studentID = ?
+    LEFT JOIN eventparticipants ep ON e.eventID = ep.eventID AND ep.studentID = ?
+    GROUP BY e.eventID
+    ORDER BY e.eventID ASC
+";
+
+$stmt = mysqli_prepare($conn, $query);
+if (!$stmt) {
+    die("Prepare failed: " . mysqli_error($conn));
+}
+mysqli_stmt_bind_param($stmt, "ii", $studentID, $studentID);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+$events = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $row['totalRegistered'] = (int)$row['totalRegistered'];
+    $row['totalAttended'] = (int)$row['totalAttended'];
+    $row['eventRegistered'] = (int)$row['eventRegistered'];
+    $row['attended'] = (int)$row['attended'];
+    $events[] = $row;
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,143 +61,104 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Student Point-Reward System — Events</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/html5-qrcode"></script>
-
 <style>
 :root {
-  --bg-overlay: rgba(0,0,0,0.68);
-  --muted: #b5bcc8;
-  --accent-1: #93c5fd;
-  --accent-2: #3b82f6;
-  --glass: rgba(0,0,0,0.40);
-  --glass-strong: rgba(0,0,0,0.55);
-  --success: #10b981;
-  --transition: 240ms cubic-bezier(.2,.9,.3,1);
+    --accent-ticket: #3b82f6;
+    --accent-supplies: #22c55e;
+    --accent-tshirts: #f59e0b;
+    --accent-ids: #a855f7;
+    --accent-points: #ef4444;
 }
-
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; display: flex; flex-direction: column; }
-body {
-  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: url('images/bg.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #f2f6fb;
-  line-height: 1.35;
-  padding-top: 80px;
-}
+body { font-family:'Inter', system-ui; background:url('images/bg.jpg') no-repeat center center fixed; background-size:cover; color:#f2f6fb; margin:0; padding-top:80px; display:flex; flex-direction:column; }
+header { position:fixed; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; background:#1e293b; padding:8px 18px; box-shadow:0 4px 16px rgba(3,7,18,0.4); z-index:100; flex-wrap:wrap; row-gap:8px;}
+.brand { display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
+.logo img { width:46px; height:46px; border-radius:8px; object-fit:cover; }
+.title-wrap h1 { margin:0; font-weight:600; font-size:16px; }
+.profile-info { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.08); padding:8px 16px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.3);}
+.avatar { background: linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; width:36px;height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; font-size:14px; }
+.user-details { display:flex; flex-direction:column; line-height:1.1; }
+.user-details strong { font-size:14px; }
+.user-details span { font-size:12px; color:#ccc; }
+.credits { background: linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:600; padding:4px 10px; border-radius:10px; font-size:12px; }
 
-header {
-  position: fixed; top: 0; left: 0; right: 0;
-  width: 100%; z-index: 100;
-  padding: 8px 18px;
-  display: flex; justify-content: space-between; align-items: center;
-  background-color: #1e293b; color: #fff;
-  box-shadow: 0 4px 16px rgba(3,7,18,0.4);
-  flex-wrap: wrap; row-gap: 8px;
-}
-.brand { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-.logo img { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; display: block; }
-.title-wrap h1 { font-size: 16px; margin: 0; font-weight: 600; }
+.container { flex:1; padding:20px 18px 20px; display:flex; flex-direction:column; }
+.content { padding:14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.04); box-shadow:0 6px 18px rgba(3,7,18,0.45); position:relative;}
+.hero { display:flex; align-items:center; justify-content:space-between; padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); flex-wrap:wrap; row-gap:10px;}
+.hero h2 { margin:0; font-size:20px; font-weight:700; }
+.hero p { margin:6px 0 0; color:#fff; text-shadow:0 1px 4px rgba(2,6,23,0.6);}
+.hero .back-btn { background: linear-gradient(135deg,#93c5fd,#3b82f6); color:#071033; font-weight:700; border:none; border-radius:8px; padding:10px 18px; cursor:pointer; transition:0.25s; box-shadow:0 4px 12px rgba(2,6,23,0.35);}
+.hero .back-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(2,6,23,0.45);}
 
-.profile-info {
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(255,255,255,0.08);
-  padding: 8px 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-.profile-info .avatar {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #fff; width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; font-weight: 700; font-size: 14px;
-}
-.profile-info .user-details { display: flex; flex-direction: column; line-height: 1.1; }
-.profile-info .user-details strong { font-size: 14px; }
-.profile-info .user-details span { font-size: 12px; color: #ccc; }
-.profile-info .credits {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff; font-weight: 600; padding: 4px 10px;
-  border-radius: 10px; font-size: 12px;
-}
-
-.container { flex: 1; padding: 20px 18px 20px; display: flex; flex-direction: column; }
-.content {
-  padding: 14px; border-radius: 12px;
-  background: var(--glass); border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 6px 18px rgba(3,7,18,0.45); position: relative;
-}
-
-.hero {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.06);
-  flex-wrap: wrap; row-gap: 10px;
-}
-.hero h2 { margin: 0; font-size: 20px; font-weight: 700; }
-.hero p { margin: 6px 0 0; color: #fff; text-shadow: 0 1px 4px rgba(2,6,23,0.6); }
-.hero .back-btn {
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  color: #071033; font-weight: 700; border: none; border-radius: 8px;
-  padding: 10px 18px; cursor: pointer; transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(2,6,23,0.35);
-}
-.hero .back-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(2,6,23,0.45);
-}
-
-.redeem-section {
-  margin-top: 30px;
-  background: rgba(255,255,255,0.08); border-radius: 18px; padding: 30px;
-  backdrop-filter: blur(12px); box-shadow: 0 10px 28px rgba(0,0,0,0.45);
-  border: 1px solid rgba(255,255,255,0.12); text-align: center;
-}
-.redeem-section button {
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  border: none; border-radius: 10px; padding: 12px 20px;
-  color: #071033; font-weight: 700; font-size: 15px;
-  cursor: pointer; transition: var(--transition); margin: 10px;
-  box-shadow: 0 4px 16px rgba(2,6,23,0.4);
-}
-.redeem-section button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 26px rgba(2,6,23,0.5);
-}
-
+.redeem-section { margin-top:30px; background: rgba(255,255,255,0.08); border-radius:18px; padding:30px; backdrop-filter: blur(12px); box-shadow:0 10px 28px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.12); text-align:center;}
 .option-list {
-  list-style: none; padding: 0; margin: 20px auto;
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 25px;
+    list-style:none;
+    padding:0;
+    margin:20px auto;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:25px;
+    max-height:500px; /* fixed height for scroll */
+    overflow-y:auto;  /* enable vertical scroll */
+    padding-right:10px; /* to avoid hiding content behind scrollbar */
 }
-.option-item {
-  background: rgba(255,255,255,0.15); border-radius: 16px; padding: 25px 20px;
-  cursor: pointer; transition: var(--transition); color: #fff;
-  display: flex; flex-direction: column; align-items: center;
-  width: 220px; text-align: center; font-size: 16px; font-weight: 600;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+.option-list::-webkit-scrollbar {
+    width: 8px;
 }
-.option-item:hover {
-  background: rgba(255,255,255,0.25); transform: translateY(-5px);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+.option-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+}
+.option-list::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+    border-radius: 6px;
+}
+.option-item { background: rgba(255,255,255,0.15); border-radius:16px; padding:25px 20px; cursor:pointer; transition:0.25s; color:#fff; display:flex; flex-direction:column; align-items:center; width:220px; text-align:center; font-size:16px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.35);}
+.option-item:hover { background: rgba(255,255,255,0.25); transform:translateY(-5px); box-shadow:0 10px 28px rgba(0,0,0,0.45);}
+.reward-type { display:inline-block; padding:4px 10px; border-radius:12px; color:#fff; font-size:13px; font-weight:600; margin:6px 0; }
+
+/* Styled buttons */
+.btn-register {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+    margin-top:12px;
+}
+.btn-register:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(59,130,246,0.45);
+}
+.btn-back {
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(249,115,22,0.4);
+    margin-top: 12px;
+}
+.btn-back:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.45);
 }
 
-#reader { width: 100%; max-width: 400px; margin: 20px auto; }
-#scanStatus { margin-top: 10px; font-weight: 600; }
+footer { width:100%; background:#1e293b; text-align:center; padding:20px 10px; margin-top:auto; }
 
-footer {
-  width: 100%; background: #1e293b; text-align: center; padding: 20px 10px; margin-top: auto;
-}
-
-@media (max-width:768px){
-  header{flex-direction:column;text-align:center;gap:6px;padding-bottom:12px;}
-  body{padding-top:130px;}
-  .hero{flex-direction:column;align-items:flex-start;}
-  .hero .back-btn{align-self:flex-end;margin-top:10px;}
-}
+@media(max-width:768px){ header{flex-direction:column;text-align:center;gap:6px;padding-bottom:12px;} body{padding-top:130px;} .hero{flex-direction:column;align-items:flex-start;} .hero .back-btn{align-self:flex-end;margin-top:10px;} }
 </style>
 </head>
-
 <body>
 <header>
   <div class="brand">
@@ -149,12 +166,12 @@ footer {
     <div class="title-wrap"><h1>Student Point-Reward System</h1></div>
   </div>
   <div class="profile-info">
-    <div class="avatar">ST</div>
+    <div class="avatar"><?= htmlspecialchars($initials) ?></div>
     <div class="user-details">
-      <strong>John Student</strong>
+      <strong><?= htmlspecialchars($fullName) ?></strong>
       <span>Student</span>
     </div>
-    <div class="credits">Points: <span id="headerCredits">120</span></div>
+    <div class="credits">Points: <span id="headerCredits"><?= htmlspecialchars($points) ?></span></div>
   </div>
 </header>
 
@@ -163,18 +180,52 @@ footer {
     <div class="hero">
       <div class="info">
         <h2>Event Attendance</h2>
-        <p>Select an event and validate attendance via QR code.</p>
+        <p>Select an event to register or mark attendance.</p>
       </div>
       <button class="back-btn" onclick="window.location.href='student_index.php'">⬅ Back to Dashboard</button>
     </div>
 
-    <div class="redeem-section" id="redeemFlow">
-      <h3>Choose an Event</h3>
-      <ul class="option-list">
-        <li class="option-item" onclick="chooseEvent('Leadership Seminar')">Leadership Seminar: <strong>+10 Points</strong></li>
-        <li class="option-item" onclick="chooseEvent('Tech Innovation Fair')">Tech Innovation Fair: <strong>+15 Points</strong></li>
-        <li class="option-item" onclick="chooseEvent('Community Outreach')">Community Outreach: <strong>+20 Points</strong></li>
-      </ul>
+    <div class="redeem-section">
+        <h3>Choose an Event</h3>
+        <ul class="option-list">
+        <?php if(empty($events)): ?>
+            <p>No events available at this time.</p>
+        <?php else: ?>
+            <?php foreach($events as $e):
+                $typeColors = [
+                    'Ticket' => '#3b82f6',
+                    'Supplies' => '#22c55e',
+                    'Tshirts' => '#f59e0b',
+                    'IDs' => '#a855f7',
+                    'Points' => '#ef4444'
+                ];
+                $color = $typeColors[$e['rewardType']] ?? '#64748b';
+            ?>
+                <li class="option-item" onclick="chooseEvent(
+        <?= (int)$e['eventID'] ?>,
+        '<?= addslashes($e['eventName']) ?>',
+        <?= (int)$e['eventRegistered'] ?>,
+        <?= (int)$e['attended'] ?>,
+        '<?= addslashes($e['eventDescription']) ?>',
+        <?= (int)$e['totalRegistered'] ?>,
+        <?= (int)$e['totalAttended'] ?>,
+        '<?= addslashes($e['rewardType']) ?>'
+    )">
+    <strong><?= htmlspecialchars($e['eventName']) ?></strong>
+    <div class="reward-type" style="background: <?= $color ?>;"><?= htmlspecialchars($e['rewardType']) ?></div>
+    <p style="font-size:14px; margin:6px 0; color:#e0e0e0;"><?= htmlspecialchars($e['eventDescription']) ?></p> <!-- Added description -->
+    <?= htmlspecialchars($e['eventRewards']) ?: '0 Points' ?><br>
+    Registered: <?= (int)$e['totalRegistered'] ?> | Attended: <?= (int)$e['totalAttended'] ?>
+
+    <?php if($e['eventRegistered'] && !$e['attended']): ?>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode('https://'.($_SERVER['HTTP_HOST'] ?? 'yourdomain.com').dirname($_SERVER['PHP_SELF']).'/mark_attendance.php?eventID='.$e['eventID']) ?>" alt="Scan to mark attendance" style="margin-top:10px;">
+        <p>Scan this QR to mark your attendance ✅</p>
+    <?php endif; ?>
+</li>
+
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </ul>
     </div>
   </section>
 </div>
@@ -185,138 +236,73 @@ footer {
     <div>📧 sprsystem@gmail.com</div>
     <span style="color:#ccc;">|</span>
     <div>📞 09123456789</div>
-    <span style="color:#ccc;">|</span>
-    <div style="display:flex; align-items:center; gap:6px;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#93c5fd" viewBox="0 0 24 24">
-        <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 
-                 3.657 9.128 8.438 9.878v-6.987H8.078v-2.89h2.36V9.797
-                 c0-2.337 1.393-3.625 3.52-3.625.996 0 2.04.178 2.04.178v2.25
-                 h-1.151c-1.137 0-1.492.705-1.492 1.43v1.716h2.54l-.406 2.89
-                 h-2.134V21.9C18.343 21.128 22 16.991 22 12z"/>
-      </svg>
-      <a href="https://www.facebook.com/StudentPointRewardSystem" target="_blank" style="color:#93c5fd; text-decoration:none;">
-        Student Point Reward System
-      </a>
-    </div>
   </div>
   <div style="font-size:13px;color:#fff;">© 2025 Student Point-Reward System. All rights reserved.</div>
 </footer>
 
 <script>
-const flow = document.getElementById('redeemFlow');
+function chooseEvent(eventID, eventName, eventRegistered, attended, eventDescription, totalRegistered, totalAttended, rewardType) {
+    const flow = document.querySelector('.redeem-section');
+    const typeColors = {
+        'Ticket':'#3b82f6',
+        'Supplies':'#22c55e',
+        'Tshirts':'#f59e0b',
+        'IDs':'#a855f7',
+        'Points':'#ef4444'
+    };
+    let color = typeColors[rewardType] || '#64748b';
+    let html = `<h3>${eventName}</h3>
+                <div class="reward-type" style="background:${color};">${rewardType}</div>
+                <p>${eventDescription}</p>
+                <p><strong>Registered:</strong> ${totalRegistered}</p>
+                <p><strong>Attended:</strong> ${totalAttended}</p>`;
 
-function chooseEvent(eventName) {
-  flow.innerHTML = `
-    <h3>Event Selected:</h3>
-    <p><strong>${eventName}</strong></p>
-    <button onclick="attendEvent('${eventName}')">📝 Attend</button>
-    <button onclick="cancelEvent()">❌ Cancel</button>
-  `;
-}
-
-function attendEvent(eventName) {
-  flow.innerHTML = `
-    <h3>Attending: ${eventName}</h3>
-    <p>Your attendance has been noted. Generating receipt...</p>
-    <button onclick="generateReceipt('${eventName}')">🧾 Generate Receipt</button>
-  `;
-}
-
-function generateReceipt(eventName) {
-  flow.innerHTML = `
-    <h3>Receipt Generated</h3>
-    <p>Receipt for <strong>${eventName}</strong> has been successfully generated.</p>
-    <button onclick="startScanner('${eventName}')">📷 Scan Event QR</button>
-  `;
-}
-
-function startScanner(eventName) {
-  flow.innerHTML = `
-    <h3>Step: Scan Event QR Code</h3>
-    <p>Use your camera to scan the event's QR code for validation.</p>
-    <div id="reader"></div>
-    <div id="scanStatus">📸 Initializing camera... please allow access.</div>
-    <button onclick="cancelEvent()">❌ Cancel</button>
-  `;
-
-  const html5QrCode = new Html5Qrcode("reader");
-
-  Html5Qrcode.getCameras()
-    .then(cameras => {
-      if (!cameras || cameras.length === 0) {
-        document.getElementById("scanStatus").innerHTML = "❌ No camera found on this device.";
-        return;
-      }
-      const cameraId = cameras.find(cam => cam.label.toLowerCase().includes("back"))
-        ? cameras.find(cam => cam.label.toLowerCase().includes("back")).id
-        : cameras[0].id;
-
-      html5QrCode.start(
-        cameraId,
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        decodedText => {
-          html5QrCode.stop().then(() => {
-            document.getElementById("scanStatus").innerHTML = "✅ QR Code Scanned: " + decodedText;
-            setTimeout(() => validateAttendance(eventName, decodedText), 1000);
-          }).catch(console.error);
-        },
-        errorMessage => console.log("Scanning...", errorMessage)
-      ).then(() => document.getElementById("scanStatus").innerHTML = "📷 Camera active — point it at the QR code.")
-      .catch(err => document.getElementById("scanStatus").innerHTML = "⚠️ Unable to start camera: " + err);
-    })
-    .catch(err => {
-      document.getElementById("scanStatus").innerHTML = "⚠️ Camera access denied or unavailable.";
-      console.error("Camera error:", err);
-    });
-}
-
-function validateAttendance(eventName, qrText) {
-  flow.innerHTML = `<h3>Validate Attendance</h3><p>Validating scanned event code...</p>`;
-  setTimeout(() => {
-    const isValid = qrText.includes("VALID");
-    if (isValid) {
-      flow.innerHTML = `
-        <h3>Validation Successful</h3>
-        <p>QR verified successfully for <strong>${eventName}</strong>.</p>
-        <button onclick="generateCode('${eventName}')">🔐 Generate Code</button>
-      `;
+    if(eventRegistered == 0) {
+        html += `<button class="btn-register" onclick="registerEvent(${eventID}, '${eventName}')">📝 Register</button>`;
     } else {
-      flow.innerHTML = `
-        <h3>Invalid QR Code</h3>
-        <p>The scanned code is invalid or expired.</p>
-        <button onclick="startScanner('${eventName}')">🔁 Scan Again</button>
-      `;
+        html += `<p>You are already registered ✅</p>`;
+        if(attended == 0) {
+            html += `<p>Scan the QR below to mark attendance</p>`;
+            html += `<div style="margin-top:10px;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(location.origin + '${location.pathname}'.replace(/\/[^/]*$/,'') + '/mark_attendance.php?eventID=' + eventID)}" alt="QR"></div>`;
+        } else {
+            html += `<p>You have attended this event ✔️</p>`;
+        }
     }
-  }, 1500);
+
+    html += `<button class="btn-back" onclick="window.location.reload()">❌ Back</button>`;
+    flow.innerHTML = html;
 }
 
-function generateCode(eventName) {
-  const code = Math.floor(1000 + Math.random() * 9000);
-  flow.innerHTML = `
-    <h3>Code Generated</h3>
-    <p>Your event code is: <strong>${code}</strong></p>
-    <p>Status: <span style="color:var(--success); font-weight:700;">VALID ✅</span></p>
-    <button onclick="startEvent()">↩ Attend Another Event</button>
-  `;
+async function registerEvent(eventID, eventName){
+    try {
+        const fd = new FormData();
+        fd.append('eventID', eventID);
+        const res = await fetch('register_events.php', {method:'POST', body: fd});
+        const data = await res.json();
+        alert(data.message || 'Registered successfully!');
+        if(data.success){
+            window.location.reload();
+        }
+    } catch(err){
+        console.error(err);
+        alert('Failed to register.');
+    }
 }
 
-function cancelEvent() {
-  flow.innerHTML = `
-    <h3>Event Cancelled</h3>
-    <p>You cancelled the process.</p>
-    <button onclick="startEvent()">🔄 Start Again</button>
-  `;
-}
-
-function startEvent() {
-  flow.innerHTML = `
-    <h3>Choose an Event</h3>
-    <ul class="option-list">
-      <li class="option-item" onclick="chooseEvent('Leadership Seminar')">Leadership Seminar: <strong>+10 Points</strong></li>
-      <li class="option-item" onclick="chooseEvent('Tech Innovation Fair')">Tech Innovation Fair: <strong>+15 Points</strong></li>
-      <li class="option-item" onclick="chooseEvent('Community Outreach')">Community Outreach: <strong>+20 Points</strong></li>
-    </ul>
-  `;
+async function markAttendance(eventID){
+    try {
+        const fd = new FormData();
+        fd.append('eventID', eventID);
+        const res = await fetch('mark_attendance.php', {method:'POST', body: fd});
+        const data = await res.json();
+        alert(data.message || 'Attendance marked!');
+        if(data.success){
+            window.location.reload();
+        }
+    } catch(err){
+        console.error(err);
+        alert('Failed to mark attendance.');
+    }
 }
 </script>
 </body>
