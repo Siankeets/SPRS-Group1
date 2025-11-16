@@ -1,27 +1,9 @@
-// users per usertype
-window.onload = function () {
-    Promise.all([ //multi fetch, theres also async na ginamit already kung saan man sa system di ko tanda.
-        fetch("reportStudentCount.php").then(response => response.json()),
-        fetch("reportAdminCount.php").then(response => response.json())
-    ])
+// -------------------------------
+// REPORTS VISUALIZATION
+// -------------------------------
 
-    .then(([studentCount, adminCount]) => {
-        console.log(studentCount, adminCount); // Log to ensure the data is correct
-        const studentTotal = studentCount.totalStudents;
-        const adminTotal = adminCount.totalAdmins;
-        
-        const reportCount = {
-            labels: ["Total Students", "Total Admins"],
-            values: [studentTotal, adminTotal]
-        };
-        console.log(reportCount); // Log to check the data before passing it to the chart
-        generateReportChart(reportCount);
-    })
-    .catch(err => console.error("Data not found",err));
-};
-
+// Generate Pie Chart for Users per Role
 function generateReportChart(data) {
-
     const chartConfig = {
         type: "pie",
         data: {
@@ -31,8 +13,7 @@ function generateReportChart(data) {
                 data: data.values,
                 backgroundColor: [
                     "rgba(75, 192, 192, 0.7)",
-                    "rgba(153, 102, 255, 0.7)",
-                    // "rgba(255, 159, 64, 0.7)" uncomment these when adding more datas (e.g # of distributed points / redeemed rewards)
+                    "rgba(153, 102, 255, 0.7)"
                 ]
             }]
         },
@@ -43,29 +24,18 @@ function generateReportChart(data) {
                     text: "Total Registered Users by Role"
                 },
                 legend: { display: false }
-            },
-            scales: {
-                y: { beginAtZero: true }
             }
         }
     };
 
-    const chartUrl = "https://quickchart.io/chart?c="+ encodeURIComponent(JSON.stringify(chartConfig));
+    const chartUrl = "https://quickchart.io/chart?c=" + encodeURIComponent(JSON.stringify(chartConfig));
 
     document.getElementById("reportChart").innerHTML = `
-        <img src="${chartUrl}" alt="Report Chart" style="width:700px;border-radius:10px;">
+        <img src="${chartUrl}" alt="User Roles Chart" style="width:450px; border-radius:10px;">
     `;
 }
 
-
-// Load Student Points Distribution
-fetch("reportPointsDistribution.php")
-    .then(response => response.json())
-    .then(data => {
-        generatePointsDistributionChart(data);
-    })
-    .catch(err => console.error("Points distribution error:", err));
-
+// Generate Bar Chart for Points Distribution
 function generatePointsDistributionChart(data) {
     const chartConfig = {
         type: "bar",
@@ -96,7 +66,33 @@ function generatePointsDistributionChart(data) {
 
     document.getElementById("pointsDistribution").innerHTML = `
         <h2>Points Distribution</h2>
-        <img src="${url}" style="width:900px; border-radius:10px;">
+        <img src="${url}" style="width:550px; border-radius:10px;">
     `;
 }
+
+// -------------------------------
+// INITIAL LOAD
+// -------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    // Fetch student/admin counts
+    Promise.all([
+        fetch("reportStudentCount.php").then(res => res.json()),
+        fetch("reportAdminCount.php").then(res => res.json())
+    ])
+    .then(([studentData, adminData]) => {
+        const data = {
+            labels: ["Students","Admins"],
+            values: [studentData.totalStudents, adminData.totalAdmins]
+        };
+        generateReportChart(data);
+    })
+    .catch(err => console.error("Error fetching user counts:", err));
+
+    // Fetch student points distribution
+    fetch("reportPointsDistribution.php") // <- make sure the file name matches exactly
+        .then(res => res.json())
+        .then(data => generatePointsDistributionChart(data))
+        .catch(err => console.error("Error fetching points distribution:", err));
+});
+
 
