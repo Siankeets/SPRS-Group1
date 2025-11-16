@@ -2,6 +2,11 @@
 header('Content-Type: text/html; charset=utf-8');
 session_start();
 include ('../db_connect.php');
+// --- Ensure admin is logged in ---
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
