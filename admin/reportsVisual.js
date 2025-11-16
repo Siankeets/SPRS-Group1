@@ -1,3 +1,4 @@
+// users per usertype
 window.onload = function () {
     Promise.all([ //multi fetch, theres also async na ginamit already kung saan man sa system di ko tanda.
         fetch("reportStudentCount.php").then(response => response.json()),
@@ -55,3 +56,47 @@ function generateReportChart(data) {
         <img src="${chartUrl}" alt="Report Chart" style="width:700px;border-radius:10px;">
     `;
 }
+
+
+// Load Student Points Distribution
+fetch("reportPointsDistribution.php")
+    .then(response => response.json())
+    .then(data => {
+        generatePointsDistributionChart(data);
+    })
+    .catch(err => console.error("Points distribution error:", err));
+
+function generatePointsDistributionChart(data) {
+    const chartConfig = {
+        type: "bar",
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: "Points",
+                data: data.values,
+                backgroundColor: "rgba(54, 162, 235, 0.7)"
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Student Points Distribution"
+                },
+                legend: { display: false }
+            },
+            scales: {
+                x: { title: { display: true, text: "Students" } },
+                y: { beginAtZero: true, title: { display: true, text: "Points" } }
+            }
+        }
+    };
+
+    const url = "https://quickchart.io/chart?c=" + encodeURIComponent(JSON.stringify(chartConfig));
+
+    document.getElementById("pointsDistribution").innerHTML = `
+        <h2>Points Distribution</h2>
+        <img src="${url}" style="width:900px; border-radius:10px;">
+    `;
+}
+

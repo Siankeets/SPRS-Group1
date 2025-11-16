@@ -2,6 +2,11 @@
 header('Content-Type: text/html; charset=utf-8');
 session_start();
 include ('../db_connect.php');
+// --- Ensure admin is logged in ---
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -176,6 +181,7 @@ include ('../db_connect.php');
   <div class="container">
     <h2>System Reports Overview</h2>
     <div id="reportChart" style="text-align:center; margin-bottom: 30px;"></div>
+    <div id="pointsDistribution" style="margin: 40px 0; text-align:center;"></div>
   </div>
 
   <!-- FOOTER -->
