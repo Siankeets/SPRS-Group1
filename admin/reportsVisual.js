@@ -13,7 +13,7 @@ window.onload = function () {
             labels: ["Total Students", "Total Admins"],
             values: [studentTotal, adminTotal]
         };
-        console.log(reportData); // Log to check the data before passing it to the chart
+        console.log(reportCount); // Log to check the data before passing it to the chart
         generateReportChart(reportCount);
     })
     .catch(err => console.error("Data not found",err));
