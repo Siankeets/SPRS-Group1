@@ -176,36 +176,6 @@ include ('../db_connect.php');
   <div class="container">
     <h2>System Reports Overview</h2>
     <div id="reportChart" style="text-align:center; margin-bottom: 30px;"></div>
-    <!-- <table>
-      <thead>
-        <tr>
-          <th>Report Type</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Last Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td data-label="Report Type">Student Activity</td>
-          <td data-label="Description">Tracks point distribution per student</td>
-          <td data-label="Status">Active</td>
-          <td data-label="Last Updated">Nov 4, 2025</td>
-        </tr>
-        <tr>
-          <td data-label="Report Type">Reward Claims</td>
-          <td data-label="Description">Shows list of redeemed rewards</td>
-          <td data-label="Status">Active</td>
-          <td data-label="Last Updated">Nov 3, 2025</td>
-        </tr>
-        <tr>
-          <td data-label="Report Type">Event Participation</td>
-          <td data-label="Description">Displays event attendance</td>
-          <td data-label="Status">Active</td>
-          <td data-label="Last Updated">Nov 2, 2025</td>
-        </tr>
-      </tbody>
-    </table> -->
   </div>
 
   <!-- FOOTER -->

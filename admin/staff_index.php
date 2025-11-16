@@ -4,6 +4,12 @@ include('../db_connect.php'); // connect for the application tables
 
 $admin_name = $_SESSION['name'];
 $admin_user = $_SESSION['username'];
+
+// --- Ensure admin is logged in ---
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -336,7 +342,7 @@ $admin_user = $_SESSION['username'];
       break;
 
     case 'reports':
-            window.location.href = 'reports.php';
+            window.location.href = 'reports-test.php';
       break;
 
     case 'help':

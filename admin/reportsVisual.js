@@ -4,9 +4,9 @@ window.onload = function () {
         fetch("reportAdminCount.php").then(response => response.json())
     ])
 
-    .then(([studCount, adminCount]) => {
+    .then(([studentCount, adminCount]) => {
         console.log(studentCount, adminCount); // Log to ensure the data is correct
-        const studentTotal = studCount.totalStudents;
+        const studentTotal = studentCount.totalStudents;
         const adminTotal = adminCount.totalAdmins;
         
         const reportCount = {

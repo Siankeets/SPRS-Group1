@@ -4,7 +4,7 @@ include ('../dummy/connection_dummydb.php');
 
 $sql = "SELECT COUNT(*) AS totalStudents FROM users WHERE role = 'student' ";
 $result = $conn->query($sql);
-$studCount = $result->fetch_assoc();
+$studentCount = $result->fetch_assoc();
 
-echo json_encode($studCount);
+echo json_encode($studentCount);
 ?>
