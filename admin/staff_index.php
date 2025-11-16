@@ -10,6 +10,7 @@ if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
     exit();
 }
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -342,7 +343,7 @@ if (!isset($_SESSION['username'])) {
       break;
 
     case 'reports':
-            window.location.href = 'reports-test.php';
+            window.location.href = 'reports.php';
       break;
 
     case 'help':

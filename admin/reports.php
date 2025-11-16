@@ -1,17 +1,43 @@
+<?php 
+header('Content-Type: text/html; charset=utf-8');
+session_start();
+include ('../db_connect.php');
+
+// --- Ensure staff is logged in ---
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
+// Fetch events for table
+$eventsQuery = "
+    SELECT e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType,
+           COUNT(DISTINCT r.id) AS registeredCount,
+           COUNT(DISTINCT p.id) AS attendedCount
+    FROM schoolevents e
+    LEFT JOIN event_registrations r ON e.eventID = r.eventID
+    LEFT JOIN eventparticipants p ON e.eventID = p.eventID AND p.attended = 1
+    GROUP BY e.eventID
+    ORDER BY e.eventID DESC
+";
+$eventsResult = mysqli_query($conn, $eventsQuery);
+$events = mysqli_fetch_all($eventsResult, MYSQLI_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>System Reports — Admin</title>
+<title>System Reports — Staff</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-  :root {
+:root {
     --accent-blue: #2563eb;
     --accent-hover: #1d4ed8;
-  }
+}
 
-  body {
+body {
     font-family: 'Inter', sans-serif;
     background: url('images/bg.jpg') center/cover no-repeat fixed;
     margin: 0;
@@ -19,195 +45,247 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-  }
+}
 
-  /* Header */
-  header {
-    background: rgba(0,0,0,0.8);
+/* HEADER MATCH EVENTS.PHP */
+header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #0f172a;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.45);
-  }
-  header img {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    margin-right: 10px;
-  }
-  header h1 {
-    font-size: 16px;
-    color: #f2f6fb;
-    margin: 0;
-    font-weight: 600;
-  }
-  .header-left {
-    display: flex;
-    align-items: center;
-  }
-  .back-btn {
-    background: var(--accent-blue);
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    transition: 0.2s;
-  }
-  .back-btn:hover { background: var(--accent-hover); }
+    box-shadow: 0 6px 20px rgba(3,7,18,0.45);
+    z-index: 10;
+}
+header .left { display: flex; align-items: center; gap: 12px; }
+header img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; }
+header h1 { font-size: 18px; font-weight: 700; margin: 0; color: #f2f6fb; }
+.back-btn { background: var(--accent-blue); color: #fff; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; text-decoration: none; transition: 0.2s; }
+.back-btn:hover { background: var(--accent-hover); }
 
-  /* Container */
-  .container {
-    max-width: 900px;
-    width: 90%;
-    margin: 80px auto;
-    background: rgba(0, 0, 0, 0.55);
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+/* CONTAINER */
+.container {
+    max-width: 1100px;
+    width: 92%;
+    margin: 140px auto 40px;
+    background: rgba(0,0,0,0.55);
     backdrop-filter: blur(10px);
-  }
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    flex: 1;
+}
 
-  h2 {
+h2 { text-align: center; font-weight: 700; margin-bottom: 25px; }
+
+/* Charts Side-by-Side */
+.chart-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.chart-box {
+    flex: 1;
+    min-width: 320px;
+    max-width: 480px;
     text-align: center;
-    margin-bottom: 25px;
-    font-weight: 700;
-  }
+}
 
-  /* Table */
-  table {
+/* Events Table */
+.events-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
-    table-layout: fixed;
-  }
-  th, td {
+    table-layout: fixed; /* fixed layout ensures alignment */
+}
+th, td {
     padding: 12px;
     border-bottom: 1px solid rgba(255,255,255,0.2);
-    text-align: left;
     word-wrap: break-word;
-  }
-  th {
-    background: rgba(255,255,255,0.1);
+    vertical-align: middle;
+}
+th { background: rgba(255,255,255,0.1); font-weight: 600; text-align: left; }
+tr:hover { background: rgba(255,255,255,0.06); }
+
+/* Column widths */
+th:nth-child(1), td:nth-child(1) { width: 30%; }   /* Event Name */
+th:nth-child(2), td:nth-child(2) { width: 50%; }   /* Description */
+th:nth-child(3), td:nth-child(3) { width: 20%; }   /* Action */
+
+/* Button */
+button.report-btn {
+    background: var(--accent-blue);
+    padding: 8px 14px;
+    border-radius: 8px;
     font-weight: 600;
-  }
-  tr:hover {
-    background: rgba(255,255,255,0.05);
-  }
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    max-width: 120px;
+}
+button.report-btn:hover { background: var(--accent-hover); }
 
-  /* Footer */
-  footer {
-    margin-top: auto;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
-    color: #e5e7eb;
+/* Modal */
+#eventChartModal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.85);
+    backdrop-filter:blur(6px);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+/* FOOTER MATCH EVENTS.PHP */
+footer {
+    width: 100%;
+    background: #0f172a;
     text-align: center;
-    padding: 20px 12px;
-    font-size: 14px;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
-  }
-  footer a {
-    color: #60a5fa;
-    text-decoration: none;
-  }
-  footer a:hover {
-    text-decoration: underline;
-  }
+    padding: 25px 10px;
+    margin-top: auto;
+    color: #cbd5e1;
+}
+footer .contact-row {
+    margin-top: 10px;
+    color: #93c5fd;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
 
-  /* Mobile Responsive */
-  @media (max-width: 768px) {
-    header {
-      flex-direction: column;
-      text-align: center;
-      gap: 10px;
-    }
-    .container {
-      margin: 60px 15px 30px;
-      padding: 25px;
-    }
-    table, thead, tbody, th, td, tr {
-      display: block;
-    }
-    thead { display: none; }
-    tr {
-      margin-bottom: 15px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      padding: 10px;
-    }
-    td {
-      text-align: left;
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-    }
-    td::before {
-      content: attr(data-label);
-      font-weight: 600;
-      color: #93c5fd;
-    }
-    .back-btn {
-      width: fit-content;
-      margin: 0 auto;
-    }
-  }
+/* Responsive */
+@media (max-width: 768px) {
+    header { flex-direction: column; gap: 10px; text-align: center; }
+    .container { margin: 160px 15px 40px; }
+}
 </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="header-left">
-      <img src="images/logorewards.jpg" alt="SPRS Logo">
-      <h1>System Reports</h1>
-    </div>
-    <button class="back-btn" onclick="window.location.href='staff_index.php'">← Back to Dashboard</button>
-  </header>
+<header>
+  <div class="left">
+    <img src="images/logorewards.jpg" alt="Logo">
+    <h1>System Reports</h1>
+  </div>
+  <a href="staff_index.php" class="back-btn">⬅ Back to Dashboard</a>
+</header>
 
-  <!-- MAIN CONTENT -->
-  <div class="container">
-    <h2>System Reports Overview</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Report Type</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Last Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td data-label="Report Type">Student Activity</td>
-          <td data-label="Description">Tracks point distribution per student</td>
-          <td data-label="Status">Active</td>
-          <td data-label="Last Updated">Nov 4, 2025</td>
-        </tr>
-        <tr>
-          <td data-label="Report Type">Reward Claims</td>
-          <td data-label="Description">Shows list of redeemed rewards</td>
-          <td data-label="Status">Active</td>
-          <td data-label="Last Updated">Nov 3, 2025</td>
-        </tr>
-        <tr>
-          <td data-label="Report Type">Event Participation</td>
-          <td data-label="Description">Displays event attendance</td>
-          <td data-label="Status">Active</td>
-          <td data-label="Last Updated">Nov 2, 2025</td>
-        </tr>
-      </tbody>
-    </table>
+<div class="container">
+
+  <h2>System Reports Overview</h2>
+
+  <!-- Side-by-side charts -->
+  <div class="chart-row">
+      <div id="reportChart" class="chart-box"></div>
+      <div id="pointsDistribution" class="chart-box"></div>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    Student Points Rewarding System <br>
-    © 2025 All Rights Reserved <br>
-    Contact: <a href="mailto:support@sprs.com">support@sprs.com</a>
-  </footer>
+  <!-- Modal -->
+  <div id="eventChartModal">
+      <div style="background:#111; padding:20px; border-radius:12px; text-align:center; width:90%; max-width:480px;">
+          <h2 id="modalTitle"></h2>
+          <img id="eventChartImage" src="" style="width:100%; border-radius:10px;">
+          <br><br>
+          <button class="back-btn" onclick="closeEventChart()">Close</button>
+      </div>
+  </div>
 
+  <h2>Events Overview</h2>
+
+  <div class="events-scroll">
+      <table>
+          <thead>
+              <tr>
+                  <th>Event Name</th>
+                  <th>Description</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+          <tbody>
+              <?php foreach($events as $e): ?>
+              <tr>
+                  <td><?= htmlspecialchars($e['eventName']) ?></td>
+                  <td><?= htmlspecialchars($e['eventDescription']) ?></td>
+                  <td>
+                      <button class="report-btn"
+                        onclick="showEventChart(
+                            '<?= $e['eventName'] ?>',
+                            <?= $e['registeredCount'] ?>,
+                            <?= $e['attendedCount'] ?>
+                        )">
+                          📊 View Chart
+                      </button>
+                  </td>
+              </tr>
+              <?php endforeach; ?>
+          </tbody>
+      </table>
+  </div>
+
+</div>
+
+<footer>
+    <div style="font-weight:700; font-size:16px;">Contact Us:</div>
+    <div class="contact-row">
+        <div>📧 sprsystem@gmail.com</div>
+        <span>|</span>
+        <div>📞 09123456789</div>
+    </div>
+    <div style="margin-top:10px;">© 2025 Student Point-Reward System. All rights reserved.</div>
+</footer>
+
+<script src="reportsVisual.js"></script>
+
+<script>
+// Event Modal Chart
+function showEventChart(eventName, registered, attended) {
+    const chartConfig = {
+        type: "pie",
+        data: {
+            labels: [
+                "Registered (" + registered + ")", 
+                "Attended (" + attended + ")"
+            ],
+            datasets: [{
+                data: [registered, attended],
+                backgroundColor: [
+                    "rgba(54,162,235,0.7)",
+                    "rgba(75,192,192,0.7)"
+                ]
+            }]
+        },
+        options: {
+            plugins: {
+                title: { display: true, text: eventName }
+            }
+        }
+    };
+    const chartUrl = "https://quickchart.io/chart?c=" + encodeURIComponent(JSON.stringify(chartConfig));
+    document.getElementById("modalTitle").innerText = eventName;
+    document.getElementById("eventChartImage").src = chartUrl;
+    document.getElementById("eventChartModal").style.display = "flex";
+}
+
+function closeEventChart() {
+    document.getElementById("eventChartModal").style.display = "none";
+}
+
+// Auto-load charts
+renderPointsChart();
+renderStudentAdminChart();
+</script>
 </body>
 </html>

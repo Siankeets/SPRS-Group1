@@ -111,15 +111,18 @@ footer div { color:#93c5fd; }
     </div>
     <div class="table-container">
       <table>
-        <thead>
-          <tr>
-            <th style="width:20%;">Title</th>
-            <th style="width:35%;">Description</th>
-            <th style="width:15%;">Reward Type</th>
-            <th style="width:15%;">Rewards</th>
-            <th style="width:15%;">Actions</th>
-          </tr>
-        </thead>
+<thead>
+  <tr>
+    <th style="width:20%;">Title</th>
+    <th style="width:25%;">Description</th>
+    <th style="width:10%;">Reward Type</th>
+    <th style="width:10%;">Rewards</th>
+    <th style="width:10%;">Registered</th>
+    <th style="width:10%;">Attended</th>
+    <th style="width:15%;">Actions</th>
+  </tr>
+</thead>
+
         <tbody id="eventList"></tbody>
       </table>
     </div>
@@ -155,7 +158,7 @@ async function loadEvents() {
 function renderEvents(data) {
   list.innerHTML = '';
   if (!data.length) {
-    list.innerHTML = '<tr><td colspan="5">No events found.</td></tr>';
+    list.innerHTML = '<tr><td colspan="7">No events found.</td></tr>';
     return;
   }
 
@@ -166,6 +169,8 @@ function renderEvents(data) {
       <td class="description-cell">${escapeHtml(e.eventDescription)}</td>
       <td class="reward-type">${escapeHtml(e.rewardType)}</td>
       <td>${escapeHtml(e.eventRewards)}</td>
+      <td>${e.registeredCount || 0}</td>
+      <td>${e.attendedCount || 0}</td>
       <td>
         <button class="btn-action edit-btn" onclick="editEvent('${e.eventID}')">Edit</button>
         <button class="btn-action delete-btn" onclick="delEvent('${e.eventID}')">Delete</button>
@@ -174,6 +179,7 @@ function renderEvents(data) {
     list.appendChild(tr);
   });
 }
+
 
 form.addEventListener('submit', async ev => {
   ev.preventDefault();
