@@ -2,7 +2,7 @@
 session_start();
 include('../db_connect.php'); // DB connection
 
-// --- Validate session ---
+// --- Ensure student is logged in ---
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
     header("Location: login.php");
     exit();
@@ -10,21 +10,83 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
 
 $studentID = $_SESSION['userID'];
 
-// --- Page rendering ---
+// --- Handle AJAX redemption ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+    $data = json_decode(file_get_contents('php://input'), true);
+    $rewardID = intval($data['rewardID'] ?? 0);
+    $pointsRequired = intval($data['pointsRequired'] ?? 0);
+
+    if (!$rewardID || !$pointsRequired) {
+        echo json_encode(['success'=>false,'message'=>'Invalid request']);
+        exit;
+    }
+
+    // Get student's current points
+    $conn->select_db('sprs_dummydb');
+    $stmt = $conn->prepare("SELECT points FROM users WHERE id=?");
+    $stmt->bind_param("i", $studentID);
+    $stmt->execute();
+    $stmt->bind_result($currentPoints);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($currentPoints < $pointsRequired) {
+        echo json_encode(['success'=>false,'message'=>'Not enough points']);
+        exit;
+    }
+
+    // Deduct points
+    $newPoints = $currentPoints - $pointsRequired;
+    $stmt = $conn->prepare("UPDATE users SET points=? WHERE id=?");
+    $stmt->bind_param("ii", $newPoints, $studentID);
+    $stmt->execute();
+    $stmt->close();
+
+    // Get reward info
+    $conn->select_db('sprs_mainredo');
+    $stmt = $conn->prepare("SELECT rewardName, rewardType FROM rewards WHERE rewardID=?");
+    $stmt->bind_param("i", $rewardID);
+    $stmt->execute();
+    $stmt->bind_result($rewardName, $rewardType);
+    if (!$stmt->fetch()) {
+        echo json_encode(['success'=>false,'message'=>'Reward not found']);
+        exit;
+    }
+    $stmt->close();
+
+    // Insert into student_inventory
+    $stmt = $conn->prepare("INSERT INTO student_inventory (studentID, rewardID, dateRedeemed) VALUES (?, ?, NOW())");
+    $stmt->bind_param("ii", $studentID, $rewardID);
+    $stmt->execute();
+    $stmt->close();
+
+    echo json_encode([
+        'success'=>true,
+        'newPoints'=>$newPoints,
+        'rewardName'=>$rewardName,
+        'rewardType'=>$rewardType,
+        'date'=>date("M d, Y"),
+        'message'=>"You have successfully redeemed '$rewardName'."
+    ]);
+    exit;
+}
+
+// --- Fetch student's points and name ---
 $conn->select_db('sprs_dummydb');
-$stmt = $conn->prepare("SELECT points, name FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT points, name FROM users WHERE id=?");
 $stmt->bind_param("i", $studentID);
 $stmt->execute();
 $stmt->bind_result($credits, $studentName);
 $stmt->fetch();
 $stmt->close();
 
-// --- Generate initials for avatar ---
+// --- Generate initials ---
 $names = explode(' ', $studentName);
 $initials = '';
 foreach ($names as $n) {
     $initials .= strtoupper($n[0]);
-    if (strlen($initials) >= 2) break; // max 2 letters
+    if (strlen($initials) >= 2) break;
 }
 
 // --- Fetch rewards ---
@@ -35,6 +97,7 @@ while ($row = $result->fetch_assoc()) {
     $rewardList[] = $row;
 }
 ?>
+
 
 
 
@@ -163,21 +226,22 @@ footer { width: 100%; background: #1e293b; text-align: center; padding: 20px 10p
     <ul class="option-list" id="rewardList">
       <?php foreach($rewardList as $reward): 
         $imgFile = match($reward['rewardType']) {
-          'Ticket' => 'pass.png',
-          'Supplies' => 'ntbk.png',
-          'Tshirts' => 'tshirt.png',
-          'IDs' => 'id.png',
-          'Points' => 'points.png',
-          default => 'default.png'
+          'Ticket'=>'pass.png',
+          'Supplies'=>'ntbk.png',
+          'Tshirts'=>'tshirt.png',
+          'IDs'=>'id.png',
+          'Points'=>'points.png',
+          default=>'default.png'
         };
       ?>
-        <li class="option-item">
-          <img src="images/<?= $imgFile ?>" alt="<?= htmlspecialchars($reward['rewardName']) ?>">
-          <div><?= htmlspecialchars($reward['rewardName']) ?> (<?= $reward['rewardPointsRequired'] ?> pts)</div>
-          <button style="margin-top:10px;padding:8px 12px;font-weight:600;" onclick="redeemReward(<?= $reward['rewardID'] ?>, <?= $reward['rewardPointsRequired'] ?>, this)">
-            Redeem
-          </button>
-        </li>
+      <li class="option-item">
+        <img src="images/<?= $imgFile ?>" alt="<?= htmlspecialchars($reward['rewardName']) ?>">
+        <div><?= htmlspecialchars($reward['rewardName']) ?> (<?= $reward['rewardPointsRequired'] ?> pts)</div>
+        <button style="margin-top:10px;padding:8px 12px;font-weight:600;"
+                onclick="redeemReward(<?= $reward['rewardID'] ?>, <?= $reward['rewardPointsRequired'] ?>, this)">
+          Redeem
+        </button>
+      </li>
       <?php endforeach; ?>
     </ul>
   </div>
@@ -189,62 +253,41 @@ footer { width: 100%; background: #1e293b; text-align: center; padding: 20px 10p
 </footer>
 
 <script>
-async function redeemReward(rewardID, pointsRequired, btn) {
-    const credits = parseInt(document.getElementById('headerCredits').innerText);
-    
-    if (credits < pointsRequired) {
-        alert("You don't have enough points to redeem this reward.");
-        return;
-    }
+async function redeemReward(rewardID, pointsRequired, btn){
+    const credits=parseInt(document.getElementById('headerCredits').innerText);
+    if(credits<pointsRequired){alert("You don't have enough points to redeem this reward.");return;}
 
-    // Step 1: Confirm purchase
-    const confirmRedeem = confirm(`Are you sure you want to redeem this reward for ${pointsRequired} points?`);
-    if (!confirmRedeem) return;
+    if(!confirm(`Are you sure you want to redeem this reward for ${pointsRequired} points?`)) return;
 
-    // Step 2: Show "Redeeming..." but don't permanently disable
-    btn.disabled = true;
-    const originalText = btn.innerText;
-    btn.innerText = "Redeeming...";
-
-    try {
-        const res = await fetch('redeem.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({rewardID, pointsRequired})
+    btn.disabled=true; const originalText=btn.innerText; btn.innerText="Redeeming...";
+    try{
+        const res=await fetch('redeem.php',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({rewardID, pointsRequired})
         });
-        const data = await res.json();
-        if (data.success) {
-            // Update credits
-            document.getElementById('headerCredits').innerText = data.newPoints;
-
-            // Show success pop-up
-            alert(`Success! You have redeemed ${pointsRequired} points for this reward.`);
-
-            // Restore button so user can redeem again
-            btn.disabled = false;
-            btn.innerText = originalText;
-        } else {
+        const data=await res.json();
+        if(data.success){
+            document.getElementById('headerCredits').innerText=data.newPoints;
             alert(data.message);
-            btn.disabled = false;
-            btn.innerText = originalText;
+            btn.disabled=false; btn.innerText=originalText;
+        } else {
+            alert(data.message); btn.disabled=false; btn.innerText=originalText;
         }
-    } catch (e) {
-        alert("An error occurred. Try again.");
-        btn.disabled = false;
-        btn.innerText = originalText;
+    } catch(e){
+        alert("An error occurred. Try again."); btn.disabled=false; btn.innerText=originalText;
     }
 }
 
 // --- Search filter ---
-const rewardItems = Array.from(document.querySelectorAll('.option-item'));
-document.getElementById('searchRewards').addEventListener('input', function() {
-    const query = this.value.toLowerCase();
-    rewardItems.forEach(item => {
-        const name = item.querySelector('div').textContent.toLowerCase();
-        item.style.display = name.includes(query) ? 'flex' : 'none';
+const rewardItems=Array.from(document.querySelectorAll('.option-item'));
+document.getElementById('searchRewards').addEventListener('input',function(){
+    const query=this.value.toLowerCase();
+    rewardItems.forEach(item=>{
+        const name=item.querySelector('div').textContent.toLowerCase();
+        item.style.display=name.includes(query)?'flex':'none';
     });
 });
 </script>
-
 </body>
 </html>

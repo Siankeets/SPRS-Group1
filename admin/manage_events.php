@@ -18,14 +18,14 @@ $act = $_GET['action'] ?? ($_POST['action'] ?? '');
 if ($act === 'list') {
     $query = "
         SELECT 
-            e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType,
+            e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType, e.eventDate,
             COUNT(DISTINCT r.id) AS registeredCount,
             COUNT(DISTINCT p.id) AS attendedCount
         FROM schoolevents e
         LEFT JOIN event_registrations r ON e.eventID = r.eventID
         LEFT JOIN eventparticipants p ON e.eventID = p.eventID AND p.attended = 1
         GROUP BY e.eventID
-        ORDER BY e.eventID DESC
+        ORDER BY e.eventDate DESC
     ";
 
     $result = mysqli_query($conn, $query);
@@ -63,22 +63,23 @@ if ($act === 'save') {
     $description = $_POST['eventDescription'] ?? '';
     $rewards = $_POST['eventRewards'] ?? '';
     $type = $_POST['rewardType'] ?? '';
+    $eventDate = $_POST['eventDate'] ?? ''; // new field
 
-    if (!$title || !$description || !$rewards || !$type) {
+    if (!$title || !$description || !$rewards || !$type || !$eventDate) {
         echo json_encode(['message' => 'All fields are required.']);
         exit;
     }
 
     if ($id > 0) {
         // UPDATE
-        $stmt = mysqli_prepare($conn, "UPDATE schoolevents SET eventName=?, eventDescription=?, eventRewards=?, rewardType=? WHERE eventID=?");
-        mysqli_stmt_bind_param($stmt, "ssssi", $title, $description, $rewards, $type, $id);
+        $stmt = mysqli_prepare($conn, "UPDATE schoolevents SET eventName=?, eventDescription=?, eventRewards=?, rewardType=?, eventDate=? WHERE eventID=?");
+        mysqli_stmt_bind_param($stmt, "sssssi", $title, $description, $rewards, $type, $eventDate, $id);
         mysqli_stmt_execute($stmt);
         $message = "Event updated successfully!";
     } else {
         // INSERT
-        $stmt = mysqli_prepare($conn, "INSERT INTO schoolevents (eventName, eventDescription, eventRewards, rewardType) VALUES (?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "ssss", $title, $description, $rewards, $type);
+        $stmt = mysqli_prepare($conn, "INSERT INTO schoolevents (eventName, eventDescription, eventRewards, rewardType, eventDate) VALUES (?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "sssss", $title, $description, $rewards, $type, $eventDate);
         mysqli_stmt_execute($stmt);
         $message = "Event added successfully!";
     }
@@ -100,7 +101,7 @@ if ($act === 'delete') {
 }
 
 // ----------------------------------------------------------------------
-// OPTIONAL: LIST / SAVE / DELETE REWARDS (if needed)
+// REWARDS MANAGEMENT (unchanged)
 // ----------------------------------------------------------------------
 if ($act === 'listRewards') {
     $result = mysqli_query($conn, "SELECT * FROM rewards");

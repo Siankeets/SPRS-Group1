@@ -9,8 +9,8 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
 }
 
 $studentID = $_SESSION['userID'];
-$fullName = $_SESSION['name'] ?? 'Student';
-$points   = $_SESSION['points'] ?? 0;
+$fullName   = $_SESSION['name'] ?? 'Student';
+$points     = $_SESSION['points'] ?? 0;
 
 // --- Generate initials for avatar ---
 $names = explode(' ', $fullName);
@@ -23,7 +23,7 @@ foreach ($names as $n) {
 
 // --- Fetch events with registration and attendance info ---
 $query = "
-    SELECT e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType,
+    SELECT e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType, e.eventDate,
            COUNT(DISTINCT r.id) AS totalRegistered,
            COUNT(DISTINCT p.id) AS totalAttended,
            IF(er.id IS NULL, 0, 1) AS eventRegistered,
@@ -52,6 +52,12 @@ while ($row = mysqli_fetch_assoc($result)) {
     $row['eventRegistered'] = (int)$row['eventRegistered'];
     $row['attended'] = (int)$row['attended'];
     $events[] = $row;
+}
+
+// --- Format date ---
+function formatEventDate($dateStr) {
+    if (!$dateStr) return '';
+    return date('M d, Y', strtotime($dateStr)); // e.g., Nov 17, 2025
 }
 ?>
 <!doctype html>
@@ -99,60 +105,22 @@ header { position:fixed; top:0; left:0; right:0; display:flex; justify-content:s
     flex-wrap:wrap;
     justify-content:center;
     gap:25px;
-    max-height:500px; /* fixed height for scroll */
-    overflow-y:auto;  /* enable vertical scroll */
-    padding-right:10px; /* to avoid hiding content behind scrollbar */
+    max-height:500px;
+    overflow-y:auto;
+    padding-right:10px;
 }
-.option-list::-webkit-scrollbar {
-    width: 8px;
-}
-.option-list::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.3);
-    border-radius: 6px;
-}
-.option-list::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.1);
-    border-radius: 6px;
-}
+.option-list::-webkit-scrollbar { width: 8px; }
+.option-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 6px; }
+.option-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 6px; }
 .option-item { background: rgba(255,255,255,0.15); border-radius:16px; padding:25px 20px; cursor:pointer; transition:0.25s; color:#fff; display:flex; flex-direction:column; align-items:center; width:220px; text-align:center; font-size:16px; font-weight:600; box-shadow:0 6px 18px rgba(0,0,0,0.35);}
-.option-item:hover { background: rgba(255,255,255,0.25); transform:translateY(-5px); box-shadow:0 10px 28px rgba(0,0,0,0.45);}
+.option-item:hover { background: rgba(255,255,255,0.25); transform:translateY(-5px); box-shadow:0 10px 28px rgba(0,0,0,0.45); }
 .reward-type { display:inline-block; padding:4px 10px; border-radius:12px; color:#fff; font-size:13px; font-weight:600; margin:6px 0; }
 
-/* Styled buttons */
-.btn-register {
-    background: linear-gradient(135deg, #3b82f6, #60a5fa);
-    color: #fff;
-    font-weight: 700;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(59,130,246,0.4);
-    margin-top:12px;
-}
-.btn-register:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(59,130,246,0.45);
-}
-.btn-back {
-    background: linear-gradient(135deg, #f97316, #fb923c);
-    color: #fff;
-    font-weight: 700;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(249,115,22,0.4);
-    margin-top: 12px;
-}
-.btn-back:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(249,115,22,0.45);
-}
+.btn-register, .btn-back { font-weight:700; border:none; border-radius:12px; padding:12px 24px; font-size:16px; cursor:pointer; transition:all 0.3s ease; margin-top:12px; }
+.btn-register { background: linear-gradient(135deg, #3b82f6, #60a5fa); color:#fff; box-shadow:0 4px 12px rgba(59,130,246,0.4); }
+.btn-register:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(59,130,246,0.45); }
+.btn-back { background: linear-gradient(135deg, #f97316, #fb923c); color:#fff; box-shadow:0 4px 12px rgba(249,115,22,0.4); }
+.btn-back:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(249,115,22,0.45); }
 
 footer { width:100%; background:#1e293b; text-align:center; padding:20px 10px; margin-top:auto; }
 
@@ -200,29 +168,30 @@ footer { width:100%; background:#1e293b; text-align:center; padding:20px 10px; m
                     'Points' => '#ef4444'
                 ];
                 $color = $typeColors[$e['rewardType']] ?? '#64748b';
+                $formattedDate = formatEventDate($e['eventDate']);
             ?>
                 <li class="option-item" onclick="chooseEvent(
-        <?= (int)$e['eventID'] ?>,
-        '<?= addslashes($e['eventName']) ?>',
-        <?= (int)$e['eventRegistered'] ?>,
-        <?= (int)$e['attended'] ?>,
-        '<?= addslashes($e['eventDescription']) ?>',
-        <?= (int)$e['totalRegistered'] ?>,
-        <?= (int)$e['totalAttended'] ?>,
-        '<?= addslashes($e['rewardType']) ?>'
-    )">
-    <strong><?= htmlspecialchars($e['eventName']) ?></strong>
-    <div class="reward-type" style="background: <?= $color ?>;"><?= htmlspecialchars($e['rewardType']) ?></div>
-    <p style="font-size:14px; margin:6px 0; color:#e0e0e0;"><?= htmlspecialchars($e['eventDescription']) ?></p> <!-- Added description -->
-    <?= htmlspecialchars($e['eventRewards']) ?: '0 Points' ?><br>
-    Registered: <?= (int)$e['totalRegistered'] ?> | Attended: <?= (int)$e['totalAttended'] ?>
-
-    <?php if($e['eventRegistered'] && !$e['attended']): ?>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode('https://'.($_SERVER['HTTP_HOST'] ?? 'yourdomain.com').dirname($_SERVER['PHP_SELF']).'/mark_attendance.php?eventID='.$e['eventID']) ?>" alt="Scan to mark attendance" style="margin-top:10px;">
-        <p>Scan this QR to mark your attendance ✅</p>
-    <?php endif; ?>
-</li>
-
+                    <?= (int)$e['eventID'] ?>,
+                    '<?= addslashes($e['eventName']) ?>',
+                    <?= (int)$e['eventRegistered'] ?>,
+                    <?= (int)$e['attended'] ?>,
+                    '<?= addslashes($e['eventDescription']) ?>',
+                    <?= (int)$e['totalRegistered'] ?>,
+                    <?= (int)$e['totalAttended'] ?>,
+                    '<?= addslashes($e['rewardType']) ?>',
+                    '<?= $formattedDate ?>'
+                )">
+                    <strong><?= htmlspecialchars($e['eventName']) ?></strong>
+                    <div class="reward-type" style="background: <?= $color ?>;"><?= htmlspecialchars($e['rewardType']) ?></div>
+                    <p style="font-size:14px; margin:6px 0; color:#e0e0e0;"><?= htmlspecialchars($e['eventDescription']) ?></p>
+                    <p style="font-size:13px; margin:2px 0; color:#fbbf24;"><strong>Date:</strong> <?= $formattedDate ?></p>
+                    <?= htmlspecialchars($e['eventRewards']) ?: '0 Points' ?><br>
+                    Registered: <?= (int)$e['totalRegistered'] ?> | Attended: <?= (int)$e['totalAttended'] ?>
+                    <?php if($e['eventRegistered'] && !$e['attended']): ?>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode('https://'.($_SERVER['HTTP_HOST'] ?? 'yourdomain.com').dirname($_SERVER['PHP_SELF']).'/mark_attendance.php?eventID='.$e['eventID']) ?>" alt="Scan to mark attendance" style="margin-top:10px;">
+                        <p>Scan this QR to mark your attendance ✅</p>
+                    <?php endif; ?>
+                </li>
             <?php endforeach; ?>
         <?php endif; ?>
         </ul>
@@ -241,7 +210,7 @@ footer { width:100%; background:#1e293b; text-align:center; padding:20px 10px; m
 </footer>
 
 <script>
-function chooseEvent(eventID, eventName, eventRegistered, attended, eventDescription, totalRegistered, totalAttended, rewardType) {
+function chooseEvent(eventID, eventName, eventRegistered, attended, eventDescription, totalRegistered, totalAttended, rewardType, eventDate) {
     const flow = document.querySelector('.redeem-section');
     const typeColors = {
         'Ticket':'#3b82f6',
@@ -254,6 +223,7 @@ function chooseEvent(eventID, eventName, eventRegistered, attended, eventDescrip
     let html = `<h3>${eventName}</h3>
                 <div class="reward-type" style="background:${color};">${rewardType}</div>
                 <p>${eventDescription}</p>
+                <p><strong>Date:</strong> ${eventDate}</p>
                 <p><strong>Registered:</strong> ${totalRegistered}</p>
                 <p><strong>Attended:</strong> ${totalAttended}</p>`;
 
@@ -280,28 +250,10 @@ async function registerEvent(eventID, eventName){
         const res = await fetch('register_events.php', {method:'POST', body: fd});
         const data = await res.json();
         alert(data.message || 'Registered successfully!');
-        if(data.success){
-            window.location.reload();
-        }
+        if(data.success) window.location.reload();
     } catch(err){
         console.error(err);
         alert('Failed to register.');
-    }
-}
-
-async function markAttendance(eventID){
-    try {
-        const fd = new FormData();
-        fd.append('eventID', eventID);
-        const res = await fetch('mark_attendance.php', {method:'POST', body: fd});
-        const data = await res.json();
-        alert(data.message || 'Attendance marked!');
-        if(data.success){
-            window.location.reload();
-        }
-    } catch(err){
-        console.error(err);
-        alert('Failed to mark attendance.');
     }
 }
 </script>

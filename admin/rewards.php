@@ -260,7 +260,6 @@ if (!isset($_SESSION['username'])) {
       <option value="Supplies">Supplies</option>
       <option value="Tshirts">Tshirts</option>
       <option value="IDs">IDs</option>
-      <option value="Points">Points</option>
     </select>
     
     <button type="submit">Save Reward</button>
@@ -335,7 +334,6 @@ function renderRewards(data) {
       Supplies: 'ntbk.png',
       Tshirts: 'tshirt.png',
       IDs: 'id.png',
-      Points: 'points.png'
     }[r.rewardType] || 'default.png';
 
     let typeColor = {
@@ -343,7 +341,7 @@ function renderRewards(data) {
       Supplies: '#22c55e',
       Tshirts: '#f59e0b',
       IDs: '#a855f7',
-      Points: '#ef4444'
+
     }[r.rewardType] || '#64748b';
 
     const tr = document.createElement('tr');
