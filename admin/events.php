@@ -99,6 +99,10 @@ footer div { color:#93c5fd; }
       <label>Rewards</label>
       <input type="text" id="rewards" name="eventRewards" required placeholder="e.g. 50 points or 'Certificate'">
 
+<label>Event Date</label>
+<input type="date" id="eventDate" name="eventDate" required>
+
+      
       <button type="submit">Save Event</button>
     </form>
   </div>
@@ -117,6 +121,7 @@ footer div { color:#93c5fd; }
     <th style="width:25%;">Description</th>
     <th style="width:10%;">Reward Type</th>
     <th style="width:10%;">Rewards</th>
+    <th style="width:10%;">Event Date</th> <!-- NEW -->
     <th style="width:10%;">Registered</th>
     <th style="width:10%;">Attended</th>
     <th style="width:15%;">Actions</th>
@@ -169,6 +174,8 @@ function renderEvents(data) {
       <td class="description-cell">${escapeHtml(e.eventDescription)}</td>
       <td class="reward-type">${escapeHtml(e.rewardType)}</td>
       <td>${escapeHtml(e.eventRewards)}</td>
+      <td>${formatDate(e.eventDate)}</td>
+
       <td>${e.registeredCount || 0}</td>
       <td>${e.attendedCount || 0}</td>
       <td>
@@ -179,6 +186,14 @@ function renderEvents(data) {
     list.appendChild(tr);
   });
 }
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return d.toLocaleDateString('en-US', options); // e.g., Nov 17, 2025
+}
+
 
 
 form.addEventListener('submit', async ev => {
@@ -203,6 +218,7 @@ async function editEvent(id) {
     document.getElementById('description').value = e.eventDescription;
     document.getElementById('rewardType').value = e.rewardType;
     document.getElementById('rewards').value = e.eventRewards;
+    document.getElementById('eventDate').value = e.eventDate ? e.eventDate.split(' ')[0] : '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (err) { console.error(err); alert('Failed to fetch event data.'); }
 }

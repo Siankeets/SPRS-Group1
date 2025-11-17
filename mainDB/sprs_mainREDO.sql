@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 16, 2025 at 06:44 AM
+-- Generation Time: Nov 17, 2025 at 12:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,18 +44,15 @@ CREATE TABLE `event_registrations` (
   `id` int(11) NOT NULL,
   `studentID` int(11) NOT NULL,
   `eventID` int(11) NOT NULL,
-  `registered_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `attended` tinyint(1) DEFAULT 0
+  `registered_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `event_registrations`
 --
 
-INSERT INTO `event_registrations` (`id`, `studentID`, `eventID`, `registered_at`, `attended`) VALUES
-(1, 5, 2, '2025-11-16 05:01:58', 0),
-(2, 5, 3, '2025-11-16 05:34:28', 0),
-(3, 6, 3, '2025-11-16 05:37:47', 0);
+INSERT INTO `event_registrations` (`id`, `studentID`, `eventID`, `registered_at`) VALUES
+(15, 5, 8, '2025-11-17 11:28:23');
 
 -- --------------------------------------------------------
 
@@ -76,8 +73,9 @@ CREATE TABLE `rewards` (
 --
 
 INSERT INTO `rewards` (`rewardID`, `rewardName`, `rewardDescription`, `rewardPointsRequired`, `rewardType`) VALUES
-(14, 'test 1', 'descirption', 300, 'Ticket'),
-(15, 'test2', 'hamburger', 20, 'Supplies');
+(15, 'test2', 'hamburger', 20, 'Supplies'),
+(16, 'test 3', 'test 3', 30, 'Tshirts'),
+(19, '20% Voucher', 'for any school supply purchases', 200, 'Ticket');
 
 -- --------------------------------------------------------
 
@@ -90,17 +88,37 @@ CREATE TABLE `schoolevents` (
   `eventName` varchar(128) NOT NULL,
   `eventDescription` text DEFAULT NULL,
   `eventRewards` text DEFAULT NULL,
-  `eventRegistered` int(11) DEFAULT 0,
-  `eventAttended` int(11) DEFAULT 0
+  `rewardType` varchar(20) NOT NULL DEFAULT 'Points',
+  `eventDate` date NOT NULL DEFAULT curdate()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `schoolevents`
 --
 
-INSERT INTO `schoolevents` (`eventID`, `eventName`, `eventDescription`, `eventRewards`, `eventRegistered`, `eventAttended`) VALUES
-(2, 'test1', 'test1', '200', 0, 0),
-(3, 'test2', 'test2', '500 points', 0, 0);
+INSERT INTO `schoolevents` (`eventID`, `eventName`, `eventDescription`, `eventRewards`, `rewardType`, `eventDate`) VALUES
+(8, 'test1', 'test1', '200 points', 'Points', '2025-11-25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_activity_log`
+--
+
+CREATE TABLE `student_activity_log` (
+  `logID` int(11) NOT NULL,
+  `studentID` int(11) NOT NULL,
+  `type` enum('Reward Redeemed','Reward Used','Event Registered','Event Attended') NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `logDate` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_activity_log`
+--
+
+INSERT INTO `student_activity_log` (`logID`, `studentID`, `type`, `description`, `logDate`) VALUES
+(9, 5, 'Reward Used', 'Used \'test 3\'', '2025-11-17 11:32:33');
 
 -- --------------------------------------------------------
 
@@ -173,6 +191,12 @@ ALTER TABLE `schoolevents`
   ADD PRIMARY KEY (`eventID`);
 
 --
+-- Indexes for table `student_activity_log`
+--
+ALTER TABLE `student_activity_log`
+  ADD PRIMARY KEY (`logID`);
+
+--
 -- Indexes for table `student_inventory`
 --
 ALTER TABLE `student_inventory`
@@ -194,25 +218,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `event_registrations`
 --
 ALTER TABLE `event_registrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `rewards`
 --
 ALTER TABLE `rewards`
-  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `schoolevents`
 --
 ALTER TABLE `schoolevents`
-  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `student_activity_log`
+--
+ALTER TABLE `student_activity_log`
+  MODIFY `logID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `student_inventory`
 --
 ALTER TABLE `student_inventory`
-  MODIFY `inventoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `inventoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `users`
