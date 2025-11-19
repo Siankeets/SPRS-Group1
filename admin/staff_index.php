@@ -1,5 +1,6 @@
 <?php
 session_start(); 
+
 include('../db_connect.php'); // connect for the application tables
 
 $admin_name = $_SESSION['name'];

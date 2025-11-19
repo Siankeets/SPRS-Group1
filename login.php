@@ -1,7 +1,6 @@
 <?php
-session_start();
-include('db_connect.php'); // Make sure this connects to your DB
-// include('dummy/connection_dummydb.php');
+session_start(); // Always start the session first
+include('db_connect.php'); // Connect to DB
 
 $error = "";
 
@@ -27,10 +26,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
 
         if ($user) {
-            // Assuming passwords are stored as plain text (not recommended for production)
-            // If hashed, use password_verify($password, $user['password'])
-            if ($password === $user['password']) {
-                // Set session
+            if ($password === $user['password']) { // Plain text, otherwise use password_verify()
+                // Set session variables
                 $_SESSION['userID'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
@@ -59,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
