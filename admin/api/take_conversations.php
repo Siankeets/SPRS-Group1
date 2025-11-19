@@ -3,7 +3,7 @@ session_start();
 include('../../db_connect.php');
 
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'admin') {
-    echo json_encode(['success' => false]);
+    echo json_encode(['success'=>false]);
     exit();
 }
 
@@ -19,7 +19,7 @@ $stmt->bind_param("ii", $studentID, $staffID);
 $stmt->execute();
 $conv = $stmt->get_result()->fetch_assoc();
 
-if ($conv) {
+if($conv){
     $conversation_id = $conv['id'];
 } else {
     // Create a new conversation
@@ -29,6 +29,5 @@ if ($conv) {
     $conversation_id = $stmt2->insert_id;
 }
 
-// Return conversation_id
-echo json_encode(['success' => true, 'conversation_id' => $conversation_id]);
+echo json_encode(['success'=>true, 'conversation_id'=>$conversation_id]);
 ?>

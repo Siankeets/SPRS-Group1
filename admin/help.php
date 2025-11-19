@@ -65,7 +65,7 @@ async function loadConversations() {
         if(currentStudent && currentStudent.studentID === c.studentID) div.classList.add('active');
 
         let badge = (c.last_sender === 'student') ? "<span class='badge'>●</span>" : "";
-        let statusText = c.conversation_status ? c.conversation_status : "No conversation";
+        let statusText = c.conversation_status || "No conversation";
 
         div.innerHTML = `${badge}<b>${c.student_name}</b><br>
                          <small>${c.student_program} • ${c.student_department}</small><br>
@@ -76,8 +76,6 @@ async function loadConversations() {
     });
 }
 
-div.onclick = () => openChat(c.conversation_id, c.studentID, c.student_name);
-
 async function openChat(conversation_id, studentID, studentName) {
     currentStudent = { studentID, studentName };
 
@@ -85,6 +83,7 @@ async function openChat(conversation_id, studentID, studentName) {
         // Create new conversation if none exists
         let res = await fetch("api/take_conversation.php", {
             method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ studentID })
         });
         let data = await res.json();
@@ -99,14 +98,14 @@ async function openChat(conversation_id, studentID, studentName) {
     loadMessages();
 }
 
-
 setInterval(() => {
     if(currentID) loadMessages();
 }, 2000);
 
 async function loadMessages() {
-    if(!currentID) return;
-    let res = await fetch("api/get_messages.php?id=" + currentID);
+    if(!currentID || !currentStudent) return;
+
+    let res = await fetch(`api/get_messages.php?id=${currentID}&studentID=${currentStudent.studentID}`);
     let msgs = await res.json();
 
     let box = document.getElementById("chatBox");
@@ -122,24 +121,29 @@ async function loadMessages() {
     box.scrollTop = box.scrollHeight;
 }
 
+
 async function sendMessage() {
     if(!currentID) return;
 
     let msg = document.getElementById("msgInput").value.trim();
     if(msg === "") return;
 
-    await fetch("api/send_admin_message.php", {
+    let res = await fetch("api/send_admin_messages.php", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             conversation_id: currentID,
             message: msg
         })
     });
-
-    document.getElementById("msgInput").value = "";
-    loadMessages();
+    let data = await res.json();
+    if(data.success){
+        document.getElementById("msgInput").value = "";
+        loadMessages();
+    } else {
+        alert("Message failed: " + (data.error || "Unknown error"));
+    }
 }
 </script>
-
 </body>
 </html>
