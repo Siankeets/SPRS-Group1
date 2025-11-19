@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $serverURL = "http://localhost/SPRS/SPRS-Group1/admin"; //babaguhin sa google cloud
 
-        $qrData = "$serverURL/verify_qr.php?qr=$uniqueCode"; //sa admin pero papunta/directory sa student dashboard using unique student IT
+        $qrData = "$serverURL/verify_qr-test.php?qr=$uniqueCode"; //sa admin pero papunta/directory sa student dashboard using unique student IT
 
         $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" . urlencode($qrData);
 

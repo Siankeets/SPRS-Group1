@@ -1,0 +1,11 @@
+Swapping hrefs/redirects:
+
+Login.php -> student_index-test.php (test ver. already uses get_points.php)
+student_index-test.php -> redeem-test.php (these will do, only testing these two main student files)
+redeem-test.php -> student_index-test.php (these will do, only testing these two main student files)
+
+=====================================================================================================
+
+staff_index.php ->  points-test.php  (remember to revert staff_index.php to redirect to points.php)
+points-test.php -> generate_qr-test.php
+generate_qr-test.php -> verify_qr-test.php
