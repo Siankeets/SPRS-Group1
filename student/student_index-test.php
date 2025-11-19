@@ -17,7 +17,7 @@ $department = $_SESSION['department'];
 $program = $_SESSION['program'];
 $major = $_SESSION['major'];
 
-$conn->select_db('sprs_dummydb');
+$conn->select_db('sprs_dummydb'); // need to change this when hosting (infinityfree)
 $stmt = $conn->prepare("SELECT points FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -401,14 +401,14 @@ function handleMenu(key){
       scanModal.style.display = 'flex';
       scanResult.textContent = '';
 
-        // GPT ver.
+        // GPT ver. - uses get_points.php
         qrScanner = new QrScanner(qrVideo, result => {
         qrScanner.stop();
           
         // Show scanning text
         scanResult.textContent = "Processing…";
           
-        // Send scanned data to backend
+        // Send scanned data to backend  //(qr scan triggers backend verification)
         fetch("verify_qr.php", {    
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -418,7 +418,7 @@ function handleMenu(key){
         .then(response => {
             scanResult.textContent = response;
         
-            // Optionally refresh credits in header
+            // Optionally refresh credits in header // (refreshes points if added)
             if (response.includes("Points Added")) {
                 fetch("get_points.php")
                 .then(res => res.json())
@@ -431,7 +431,7 @@ function handleMenu(key){
         .catch(() => {
             scanResult.textContent = "❌ Error communicating with server.";
         });
-    });
+    }); // end of gpt ver.
 
       qrScanner.start();
       break;
@@ -439,7 +439,7 @@ function handleMenu(key){
     case 'inventory': window.location.href = 'inventory.php'; break;
     case 'events': window.location.href = 'event.php'; break;
     case 'help': window.location.href = 'help.php'; break;
-    case 'logout': if(confirm('Logout?')) window.location.href = '../login.php'; break;
+    case 'logout': if(confirm('Logout?')) window.location.href = '../logout.php'; break; //now using logout php with session destruction
   }
 }
 </script>

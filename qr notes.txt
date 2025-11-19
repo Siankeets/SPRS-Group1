@@ -1,0 +1,8 @@
+check:
+
+student_index.php (now uses get_points.php for updating student points after scanning) + redeem.php
+points.php
+
+
+verify_qr.php - test ver adjusts $_GET -> $_POST because student_index.php with get_points.php uses $_POST
+generate_qr.php - WORKS AS IS, NO MODIFICATIONS
