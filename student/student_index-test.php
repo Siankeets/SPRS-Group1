@@ -400,9 +400,39 @@ function handleMenu(key){
     case 'scan':
       scanModal.style.display = 'flex';
       scanResult.textContent = '';
-      qrScanner = new QrScanner(qrVideo, result => {
-          scanResult.textContent = `✅ Points Added: ${result}`;
-      });
+
+        // GPT ver.
+        qrScanner = new QrScanner(qrVideo, result => {
+        qrScanner.stop();
+          
+        // Show scanning text
+        scanResult.textContent = "Processing…";
+          
+        // Send scanned data to backend
+        fetch("verify_qr.php", {    
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "qr=" + encodeURIComponent(result)
+        })
+        .then(res => res.text())
+        .then(response => {
+            scanResult.textContent = response;
+        
+            // Optionally refresh credits in header
+            if (response.includes("Points Added")) {
+                fetch("get_points.php")
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("headerCredits").textContent =
+                        "Credits: " + data.points;
+                });
+            }
+        })
+        .catch(() => {
+            scanResult.textContent = "❌ Error communicating with server.";
+        });
+    });
+
       qrScanner.start();
       break;
     case 'redeem': window.location.href = 'redeem.php'; break;
