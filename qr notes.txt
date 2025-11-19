@@ -1,8 +1,21 @@
 check:
 
-student_index.php (now uses get_points.php for updating student points after scanning) + redeem.php
-points.php
+student_index.php -  (now uses get_points.php for updating student points after scanning) 
+
++ redeem.php - (should work as is, gpt says)
+    Concurrency issue – If two redemption requests happen simultaneously, 
+    currentPoints check might have a race condition. 
+    For high-stakes points, consider doing the deduction in one SQL transaction or UPDATE ... WHERE points >= ?.
+
+points.php - (works as is, gpt says)
 
 
 verify_qr.php - test ver adjusts $_GET -> $_POST because student_index.php with get_points.php uses $_POST
-generate_qr.php - WORKS AS IS, NO MODIFICATIONS
+
+generate_qr.php - WORKS AS IS, NO MODIFICATIONS (gpt says)
+Suggested Improvements: 
+Better deletion check to avoid accidental substring matches:               
+                        $parts = explode('|', $line);
+                            if ($parts[0] !== $deleteCode) {
+                            $updated[] = $line;
+                        }
