@@ -187,10 +187,26 @@ footer { width:100%; background:#1e293b; text-align:center; padding:20px 10px; m
                     <p style="font-size:13px; margin:2px 0; color:#fbbf24;"><strong>Date:</strong> <?= $formattedDate ?></p>
                     <?= htmlspecialchars($e['eventRewards']) ?: '0 Points' ?><br>
                     Registered: <?= (int)$e['totalRegistered'] ?> | Attended: <?= (int)$e['totalAttended'] ?>
-                    <?php if($e['eventRegistered'] && !$e['attended']): ?>
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode('https://'.($_SERVER['HTTP_HOST'] ?? 'yourdomain.com').dirname($_SERVER['PHP_SELF']).'/mark_attendance.php?eventID='.$e['eventID']) ?>" alt="Scan to mark attendance" style="margin-top:10px;">
-                        <p>Scan this QR to mark your attendance ✅</p>
-                    <?php endif; ?>
+                    <?php
+$today = date('Y-m-d');
+$eventDay = date('Y-m-d', strtotime($e['eventDate']));
+?>
+
+<?php if ($e['eventRegistered'] && !$e['attended']): ?>
+    
+    <?php if ($today < $eventDay): ?>
+        <p style="color:#f87171; font-weight:bold; margin-top:10px;">
+            🚫 Event hasn’t started yet. Come back on <?= formatEventDate($e['eventDate']) ?>.
+        </p>
+
+    <?php else: ?>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode('https://'.($_SERVER['HTTP_HOST'] ?? 'yourdomain.com').dirname($_SERVER['PHP_SELF']).'/mark_attendance.php?eventID='.$e['eventID']) ?>" 
+             alt="Scan to mark attendance" style="margin-top:10px;">
+        <p>Scan this QR to mark your attendance ✅</p>
+    <?php endif; ?>
+
+<?php endif; ?>
+
                 </li>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -227,17 +243,32 @@ function chooseEvent(eventID, eventName, eventRegistered, attended, eventDescrip
                 <p><strong>Registered:</strong> ${totalRegistered}</p>
                 <p><strong>Attended:</strong> ${totalAttended}</p>`;
 
-    if(eventRegistered == 0) {
-        html += `<button class="btn-register" onclick="registerEvent(${eventID}, '${eventName}')">📝 Register</button>`;
-    } else {
-        html += `<p>You are already registered ✅</p>`;
-        if(attended == 0) {
-            html += `<p>Scan the QR below to mark attendance</p>`;
-            html += `<div style="margin-top:10px;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(location.origin + '${location.pathname}'.replace(/\/[^/]*$/,'') + '/mark_attendance.php?eventID=' + eventID)}" alt="QR"></div>`;
+    const today = new Date().toISOString().split('T')[0];
+const eventDay = new Date(eventDate).toISOString().split('T')[0];
+
+if (eventRegistered == 0) {
+    html += `<button class="btn-register" onclick="registerEvent(${eventID}, '${eventName}')">📝 Register</button>`;
+} else {
+    html += `<p>You are already registered ✅</p>`;
+
+    if (attended == 0) {
+
+        if (today < eventDay) {
+            html += `<p style="color:#f87171; font-weight:bold;">🚫 Event hasn't started yet.</p>`;
         } else {
-            html += `<p>You have attended this event ✔️</p>`;
+            html += `<p>Scan the QR below to mark attendance</p>`;
+            html += `<div style="margin-top:10px;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${
+                            encodeURIComponent(location.origin + '${location.pathname}'.replace(/\/[^/]*$/,'') + '/mark_attendance.php?eventID=' + eventID)
+                        }">
+                     </div>`;
         }
+
+    } else {
+        html += `<p>You have attended this event ✔️</p>`;
     }
+}
+
 
     html += `<button class="btn-back" onclick="window.location.reload()">❌ Back</button>`;
     flow.innerHTML = html;
