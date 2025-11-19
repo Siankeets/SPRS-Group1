@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 17, 2025 at 12:34 PM
+-- Generation Time: Nov 19, 2025 at 08:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -52,7 +52,85 @@ CREATE TABLE `event_registrations` (
 --
 
 INSERT INTO `event_registrations` (`id`, `studentID`, `eventID`, `registered_at`) VALUES
-(15, 5, 8, '2025-11-17 11:28:23');
+(15, 5, 8, '2025-11-17 11:28:23'),
+(16, 5, 9, '2025-11-19 10:27:28');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `help_conversations`
+--
+
+CREATE TABLE `help_conversations` (
+  `id` int(11) NOT NULL,
+  `studentID` int(11) NOT NULL,
+  `staffID` int(11) DEFAULT NULL,
+  `status` enum('open','closed') DEFAULT 'open',
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `help_conversations`
+--
+
+INSERT INTO `help_conversations` (`id`, `studentID`, `staffID`, `status`, `last_updated`) VALUES
+(2, 5, 1, 'open', '2025-11-19 19:02:46');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `help_messages`
+--
+
+CREATE TABLE `help_messages` (
+  `id` int(11) NOT NULL,
+  `conversation_id` int(11) NOT NULL,
+  `sender` enum('student','staff') NOT NULL,
+  `message` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `help_messages`
+--
+
+INSERT INTO `help_messages` (`id`, `conversation_id`, `sender`, `message`, `created_at`) VALUES
+(3, 2, 'student', 'hello', '2025-11-19 17:20:31'),
+(4, 2, 'staff', 'sup', '2025-11-19 17:20:46'),
+(5, 2, 'staff', 'sup', '2025-11-19 17:22:03'),
+(6, 2, 'student', 'hello again', '2025-11-19 17:24:36'),
+(7, 2, 'staff', 'yes?', '2025-11-19 17:24:50'),
+(8, 2, 'staff', 'yes?', '2025-11-19 17:34:46'),
+(9, 2, 'student', 'hello', '2025-11-19 17:36:29'),
+(10, 2, 'student', 'yes', '2025-11-19 17:36:35'),
+(11, 2, 'staff', 'sup', '2025-11-19 17:36:51'),
+(12, 2, 'student', 'he llo', '2025-11-19 18:06:28'),
+(13, 2, 'student', 'he llo', '2025-11-19 18:06:29'),
+(14, 2, 'student', 'hi', '2025-11-19 18:07:39'),
+(15, 2, 'student', 'hi', '2025-11-19 18:07:39'),
+(16, 2, 'student', 'hi', '2025-11-19 18:07:39'),
+(17, 2, 'student', 'hi', '2025-11-19 18:07:39'),
+(18, 2, 'student', 'here', '2025-11-19 18:12:25'),
+(19, 2, 'staff', 'yes i can see', '2025-11-19 18:12:59'),
+(20, 2, 'student', 'hello', '2025-11-19 18:14:45'),
+(21, 2, 'student', 'hi', '2025-11-19 18:14:47'),
+(22, 2, 'staff', 'hello', '2025-11-19 18:15:27'),
+(23, 2, 'staff', 'okay i send fine here', '2025-11-19 18:15:33'),
+(24, 2, 'staff', 'but the moment i open the instance for admin it stops the student side from working at all', '2025-11-19 18:15:59'),
+(25, 2, 'student', 'hello', '2025-11-19 18:22:00'),
+(26, 2, 'staff', 'yes', '2025-11-19 18:22:10'),
+(27, 2, 'student', 'how are you', '2025-11-19 18:22:16'),
+(28, 2, 'staff', 'fine', '2025-11-19 18:22:21'),
+(29, 2, 'student', 'yes', '2025-11-19 18:22:25'),
+(30, 2, 'staff', 'okauy', '2025-11-19 18:22:42'),
+(31, 2, 'student', 'maybe', '2025-11-19 18:22:46'),
+(32, 2, 'staff', 'yhes', '2025-11-19 18:23:08'),
+(33, 2, 'student', 'incognito mode is cool', '2025-11-19 18:24:02'),
+(34, 2, 'staff', 'doesnt update immediately', '2025-11-19 18:24:13'),
+(35, 2, 'staff', 'in staff side', '2025-11-19 18:24:19'),
+(36, 2, 'student', 'hello', '2025-11-19 19:01:47'),
+(37, 2, 'student', 'i have a concern', '2025-11-19 19:02:37'),
+(38, 2, 'staff', 'yes, what is it?', '2025-11-19 19:02:46');
 
 -- --------------------------------------------------------
 
@@ -97,7 +175,8 @@ CREATE TABLE `schoolevents` (
 --
 
 INSERT INTO `schoolevents` (`eventID`, `eventName`, `eventDescription`, `eventRewards`, `rewardType`, `eventDate`) VALUES
-(8, 'test1', 'test1', '200 points', 'Points', '2025-11-25');
+(8, 'test1', 'test1', '200 points', 'Points', '2025-11-25'),
+(9, 'test 2', 'test 2', '500', 'Points', '2025-11-19');
 
 -- --------------------------------------------------------
 
@@ -118,7 +197,15 @@ CREATE TABLE `student_activity_log` (
 --
 
 INSERT INTO `student_activity_log` (`logID`, `studentID`, `type`, `description`, `logDate`) VALUES
-(9, 5, 'Reward Used', 'Used \'test 3\'', '2025-11-17 11:32:33');
+(9, 5, 'Reward Used', 'Used \'test 3\'', '2025-11-17 11:32:33'),
+(10, 5, 'Reward Used', 'Used \'20% Voucher\'', '2025-11-18 03:50:32'),
+(11, 5, 'Reward Used', 'Used \'20% Voucher\'', '2025-11-18 13:14:52'),
+(12, 5, 'Reward Used', 'Used \'20% Voucher\'', '2025-11-19 10:19:05'),
+(13, 5, 'Reward Used', 'Used \'20% Voucher\'', '2025-11-19 10:50:04'),
+(14, 5, 'Reward Used', 'Used \'20% Voucher\'', '2025-11-19 11:37:59'),
+(15, 5, 'Reward Used', 'Used \'test2\'', '2025-11-19 11:38:22'),
+(16, 5, 'Reward Used', 'Used \'test 3\'', '2025-11-19 11:38:25'),
+(17, 5, 'Reward Used', 'Used \'20% Voucher\'', '2025-11-19 11:38:27');
 
 -- --------------------------------------------------------
 
@@ -132,6 +219,15 @@ CREATE TABLE `student_inventory` (
   `rewardID` int(11) DEFAULT NULL,
   `dateRedeemed` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_inventory`
+--
+
+INSERT INTO `student_inventory` (`inventoryID`, `studentID`, `rewardID`, `dateRedeemed`) VALUES
+(52, 5, 19, '2025-11-19 19:38:40'),
+(53, 5, 16, '2025-11-19 19:38:43'),
+(54, 5, 15, '2025-11-19 19:38:47');
 
 -- --------------------------------------------------------
 
@@ -179,6 +275,19 @@ ALTER TABLE `event_registrations`
   ADD UNIQUE KEY `studentID` (`studentID`,`eventID`);
 
 --
+-- Indexes for table `help_conversations`
+--
+ALTER TABLE `help_conversations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `help_messages`
+--
+ALTER TABLE `help_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `conversation_id` (`conversation_id`);
+
+--
 -- Indexes for table `rewards`
 --
 ALTER TABLE `rewards`
@@ -218,31 +327,43 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `event_registrations`
 --
 ALTER TABLE `event_registrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `help_conversations`
+--
+ALTER TABLE `help_conversations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `help_messages`
+--
+ALTER TABLE `help_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `rewards`
 --
 ALTER TABLE `rewards`
-  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `schoolevents`
 --
 ALTER TABLE `schoolevents`
-  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `student_activity_log`
 --
 ALTER TABLE `student_activity_log`
-  MODIFY `logID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `logID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `student_inventory`
 --
 ALTER TABLE `student_inventory`
-  MODIFY `inventoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `inventoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -260,6 +381,12 @@ ALTER TABLE `users`
 ALTER TABLE `eventparticipants`
   ADD CONSTRAINT `eventparticipants_ibfk_1` FOREIGN KEY (`eventID`) REFERENCES `schoolevents` (`eventID`),
   ADD CONSTRAINT `eventparticipants_ibfk_2` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `help_messages`
+--
+ALTER TABLE `help_messages`
+  ADD CONSTRAINT `help_messages_ibfk_1` FOREIGN KEY (`conversation_id`) REFERENCES `help_conversations` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `student_inventory`
