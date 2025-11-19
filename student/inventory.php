@@ -277,6 +277,7 @@ footer .contact svg { vertical-align:middle; }
 </div>
 
 <footer>
+      <div style="font-weight:700; font-size:16px; margin-bottom:12px;">Contact Us:</div>
   <div class="contact">
     📧 sprsystem@gmail.com | 📞 09123456789 |
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#93c5fd" viewBox="0 0 24 24">
