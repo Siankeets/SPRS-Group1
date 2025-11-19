@@ -285,7 +285,7 @@
       if (!confirm('Are you sure you want to delete this QR code?')) return;
 
       try {
-        const response = await fetch('http://localhost/SPRS/SPRS-Group1/admin/generate_qr.php',
+        const response = await fetch('http://localhost/SPRS/SPRS-Group1/admin/generate_qr-test.php',
  {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

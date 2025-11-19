@@ -4,7 +4,7 @@ include('../db_connect.php'); // DB connection
 
 // --- Ensure student is logged in ---
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -217,7 +217,7 @@ footer { width: 100%; background: #1e293b; text-align: center; padding: 20px 10p
       <h2>Redeem Points</h2>
       <p>Select a reward below to redeem it.</p>
     </div>
-    <button class="back-btn" onclick="window.location.href='student_index.php'">⬅ Back to Dashboard</button>
+    <button class="back-btn" onclick="window.location.href='student_index-test.php'">⬅ Back to Dashboard</button>
   </div>
 
   <div class="redeem-section" id="redeemFlow">
@@ -275,7 +275,7 @@ async function redeemReward(rewardID, pointsRequired, btn){
 
     btn.disabled=true; const originalText=btn.innerText; btn.innerText="Redeeming...";
     try{
-        const res=await fetch('redeem.php',{
+        const res=await fetch('redeem-test.php',{
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({rewardID, pointsRequired})
