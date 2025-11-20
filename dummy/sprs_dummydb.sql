@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2025 at 08:45 AM
+-- Generation Time: Nov 20, 2025 at 09:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,7 +47,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `password`, `role`, `points`, `name`, `department`, `program`, `major`, `contact_number`) VALUES
 (1, 'admin1', 'admin111', 'admin', NULL, 'Alice Dela Cruz', 'IT Department', NULL, NULL, '09151045628'),
 (2, 'admin2', 'admin456', 'admin', NULL, 'Bob Santos', 'Engineering Department', NULL, NULL, '09284561234'),
-(5, 'student1', 'stud123', 'student', 60, 'Juan Dela Cruz', 'Computer Science', 'BSCS', 'Software Development', '09562347891'),
+(5, 'student1', 'stud123', 'student', 46320, 'Juan Dela Cruz', 'Computer Science', 'BSCS', 'Software Development', '09562347891'),
 (6, 'student2', 'stud456', 'student', 95, 'Maria Lopez', 'Engineering', 'BSEE', 'Power Systems', '09671239845'),
 (7, 'student3', 'stud789', 'student', 80, 'Jose Lim', 'Business', 'BSBA', 'Marketing', '09782345612'),
 (8, 'student4', 'stud101', 'student', 110, 'Anna Reyes', 'Computer Science', 'BSCS', 'Data Science', '09893214567'),

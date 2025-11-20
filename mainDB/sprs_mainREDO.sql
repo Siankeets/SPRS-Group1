@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2025 at 08:04 PM
+-- Generation Time: Nov 20, 2025 at 09:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,14 +47,6 @@ CREATE TABLE `event_registrations` (
   `registered_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `event_registrations`
---
-
-INSERT INTO `event_registrations` (`id`, `studentID`, `eventID`, `registered_at`) VALUES
-(15, 5, 8, '2025-11-17 11:28:23'),
-(16, 5, 9, '2025-11-19 10:27:28');
-
 -- --------------------------------------------------------
 
 --
@@ -74,7 +66,12 @@ CREATE TABLE `help_conversations` (
 --
 
 INSERT INTO `help_conversations` (`id`, `studentID`, `staffID`, `status`, `last_updated`) VALUES
-(2, 5, 1, 'open', '2025-11-19 19:02:46');
+(33, 7, 1, 'open', '2025-11-20 07:49:46'),
+(34, 5, 1, 'open', '2025-11-20 08:02:15'),
+(35, 5, 2, 'open', '2025-11-20 07:56:25'),
+(36, 10, 1, 'open', '2025-11-20 07:57:31'),
+(37, 9, 1, 'open', '2025-11-20 08:03:19'),
+(38, 14, 1, 'open', '2025-11-20 08:06:24');
 
 -- --------------------------------------------------------
 
@@ -95,42 +92,21 @@ CREATE TABLE `help_messages` (
 --
 
 INSERT INTO `help_messages` (`id`, `conversation_id`, `sender`, `message`, `created_at`) VALUES
-(3, 2, 'student', 'hello', '2025-11-19 17:20:31'),
-(4, 2, 'staff', 'sup', '2025-11-19 17:20:46'),
-(5, 2, 'staff', 'sup', '2025-11-19 17:22:03'),
-(6, 2, 'student', 'hello again', '2025-11-19 17:24:36'),
-(7, 2, 'staff', 'yes?', '2025-11-19 17:24:50'),
-(8, 2, 'staff', 'yes?', '2025-11-19 17:34:46'),
-(9, 2, 'student', 'hello', '2025-11-19 17:36:29'),
-(10, 2, 'student', 'yes', '2025-11-19 17:36:35'),
-(11, 2, 'staff', 'sup', '2025-11-19 17:36:51'),
-(12, 2, 'student', 'he llo', '2025-11-19 18:06:28'),
-(13, 2, 'student', 'he llo', '2025-11-19 18:06:29'),
-(14, 2, 'student', 'hi', '2025-11-19 18:07:39'),
-(15, 2, 'student', 'hi', '2025-11-19 18:07:39'),
-(16, 2, 'student', 'hi', '2025-11-19 18:07:39'),
-(17, 2, 'student', 'hi', '2025-11-19 18:07:39'),
-(18, 2, 'student', 'here', '2025-11-19 18:12:25'),
-(19, 2, 'staff', 'yes i can see', '2025-11-19 18:12:59'),
-(20, 2, 'student', 'hello', '2025-11-19 18:14:45'),
-(21, 2, 'student', 'hi', '2025-11-19 18:14:47'),
-(22, 2, 'staff', 'hello', '2025-11-19 18:15:27'),
-(23, 2, 'staff', 'okay i send fine here', '2025-11-19 18:15:33'),
-(24, 2, 'staff', 'but the moment i open the instance for admin it stops the student side from working at all', '2025-11-19 18:15:59'),
-(25, 2, 'student', 'hello', '2025-11-19 18:22:00'),
-(26, 2, 'staff', 'yes', '2025-11-19 18:22:10'),
-(27, 2, 'student', 'how are you', '2025-11-19 18:22:16'),
-(28, 2, 'staff', 'fine', '2025-11-19 18:22:21'),
-(29, 2, 'student', 'yes', '2025-11-19 18:22:25'),
-(30, 2, 'staff', 'okauy', '2025-11-19 18:22:42'),
-(31, 2, 'student', 'maybe', '2025-11-19 18:22:46'),
-(32, 2, 'staff', 'yhes', '2025-11-19 18:23:08'),
-(33, 2, 'student', 'incognito mode is cool', '2025-11-19 18:24:02'),
-(34, 2, 'staff', 'doesnt update immediately', '2025-11-19 18:24:13'),
-(35, 2, 'staff', 'in staff side', '2025-11-19 18:24:19'),
-(36, 2, 'student', 'hello', '2025-11-19 19:01:47'),
-(37, 2, 'student', 'i have a concern', '2025-11-19 19:02:37'),
-(38, 2, 'staff', 'yes, what is it?', '2025-11-19 19:02:46');
+(95, 33, 'student', 'hallo', '2025-11-20 07:49:11'),
+(96, 33, 'student', 'hallo', '2025-11-20 07:49:12'),
+(97, 33, 'staff', 'halo', '2025-11-20 07:49:46'),
+(98, 34, 'student', 'amrica ya', '2025-11-20 07:53:29'),
+(99, 34, 'staff', 'sup', '2025-11-20 07:53:54'),
+(100, 34, 'student', 'hamburger', '2025-11-20 07:54:02'),
+(101, 36, 'student', 'hello po', '2025-11-20 07:56:55'),
+(102, 36, 'staff', 'yes po', '2025-11-20 07:57:04'),
+(103, 36, 'student', 'this is not first message', '2025-11-20 07:57:28'),
+(104, 36, 'staff', 'i know', '2025-11-20 07:57:31'),
+(105, 34, 'staff', 'yes', '2025-11-20 08:02:15'),
+(106, 37, 'student', 'need assistance', '2025-11-20 08:02:23'),
+(107, 37, 'staff', 'understoood', '2025-11-20 08:03:19'),
+(108, 38, 'student', 'test1', '2025-11-20 08:06:02'),
+(109, 38, 'staff', 'america ya', '2025-11-20 08:06:24');
 
 -- --------------------------------------------------------
 
@@ -333,13 +309,13 @@ ALTER TABLE `event_registrations`
 -- AUTO_INCREMENT for table `help_conversations`
 --
 ALTER TABLE `help_conversations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `help_messages`
 --
 ALTER TABLE `help_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
 
 --
 -- AUTO_INCREMENT for table `rewards`
