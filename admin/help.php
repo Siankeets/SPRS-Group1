@@ -48,72 +48,70 @@ button { padding: 10px; background: green; color: white; border: none; cursor: p
 let currentID = null;
 let currentStudent = null;
 
-// Load students and conversations every 2 seconds
+// Initial load + refresh every 2 seconds
+async function loadConversations() {
+    const res = await fetch("api/get_conversations.php");
+    conversationList = await res.json();
+    renderConversations();
+}
 setInterval(loadConversations, 2000);
 loadConversations();
 
-async function loadConversations() {
-    let res = await fetch("api/get_conversations.php");
-    let list = await res.json();
-
-    let box = document.getElementById("convoList");
+function renderConversations() {
+    const box = document.getElementById("convoList");
     box.innerHTML = "";
 
-    list.forEach(c => {
-        let div = document.createElement("div");
+    conversationList.forEach(c => {
+        const div = document.createElement("div");
         div.className = "convo";
-        if(currentStudent && currentStudent.studentID === c.studentID) div.classList.add('active');
 
-        let badge = (c.last_sender === 'student') ? "<span class='badge'>●</span>" : "";
-        let statusText = c.conversation_status ? c.conversation_status : "No conversation";
+        if(currentStudent && currentStudent.studentID === c.studentID) {
+            div.classList.add("active");
+        }
 
+        const badge = (c.last_sender === 'student') ? "<span class='badge'>●</span>" : "";
         div.innerHTML = `${badge}<b>${c.student_name}</b><br>
                          <small>${c.student_program} • ${c.student_department}</small><br>
-                         <span>Status: ${statusText}</span>`;
+                         <span>Status: ${c.status || 'No conversation'}</span>`;
 
-        div.onclick = () => openChat(c.conversation_id, c.studentID, c.student_name);
+        div.onclick = () => openChat(c.studentID, c.student_name, c.conversation_id);
         box.appendChild(div);
     });
 }
 
-div.onclick = () => openChat(c.conversation_id, c.studentID, c.student_name);
-
-async function openChat(conversation_id, studentID, studentName) {
+async function openChat(studentID, studentName, conversation_id) {
     currentStudent = { studentID, studentName };
-
-    if (!conversation_id) {
-        // Create new conversation if none exists
-        let res = await fetch("api/take_conversation.php", {
-            method: "POST",
-            body: JSON.stringify({ studentID })
-        });
-        let data = await res.json();
-        conversation_id = data.conversation_id;
-    }
-
     currentID = conversation_id;
+
     document.getElementById("chatHeader").innerText = "Chat with " + studentName;
     document.getElementById("msgInput").disabled = false;
     document.getElementById("sendBtn").disabled = false;
 
+    // If no conversation exists, create one
+    if (!currentID) {
+        const res = await fetch("api/take_conversations.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ studentID })
+        });
+        const data = await res.json();
+        currentID = data.conversation_id;
+    }
+
     loadMessages();
 }
 
-
-setInterval(() => {
-    if(currentID) loadMessages();
-}, 2000);
-
 async function loadMessages() {
     if(!currentID) return;
-    let res = await fetch("api/get_messages.php?id=" + currentID);
-    let msgs = await res.json();
 
-    let box = document.getElementById("chatBox");
+    const res = await fetch(`api/get_messages.php?id=${currentID}`);
+    const msgs = await res.json();
+
+    const box = document.getElementById("chatBox");
     box.innerHTML = "";
 
     msgs.forEach(m => {
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.className = "message " + m.sender;
         div.innerHTML = `<b>${m.sender}:</b> ${m.message}`;
         box.appendChild(div);
@@ -125,20 +123,27 @@ async function loadMessages() {
 async function sendMessage() {
     if(!currentID) return;
 
-    let msg = document.getElementById("msgInput").value.trim();
+    const msg = document.getElementById("msgInput").value.trim();
     if(msg === "") return;
 
-    await fetch("api/send_admin_message.php", {
+    const res = await fetch("api/send_admin_message.php", {
         method: "POST",
-        body: JSON.stringify({
-            conversation_id: currentID,
-            message: msg
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversation_id: currentID, message: msg })
     });
 
-    document.getElementById("msgInput").value = "";
-    loadMessages();
+    const data = await res.json();
+    if(data.success){
+        document.getElementById("msgInput").value = "";
+        loadMessages();
+    } else {
+        alert("Failed to send message: " + (data.error || "Unknown"));
+    }
 }
+
+// Auto-refresh messages every 2 seconds if a conversation is selected
+setInterval(() => { if(currentID) loadMessages(); }, 2000);
+
 </script>
 
 </body>
