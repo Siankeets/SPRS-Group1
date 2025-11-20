@@ -409,7 +409,7 @@ function handleMenu(key){
         scanResult.textContent = "Processing…";
           
         // Send scanned data to backend  //(qr scan triggers backend verification)
-        fetch("verify_qr.php", {    
+        fetch("../admin/verify_qr-test.php", {    
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "qr=" + encodeURIComponent(result)
@@ -435,7 +435,7 @@ function handleMenu(key){
 
       qrScanner.start();
       break;
-    case 'redeem': window.location.href = 'redeem.php'; break;
+    case 'redeem': window.location.href = 'redeem-test.php'; break;
     case 'inventory': window.location.href = 'inventory.php'; break;
     case 'events': window.location.href = 'event.php'; break;
     case 'help': window.location.href = 'help.php'; break;
