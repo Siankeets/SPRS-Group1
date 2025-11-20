@@ -14,25 +14,182 @@ $studentID = $_SESSION['userID'];
 <html>
 <head>
 <title>Help Desk - Student</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-body { margin: 0; font-family: Arial; display: flex; height: 100vh; overflow: hidden; }
-#sidebar { width: 300px; background: #f2f2f2; padding: 10px; overflow-y: auto; border-right: 1px solid #ccc; }
-#chatArea { flex: 1; display: flex; flex-direction: column; padding: 20px; background: #e5e5e5; }
-.convo { padding: 10px; background: white; margin-bottom: 5px; cursor: pointer; border-radius: 8px; }
-.convo.active { background: #d1e7fd; }
-#chatBox { flex: 1; overflow-y: auto; background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-#inputBox { display: flex; gap: 10px; }
-input { flex: 1; padding: 10px; }
-button { padding: 10px; background: blue; color: white; border: none; cursor: pointer; border-radius: 5px; }
-.message.student { text-align: right; color: blue; margin-bottom: 5px; }
-.message.staff { text-align: left; color: green; margin-bottom: 5px; }
+:root {
+    --accent-blue: #2563eb;
+    --accent-hover: #1d4ed8;
+    --header-bg: #0f172a;
+    --sidebar-bg: rgba(15,23,42,0.9);
+    --chat-bg: rgba(0,0,0,0.55);
+    --bubble-student: #2563eb;
+    --bubble-staff: #10b981;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    height: 100vh;
+    background: url('images/bg.jpg') center/cover no-repeat fixed;
+    color: #fff;
+}
+
+/* HEADER */
+header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--header-bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 6px 20px rgba(3,7,18,0.45);
+    z-index: 10;
+}
+header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+.back-btn {
+    background: var(--accent-blue);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.back-btn:hover { background: var(--accent-hover); }
+
+/* LAYOUT */
+#sidebar {
+    width: 280px;
+    background: var(--sidebar-bg);
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+#chatArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 30px 20px 30px; /* leave space for header */
+    background: var(--chat-bg);
+}
+
+/* Sidebar items */
+#sidebar h3 { margin-top: 0; font-weight: 600; margin-bottom: 10px; }
+#staffSearch {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+    outline: none;
+}
+.convo {
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+.convo:hover { background: rgba(37,99,235,0.2); }
+.convo.active { background: rgba(37,99,235,0.6); }
+
+/* Chat Area */
+#chatHeader { margin-top: 0; margin-bottom: 15px; font-weight: 700; }
+
+/* Messenger-style chat box */
+#chatBox {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 20px;
+    word-wrap: break-word;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    display: inline-block;
+}
+
+.message.student {
+    background: var(--bubble-student);
+    align-self: flex-end;
+    text-align: right;
+    border-bottom-right-radius: 4px;
+}
+.message.staff {
+    background: var(--bubble-staff);
+    align-self: flex-start;
+    text-align: left;
+    border-bottom-left-radius: 4px;
+}
+
+/* Input Box */
+#inputBox {
+    display: flex;
+    gap: 10px;
+}
+#msgInput {
+    flex: 1;
+    padding: 12px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+#sendBtn {
+    padding: 12px 20px;
+    border-radius: 20px;
+    border: none;
+    background: var(--accent-blue);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+#sendBtn:hover { background: var(--accent-hover); }
+
+/* Scrollbars */
+#sidebar::-webkit-scrollbar,
+#chatBox::-webkit-scrollbar {
+    width: 6px;
+}
+#sidebar::-webkit-scrollbar-thumb,
+#chatBox::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #sidebar { display: none; }
+    #chatArea { padding: 80px 15px 15px 15px; }
+}
 </style>
+
 </head>
 <body>
 
+<header>
+    <h1>Help Desk</h1>
+    <a href="student_index.php" class="back-btn">⬅ Back to Dashboard</a>
+</header>
+
 <div id="sidebar">
     <h3>Staff</h3>
-    <input type="text" id="staffSearch" placeholder="Search staff..." style="width: 100%; padding: 5px; margin-bottom: 5px;">
+    <input type="text" id="staffSearch" placeholder="Search staff...">
     <div id="staffList"></div>
 </div>
 
@@ -46,32 +203,27 @@ button { padding: 10px; background: blue; color: white; border: none; cursor: po
 </div>
 
 <script>
+// Original JS kept as-is
 let currentID = null;
 let currentStaff = null;
 let staffListData = [];
 
-// Load staff list
 async function loadStaff() {
     const res = await fetch("api/get_staff.php");
     staffListData = await res.json();
     renderStaffList();
 }
 
-// Render staff list with optional search
 function renderStaffList() {
     const searchTerm = document.getElementById('staffSearch').value.toLowerCase();
     const box = document.getElementById("staffList");
     box.innerHTML = "";
-
     staffListData
         .filter(s => s.name.toLowerCase().includes(searchTerm))
         .forEach(staff => {
             const div = document.createElement("div");
             div.className = "convo";
-
-            // Preserve active staff
             if(currentStaff && currentStaff.staffID === staff.id) div.classList.add('active');
-
             div.dataset.name = staff.name;
             div.innerHTML = `<b>${staff.name}</b><br><small>${staff.department}</small>`;
             div.onclick = () => openChat(staff.id, staff.name);
@@ -79,38 +231,27 @@ function renderStaffList() {
         });
 }
 
-
-// Search input event
 document.getElementById('staffSearch').addEventListener('input', renderStaffList);
 
 async function openChat(staffID, staffName) {
     currentStaff = { staffID, staffName };
-
-    // Fetch conversation or create one
     const res = await fetch("api/get_create_conversation.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ staffID })
-});
-
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ staffID })
+    });
     const data = await res.json();
-
     if(!data.success){
         alert("Error opening chat: " + (data.error || "unknown"));
         return;
     }
-
     currentID = data.conversation_id;
     document.getElementById("chatHeader").innerText = "Chat with " + staffName;
     document.getElementById("msgInput").disabled = false;
     document.getElementById("sendBtn").disabled = false;
-
     loadMessages();
 }
 
-
-
-// Auto-refresh staff list and messages every 2 seconds
 setInterval(() => {
     loadStaff();
     if(currentID) loadMessages();
@@ -120,17 +261,14 @@ async function loadMessages() {
     if(!currentID) return;
     const res = await fetch("api/get_admin_messages.php?id=" + currentID);
     const msgs = await res.json();
-
     const box = document.getElementById("chatBox");
     box.innerHTML = "";
-
     msgs.forEach(m => {
         const div = document.createElement("div");
         div.className = "message " + m.sender;
         div.innerHTML = `<b>${m.sender}:</b> ${m.message}`;
         box.appendChild(div);
     });
-
     box.scrollTop = box.scrollHeight;
 }
 
@@ -139,10 +277,8 @@ async function sendMessage() {
         alert("Cannot send message: No staff selected");
         return;
     }
-
     const msg = document.getElementById("msgInput").value.trim();
     if(msg === "") return;
-
     const res = await fetch("api/send_student_message.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -152,7 +288,6 @@ async function sendMessage() {
             message: msg
         })
     });
-
     const data = await res.json();
     if(data.success){
         document.getElementById("msgInput").value = "";
@@ -162,10 +297,6 @@ async function sendMessage() {
     }
 }
 
-
-
-
-// Initial load
 loadStaff();
 </script>
 

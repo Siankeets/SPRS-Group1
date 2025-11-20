@@ -290,6 +290,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `delete=${encodeURIComponent(currentCode)}`
+
         });
 
         const result = await response.json();
