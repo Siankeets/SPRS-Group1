@@ -209,8 +209,7 @@ function renderConversations() {
         }
         const badge = (c.last_sender === 'student') ? "<span class='badge'>●</span>" : "";
         div.innerHTML = `${badge}<b>${c.student_name}</b><br>
-                         <small>${c.student_program} • ${c.student_department}</small><br>
-                         <span>Status: ${c.status || 'No conversation'}</span>`;
+                         <small>${c.student_program} • ${c.student_department}</small><br>`;
         div.onclick = () => openChat(c.studentID, c.student_name, c.conversation_id);
         box.appendChild(div);
     });
