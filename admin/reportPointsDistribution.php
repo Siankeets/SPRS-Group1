@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 include "../dummy/connection_dummydb.php";
 
-// Fetch student names + points
+
 $sql = "
     SELECT name, points 
     FROM users

@@ -1,7 +1,3 @@
-// -------------------------------
-// REPORTS VISUALIZATION
-// -------------------------------
-
 // Generate Pie Chart for Users per Role
 function generateReportChart(data) {
     const chartConfig = {
@@ -89,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error("Error fetching user counts:", err));
 
     // Fetch student points distribution
-    fetch("reportPointsDistribution.php") // <- make sure the file name matches exactly
+    fetch("reportPointsDistribution.php")
         .then(res => res.json())
         .then(data => generatePointsDistributionChart(data))
         .catch(err => console.error("Error fetching points distribution:", err));

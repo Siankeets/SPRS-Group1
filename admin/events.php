@@ -3,7 +3,6 @@ header('Content-Type: text/html; charset=utf-8');
 session_start();
 include('../db_connect.php');
 
-// --- Ensure admin is logged in ---
 if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
     exit();
@@ -22,7 +21,6 @@ if (!isset($_SESSION['username'])) {
 * { box-sizing: border-box; }
 body { font-family:'Inter',system-ui; background:url('images/bg.jpg') no-repeat center center fixed; background-size:cover; margin:0; color:#fff; line-height:1.4; min-height:100vh; display:flex; flex-direction:column; }
 
-/* HEADER */
 header { position:fixed; top:0; left:0; right:0; background:#1e293b; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 6px 20px rgba(3,7,18,0.45); z-index:10; }
 header .left { display:flex; align-items:center; gap:12px; }
 header img { width:42px; height:42px; border-radius:10px; }
@@ -30,10 +28,10 @@ header h1 { font-size:16px; margin:0; color:#f2f6fb; font-weight:600; }
 .back-btn { background:var(--accent-blue); color:white; text-decoration:none; padding:8px 16px; border-radius:6px; font-size:14px; font-weight:600; transition:0.2s; }
 .back-btn:hover { background:var(--accent-hover); }
 
-/* MAIN CONTENT */
+
 .main-content { display:flex; gap:25px; max-width:1200px; margin:120px auto 40px; width:90%; flex-grow:1; }
 
-/* FORM */
+
 .form-card { background: rgba(0,0,0,0.6); border-radius:16px; padding:25px; width:35%; min-width:300px; box-shadow:0 8px 20px rgba(0,0,0,0.35); height: fit-content; }
 .form-card h2 { text-align:center; margin-bottom:20px; font-weight:700; }
 label { font-weight:600; margin-top:10px; display:block; }
@@ -42,7 +40,6 @@ textarea#description { height:100px; resize:none; }
 button { background:var(--accent-blue); border:none; color:white; padding:10px 14px; border-radius:8px; margin-top:14px; cursor:pointer; font-weight:600; transition:0.2s ease; width:100%; }
 button:hover { background:var(--accent-hover); }
 
-/* TABLE */
 .table-card { flex:1; background: rgba(0,0,0,0.6); border-radius:16px; padding:25px; box-shadow:0 8px 20px rgba(0,0,0,0.35); display:flex; flex-direction:column; }
 .table-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; }
 .table-header h2 { margin:0; font-weight:700; }
@@ -191,7 +188,7 @@ function formatDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return d.toLocaleDateString('en-US', options); // e.g., Nov 17, 2025
+  return d.toLocaleDateString('en-US', options);   
 }
 
 

@@ -17,7 +17,6 @@ $result = $stmt->get_result();
 
 $messages = [];
 while ($row = $result->fetch_assoc()) {
-    // Ensure sender is always lowercase student/staff
     $row['sender'] = strtolower($row['sender']);
     $messages[] = $row;
 }

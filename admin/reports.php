@@ -105,7 +105,7 @@ h2 { text-align: center; font-weight: 700; margin-bottom: 25px; }
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* fixed layout ensures alignment */
+    table-layout: fixed;
 }
 th, td {
     padding: 12px;
@@ -116,12 +116,12 @@ th, td {
 th { background: rgba(255,255,255,0.1); font-weight: 600; text-align: left; }
 tr:hover { background: rgba(255,255,255,0.06); }
 
-/* Column widths */
-th:nth-child(1), td:nth-child(1) { width: 30%; }   /* Event Name */
-th:nth-child(2), td:nth-child(2) { width: 50%; }   /* Description */
-th:nth-child(3), td:nth-child(3) { width: 20%; }   /* Action */
 
-/* Button */
+th:nth-child(1), td:nth-child(1) { width: 30%; }  
+th:nth-child(2), td:nth-child(2) { width: 50%; }   
+th:nth-child(3), td:nth-child(3) { width: 20%; }   
+
+
 button.report-btn {
     background: var(--accent-blue);
     padding: 8px 14px;
@@ -135,7 +135,7 @@ button.report-btn {
 }
 button.report-btn:hover { background: var(--accent-hover); }
 
-/* Modal */
+
 #eventChartModal {
     display:none;
     position:fixed;
@@ -148,7 +148,6 @@ button.report-btn:hover { background: var(--accent-hover); }
     z-index:9999;
 }
 
-/* FOOTER MATCH EVENTS.PHP */
 footer {
     width: 100%;
     background: #0f172a;
@@ -166,7 +165,6 @@ footer .contact-row {
     flex-wrap: wrap;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     header { flex-direction: column; gap: 10px; text-align: center; }
     .container { margin: 160px 15px 40px; }
@@ -283,7 +281,7 @@ function closeEventChart() {
     document.getElementById("eventChartModal").style.display = "none";
 }
 
-// Auto-load charts
+
 renderPointsChart();
 renderStudentAdminChart();
 </script>

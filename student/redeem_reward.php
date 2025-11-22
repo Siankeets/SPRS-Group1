@@ -13,14 +13,14 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
 $studentID = $_SESSION['userID'];
 $data = json_decode(file_get_contents('php://input'), true);
 $rewardID = intval($data['rewardID'] ?? 0);
-$action = $data['action'] ?? 'redeem'; // "redeem" or "use"
+$action = $data['action'] ?? 'redeem';
 
 if (!$rewardID) {
     echo json_encode(['success'=>false,'message'=>'Invalid reward']);
     exit;
 }
 
-// --- Fetch reward info ---
+
 $conn->select_db('sprs_mainredo');
 $stmt = $conn->prepare("SELECT rewardName, rewardType FROM rewards WHERE rewardID = ?");
 $stmt->bind_param("i", $rewardID);
@@ -32,7 +32,6 @@ if (!$stmt->fetch()) {
 }
 $stmt->close();
 
-// --- Function to log activity ---
 function logActivity($conn, $studentID, $type, $desc) {
     $stmt = $conn->prepare("INSERT INTO student_activity_log (studentID, type, description, logDate) VALUES (?, ?, ?, NOW())");
     $stmt->bind_param("iss", $studentID, $type, $desc);
@@ -41,7 +40,6 @@ function logActivity($conn, $studentID, $type, $desc) {
 }
 
 if($action === 'redeem'){
-    // --- Redeem: deduct points and add to inventory ---
     $pointsRequired = intval($data['pointsRequired'] ?? 0);
     if (!$pointsRequired) {
         echo json_encode(['success'=>false,'message'=>'Invalid points']);
@@ -73,7 +71,7 @@ if($action === 'redeem'){
     $stmt->execute();
     $stmt->close();
 
-    // --- Log redeem activity ---
+
     logActivity($conn, $studentID, "Reward Redeemed", "Redeemed '$rewardName'");
 
     echo json_encode([
@@ -88,7 +86,7 @@ if($action === 'redeem'){
 }
 
 elseif($action === 'use'){
-    // --- Use: remove from inventory and log activity ---
+
     $conn->select_db('sprs_mainredo');
 
     $stmt = $conn->prepare("DELETE FROM student_inventory WHERE studentID=? AND rewardID=? LIMIT 1");
@@ -96,7 +94,7 @@ elseif($action === 'use'){
     $stmt->execute();
     $stmt->close();
 
-    // --- Log use activity ---
+
     logActivity($conn, $studentID, "Reward Used", "Used '$rewardName'");
 
     echo json_encode([

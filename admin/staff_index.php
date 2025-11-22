@@ -1,12 +1,12 @@
 <?php
 session_start(); 
 
-include('../db_connect.php'); // connect for the application tables
+include('../db_connect.php'); 
 
 $admin_name = $_SESSION['name'];
 $admin_user = $_SESSION['username'];
 
-// --- Ensure admin is logged in ---
+
 if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
     exit();
@@ -20,7 +20,6 @@ if (!isset($_SESSION['username'])) {
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Student Point-Reward System — Admin Dashboard</title>
 
-  <!-- Optional: modern font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -47,7 +46,7 @@ if (!isset($_SESSION['username'])) {
     }
     body {
      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-     background-color: #0f172a; /* dark backdrop behind everything */
+     background-color: #0f172a; 
       color: #f2f6fb;
      line-height: 1.35;
     }
@@ -63,7 +62,6 @@ if (!isset($_SESSION['username'])) {
      box-shadow: 0 8px 24px rgba(0,0,0,0.45);
     }
 
-    /* HEADER */
     header {
       position: fixed;
       top: 0;
@@ -234,7 +232,6 @@ if (!isset($_SESSION['username'])) {
 
   <div class="container">
     <div class="main">
-      <!-- SIDEBAR -->
       <aside class="sidebar">
         <div class="profile">
           <div class="avatar">AD</div>
@@ -246,7 +243,6 @@ if (!isset($_SESSION['username'])) {
         <nav class="buttons" id="menu"></nav>
       </aside>
 
-      <!-- CONTENT -->
       <section class="content">
         <div class="hero">
           <div class="info">
@@ -289,7 +285,6 @@ if (!isset($_SESSION['username'])) {
 
 
   <script>
-    // admin menu items
     const adminMenu = [
       { key: 'points', title: 'Distrbute Points', sub: 'Generate points', icon: 'user' },
       { key: 'rewards', title: 'Rewards', sub: 'Manage rewards', icon: 'gift' },
@@ -299,7 +294,6 @@ if (!isset($_SESSION['username'])) {
       { key: 'logout', title: 'Logout', sub: 'Sign out', icon: 'logout' }
     ];
 
-    // SVG icons map
     function iconSVG(name){
       const map = {
         user:`<svg viewBox="0 0 24 24" fill="none"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12z" fill="#fff"/><path d="M4.2 20.6c0-3.2 2.6-5.8 5.8-5.8h4c3.2 0 5.8 2.6 5.8 5.8" stroke="#fff" stroke-width="0.6"/></svg>`,
@@ -322,7 +316,6 @@ if (!isset($_SESSION['username'])) {
       menu.appendChild(btn);
     });
 
-    // panel animation
     window.addEventListener('load',()=>{
       document.querySelectorAll('[data-anim]').forEach((p,i)=>{
         setTimeout(()=>p.classList.add('visible'),120*i);

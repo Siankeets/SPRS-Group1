@@ -1,9 +1,9 @@
 <?php
 session_start();
-include('../db_connect.php'); // DB connection
+include('../db_connect.php');
 header('Content-Type: application/json');
 
-// --- Ensure student is logged in ---
+
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
     echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit();
@@ -11,7 +11,7 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
 
 $studentID = (int)$_SESSION['userID'];
 
-// --- Check POST data ---
+
 if (!isset($_POST['eventID'])) {
     echo json_encode(['success' => false, 'message' => 'Event ID missing.']);
     exit();
@@ -19,7 +19,7 @@ if (!isset($_POST['eventID'])) {
 
 $eventID = (int)$_POST['eventID'];
 
-// Validate event exists
+
 $stmtV = mysqli_prepare($conn, "SELECT eventID FROM schoolevents WHERE eventID = ?");
 mysqli_stmt_bind_param($stmtV, "i", $eventID);
 mysqli_stmt_execute($stmtV);
@@ -29,7 +29,7 @@ if (!$resV || mysqli_num_rows($resV) === 0) {
     exit();
 }
 
-// --- Check if already registered ---
+
 $stmt = mysqli_prepare($conn, "SELECT id FROM event_registrations WHERE studentID = ? AND eventID = ?");
 mysqli_stmt_bind_param($stmt, "ii", $studentID, $eventID);
 mysqli_stmt_execute($stmt);
@@ -40,19 +40,18 @@ if(mysqli_num_rows($result) > 0){
     exit();
 }
 
-// --- Insert registration ---
+
 $stmtIns = mysqli_prepare($conn, "INSERT INTO event_registrations (studentID, eventID, registered_at) VALUES (?, ?, NOW())");
 mysqli_stmt_bind_param($stmtIns, "ii", $studentID, $eventID);
 
 if(mysqli_stmt_execute($stmtIns)){
-    // --- Insert participant row if missing ---
+   
     $stmt3 = mysqli_prepare($conn, "INSERT IGNORE INTO eventparticipants (eventID, studentID, attended) VALUES (?, ?, 0)");
     mysqli_stmt_bind_param($stmt3, "ii", $eventID, $studentID);
     mysqli_stmt_execute($stmt3);
 
     echo json_encode(['success' => true, 'message' => 'Registered successfully!']);
-    exit(); // <--- important
-} else {
+    exit(); 
     echo json_encode(['success' => false, 'message' => 'Registration failed.']);
-    exit(); // <--- important
+    exit(); 
 }

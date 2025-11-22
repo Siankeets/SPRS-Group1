@@ -63,7 +63,7 @@ if ($act === 'save') {
     $description = $_POST['eventDescription'] ?? '';
     $rewards = $_POST['eventRewards'] ?? '';
     $type = $_POST['rewardType'] ?? '';
-    $eventDate = $_POST['eventDate'] ?? ''; // new field
+    $eventDate = $_POST['eventDate'] ?? '';
 
     if (!$title || !$description || !$rewards || !$type || !$eventDate) {
         echo json_encode(['message' => 'All fields are required.']);
@@ -101,7 +101,7 @@ if ($act === 'delete') {
 }
 
 // ----------------------------------------------------------------------
-// REWARDS MANAGEMENT (unchanged)
+// REWARDS MANAGEMENT 
 // ----------------------------------------------------------------------
 if ($act === 'listRewards') {
     $result = mysqli_query($conn, "SELECT * FROM rewards");

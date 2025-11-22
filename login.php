@@ -1,6 +1,6 @@
 <?php
-session_start(); // Always start the session first
-include('db_connect.php'); // Connect to DB
+session_start();
+include('db_connect.php'); 
 
 $error = "";
 
