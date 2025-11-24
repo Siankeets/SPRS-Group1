@@ -11,7 +11,7 @@ $staffID = $_SESSION['userID'];
 $data = json_decode(file_get_contents("php://input"), true);
 $studentID = intval($data['studentID']);
 
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 
 // Check if conversation already exists
 $stmt = $conn->prepare("SELECT id FROM help_conversations WHERE studentID = ? AND staffID = ?");

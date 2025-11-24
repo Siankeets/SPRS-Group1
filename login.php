@@ -1,6 +1,7 @@
 <?php
-session_start(); // Always start the session first
-include('db_connect.php'); // Connect to DB
+session_start();
+include('db_connect.php'); // Make sure this connects to your DB
+// include('dummy/connection_dummydb.php');
 
 $error = "";
 
@@ -15,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Password must be at least 5 characters and contain letters and numbers.";
     } else {
         // --- Check database ---
-        $conn->select_db('sprs_dummydb');
+        $conn->select_db('if0_40284661_sprs_dummydb');
 
         $stmt = $conn->prepare("SELECT id, username, password, role, points, name, department, program, major 
                                 FROM users WHERE username = ?");
@@ -26,8 +27,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
 
         if ($user) {
-            if ($password === $user['password']) { // Plain text, otherwise use password_verify()
-                // Set session variables
+            // Assuming passwords are stored as plain text (not recommended for production)
+            // If hashed, use password_verify($password, $user['password'])
+            if ($password === $user['password']) {
+                // Set session
                 $_SESSION['userID'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
@@ -39,10 +42,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Redirect based on role
                 if ($user['role'] === 'student') {
-                    header("Location: /SPRS/SPRS-Group1/student/student_index.php");
+                    header("Location: /SPRS-Group1/student/student_index.php");
                     exit();
                 } elseif ($user['role'] === 'admin') {
-                    header("Location: /SPRS/SPRS-Group1/admin/staff_index.php");
+                    header("Location: /SPRS-Group1/admin/staff_index.php");
                     exit();
                 } else {
                     $error = "Unknown role assigned to this user.";
@@ -56,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -214,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="error-message"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form id="loginForm" method="POST" action="/SPRS/SPRS-Group1/login.php" novalidate>
+    <form id="loginForm" method="POST" action="/SPRS-Group1/login.php" novalidate>
       <input type="text" name="username" placeholder="Username" required />
       <input type="password" name="password" placeholder="Password" required />
       <a href="forget/forgot.html" class="forgot-password">Forgot password?</a>

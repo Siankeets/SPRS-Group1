@@ -1,3 +1,18 @@
+<?php
+session_start(); 
+
+include('../db_connect.php'); // connect for the application tables
+
+$admin_name = $_SESSION['name'];
+$admin_user = $_SESSION['username'];
+
+// --- Ensure admin is logged in ---
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
+?>
 <!DOCTYPE html>
 <html>
 <head>

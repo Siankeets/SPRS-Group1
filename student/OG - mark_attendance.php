@@ -1,15 +1,9 @@
 <?php
 session_start();
-include('../db_connect.php'); // Main DB connection
-
-// USERS database (dummy) for points
-//include('../connection_dummydb.php');   // commented out so $conn only refers to db_connect
-
+include('../db_connect.php'); // DB connection
 header('Content-Type: application/json');
 
-// COPY OF WORKING MARK ATTENDANCE w/ FULL SYSTEM  // THIS TEST VERSION IS FOR ADDING POINTS DISTRIBUTION THE SAME TIME AS ATTENDANCE IS CONFIRMED.
-
-// Must be logged in student to mark attendance 
+// Must be logged in student to mark attendance
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
     echo json_encode(['success' => false, 'message' => 'Not logged in.']);
     exit();
@@ -63,42 +57,7 @@ if ($rowP = mysqli_fetch_assoc($resP)) {
     $stmtUp = mysqli_prepare($conn, "UPDATE eventparticipants SET attended = 1 WHERE id = ?");
     mysqli_stmt_bind_param($stmtUp, "i", $rowP['id']);
     mysqli_stmt_execute($stmtUp);
-    if (mysqli_stmt_affected_rows($stmtUp) >= 0) { //slot in here the points distribution.
-		//get event
-		mysqli_select_db($conn, "if0_40284661_sprs_mainredo"); //connect to main db and get eventReward value first.
-
-		$stmtReward = mysqli_prepare($conn, "SELECT eventRewards FROM schoolevents WHERE eventID = ?");
-		mysqli_stmt_bind_param($stmtReward, "i", $eventID);
-		mysqli_stmt_execute($stmtReward);
-		$resReward = mysqli_stmt_get_result($stmtReward);
-		$rowReward = mysqli_fetch_assoc($resReward);
-		
-		$pointsToAdd = (int)$rowReward['eventRewards']; //only reads the int e.g 500 points, reads 500 to set as pointsToAdd value.
-		
-		
-		mysqli_select_db($conn, "if0_40284661_sprs_dummydb"); //switch to dummy db to find the user's points column to update.
-		
-		// get current points
-		$stmtBefore = mysqli_prepare($conn, "SELECT points FROM users WHERE id = ?");
-		mysqli_stmt_bind_param($stmtBefore, "i", $studentID);
-		mysqli_stmt_execute($stmtBefore);
-		$resBefore = mysqli_stmt_get_result($stmtBefore);
-		$rowBefore = mysqli_fetch_assoc($resBefore);
-		$pointsBefore = (int)$rowBefore['points'];
-
-		//add the points // this makes sure that the points to be added is correct / untampered by getting the before value and the reward value in the databases.
-		$pointsAfter = $pointsBefore + $pointsToAdd;
-        
-        $stmtUpdatePoints = mysqli_prepare($conn, "UPDATE users SET points = ? WHERE id = ?");
-        mysqli_stmt_bind_param($stmtUpdatePoints, "ii", $pointsAfter, $studentID);
-        mysqli_stmt_execute($stmtUpdatePoints);
-		
-		//update session points value
-		//$_SESSION['points'] = $pointsAfter; // commented out for now because i think get_points.php or something handles the updates for the front-end.
-		
-		// switch back to main db
-		//mysqli_select_db($conn, "if0_40284661_sprs_mainredo"); this isnt needed since i made the connection switch in the else statement.
-
+    if (mysqli_stmt_affected_rows($stmtUp) >= 0) {
         echo json_encode(['success' => true, 'message' => 'Attendance marked successfully.']);
         exit();
     } else {
@@ -107,8 +66,6 @@ if ($rowP = mysqli_fetch_assoc($resP)) {
     }
 } else {
     // insert row with attended=1
-    mysqli_select_db($conn, "if0_40284661_sprs_mainredo"); // added after select_db modifications for points distribution.
-
     $stmtIns = mysqli_prepare($conn, "INSERT INTO eventparticipants (eventID, studentID, attended) VALUES (?, ?, 1)");
     mysqli_stmt_bind_param($stmtIns, "ii", $eventID, $studentID);
     if (mysqli_stmt_execute($stmtIns)) {

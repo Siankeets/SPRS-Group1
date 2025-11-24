@@ -1,6 +1,5 @@
 <?php
 session_start(); 
-
 include('../db_connect.php'); // connect for the application tables
 
 $admin_name = $_SESSION['name'];
@@ -332,7 +331,7 @@ if (!isset($_SESSION['username'])) {
    function handleMenu(key) {
   switch (key) {
     case 'points':
-      window.location.href = 'points.php';
+      window.location.href = 'points-test.php'; //revert to og after testing.
       break;
 
     case 'rewards':
@@ -353,7 +352,7 @@ if (!isset($_SESSION['username'])) {
 
     case 'logout':
       if (confirm('Logout?')) {
-        window.location.href = '/SPRS/SPRS-Group1/login.php';
+        window.location.href = '/SPRS-Group1/logout.php'; // changed to a dedicated logout.php w/session destruction
       }
       break;
 

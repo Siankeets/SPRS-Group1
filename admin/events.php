@@ -3,6 +3,9 @@ header('Content-Type: text/html; charset=utf-8');
 session_start();
 include('../db_connect.php');
 
+// set timezone to manila
+date_default_timezone_set('Asia/Manila');
+
 // --- Ensure admin is logged in ---
 if (!isset($_SESSION['username'])) {
     header("Location: ../login.php");
@@ -181,6 +184,7 @@ function renderEvents(data) {
       <td>
         <button class="btn-action edit-btn" onclick="editEvent('${e.eventID}')">Edit</button>
         <button class="btn-action delete-btn" onclick="delEvent('${e.eventID}')">Delete</button>
+        <button class="btn-action download-qr-btn" onclick="downloadQR(${e.eventID})">⬇ Download QR</button>
       </td>
     `;
     list.appendChild(tr);
@@ -232,6 +236,24 @@ async function delEvent(id) {
     loadEvents();
   } catch (err) { console.error(err); alert('Failed to delete event.'); }
 }
+
+// Function to download QR code for the event by GPT // test 1, 2 , 5 and 6 are made before this, theyre probably broken. || FINAL UPDATE, SWITCHED TO TEST VER FOR POINTS.
+function downloadQR(eventID) {
+    const qrData = `https://${window.location.host}/student/mark_attendance.php?eventID=${eventID}`;
+    const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
+
+    // Create a temporary <a> element to trigger the download
+    const link = document.createElement('a');
+    link.href = qrURL;
+    link.download = `event_${eventID}_QR.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    // Open the QR code image in a new tab (this opens the qr in new tab.)
+    //window.open(qrURL, '_blank');
+}
+
 
 searchBar.addEventListener('input', async () => {
   const q = searchBar.value.trim().toLowerCase();

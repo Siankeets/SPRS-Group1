@@ -1,0 +1,68 @@
+ABV:11/20/2025: (starting this since I havent been uploading changes to github / stopped utilizing github for testing (since yesterday, we switched to hosting))
+
+student_index-test.php works with the event qr now, registering and attendance. (this is connected to revised events-test.php and mark_attendance-test.php)
+ISSUE: can register and attend expired events. |The webpage the user is sent to after scanning attendance is just a text cofirming success/fail, no back button but it opens on a new/seperate tab anyways so its not that bad.
+
+student_index-test2.php is an attempt to make a Scan Attendance button for student_index dashboard, I gave up (coping with current state of attendance scans, it 100% works, the confirmation page is just ugly).
+
+NOTE: redeem-test.php and redeem.php basically the same, except -test redirects to staff_index-test.php while redeem redirects to staff_index.php || idk if redeem works.
+
+==============================
+zzz ill leave redeem and inventory as is, i think joshua said they both work. Just need to remember to redirect everything back to non -test ver. of the files.
+
+help.php is updated to joshua's ver. BUT IT REDIRECTS TO student_index-test.php, CHANGE THIS BACK AFTER TESTING.
+dropped api folder and its files as is, no issue with help.php
+
+ADMIN ALICE <-> STUDENT JUAN HELPDESK TESTED AND WORKING - SEE CHAT LOGS. no other admins and students were tested
+=========================================
+
+returning back to qr, need to give points based on event as attendance is scanned and confirmed.
+NOTE: manage_attendance-test.php WILL HANDLE REWARDS DESTRIBUTION in CONJUNCTION of ATTENDANCE. !!! THIS IS NOT TESTED YET , HAVING ISSUES WITH EVENTS !!!
+
+register_events.php will be modified to also insert id instead of studentID only.
+
+11/20/2025 - 10:20 PM - am cooked, papa clarify nalang ako bukas kay joshua kung papano.
+===============================================================================================================================================================================
+11/21/2025 - 9AM - damn, removing the studentID fkey might be the issue. gpt says event-test.php is querying for ep.studentID which we dont have for both tables, this value is set in session now by attaching id value of the student as as studentID. 
+This triggers eventRegistered and attended to be null and doesnt activate the JS to let me register. 
+
+EVENT-TEST.PHP IS WORKING WITH REGISTERS NOW - TEST 3 AND TEST 4 HAS ISSUES BUT A NEW TEST 5 EVENT CREATED AFTER THE REVISION LETS ME REGISTER. TEST3&4 IS PROBABLY BRICKED FROM OLD CODE UPON CREATION.
+
+mark_attendance-test.php has issues with inserting into eventparticipants as well due to studentID apparently. will modify it.
+
+NOTE: date_default_timezone_set('Asia/Manila'); // INFINITY FREE IS USING UTC, MAKES TESTING HARDER. -this is ADDED TO mark_attendance-test.php AND event-test.php
+This makes date('Y-m-d') → Manila date. NOW() in MySQL → still UTC unless you alter session timezone, but for comparisons you can do it in PHP correctly
+
+ISSUES AGAIN after setting default time zone to manila. I can attend test 5 now but test 6 created after this addition doesnt let me register.
+
+testing- adding this to event-test.php and mark_attendance-test.php and setting their $today = todayDate(); , mark_attendance's $registeredAt = nowDateTime(); :
+	// Helper function: get today's date in Manila
+	function todayDate() {
+ 	   return date('Y-m-d');
+	}
+
+	// Helper function: get current datetime in Manila (for registration timestamps) || can replace NOW() as well for manila based timestamps.
+	function nowDateTime() {
+ 	   return date('Y-m-d H:i:s');
+	}
+redeem-test.php will be using this as well since it uses NOW();
+=====================================================================
+11/22/2025: were changing approach with the attendance, ADMIN wilL GET the DOWNLOAD EVENT ATTENDANCE QR BUTTON,
+<!-- DOWNLOAD QR BUTTON --> <!-- THIS IS MADE FOR THE EVENTS-TEST.PHP, WILL NEED ADJUSTMENTS FOR ADMIN SIDE -->
+<?php if ($e['eventRegistered']): ?>
+    <button 
+        onclick="event.stopPropagation(); downloadQR(<?= $e['eventID'] ?>);" 
+        style="margin-top:10px; padding:8px 12px; border:none; background:#3b82f6; color:white; border-radius:8px; cursor:pointer;">
+        ⬇ Download QR
+    </button>
+<?php endif; ?>
+
+----------This is the student event qr generation code that the download qr button is built for:
+    <?php else: ?>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode('https://'.($_SERVER['HTTP_HOST'] ?? 'yourdomain.com').dirname($_SERVER['PHP_SELF']).'/mark_attendance-test.php?eventID='.$e['eventID']) ?>" 
+             alt="Scan to mark attendance" style="margin-top:10px;">
+        <p>Scan this QR to mark your attendance ✅</p>
+    <?php endif; ?>
+
+!!!! FINAL CHANGES !!!!!
+TESTING ON student_index.php, CHANGED mark_attendance.php -> mark_attendance-test.php | REVERT THIS BACK ONCE ITS CONFIRMED WORKING

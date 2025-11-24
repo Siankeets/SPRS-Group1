@@ -10,7 +10,7 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'admin') {
 $staffID = $_SESSION['userID'];
 
 // Use dummydb to get student info
-$conn->select_db('sprs_dummydb');
+$conn->select_db('if0_40284661_sprs_dummydb');
 
 $sql = "SELECT id AS studentID, name AS student_name, program AS student_program, department AS student_department
         FROM users
@@ -22,7 +22,7 @@ $students = [];
 
 while ($row = $result->fetch_assoc()) {
     // Switch to mainredo DB to check conversations
-    $conn->select_db('sprs_mainredo');
+    $conn->select_db('if0_40284661_sprs_mainredo');
 
     // Check if conversation exists with this staff
     $stmt = $conn->prepare("SELECT id, status FROM help_conversations WHERE studentID = ? AND staffID = ?");
@@ -42,7 +42,7 @@ while ($row = $result->fetch_assoc()) {
     }
 
     // Switch back to dummydb to continue looping students
-    $conn->select_db('sprs_dummydb');
+    $conn->select_db('if0_40284661_sprs_dummydb');
 
     $students[] = [
         'studentID' => $row['studentID'],

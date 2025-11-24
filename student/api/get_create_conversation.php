@@ -16,7 +16,7 @@ if (!$staffID) {
     exit();
 }
 
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 
 // Check for existing conversation
 $stmt = $conn->prepare("SELECT id FROM help_conversations WHERE studentID = ? AND staffID = ?");
