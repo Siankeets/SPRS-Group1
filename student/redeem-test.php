@@ -2,6 +2,19 @@
 session_start();
 include('../db_connect.php'); // DB connection
 
+// --- Set Manila timezone for consistent date comparisons ---
+date_default_timezone_set('Asia/Manila');
+
+// Helper function: get today's date in Manila
+function todayDate() {
+    return date('Y-m-d');
+}
+
+// Helper function: get current datetime in Manila (for registration timestamps) || use this instead of NOW() for manila based timestamps instead of UTC.
+function nowDateTime() {
+    return date('Y-m-d H:i:s');
+}
+
 // --- Ensure student is logged in ---
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
     header("Location: ../login.php");
@@ -16,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     $rewardID = intval($data['rewardID'] ?? 0);
     $pointsRequired = intval($data['pointsRequired'] ?? 0);
+    
+    $redeemTime = nowDateTime();
 
     if (!$rewardID || !$pointsRequired) {
         echo json_encode(['success'=>false,'message'=>'Invalid request']);
@@ -55,9 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt->close();
 
-    // Insert into student_inventory
-    $stmt = $conn->prepare("INSERT INTO student_inventory (studentID, rewardID, dateRedeemed) VALUES (?, ?, NOW())");
-    $stmt->bind_param("ii", $studentID, $rewardID);
+    // Insert into student_inventory // replacing NOW() with $redeemTime
+    $stmt = $conn->prepare("INSERT INTO student_inventory (studentID, rewardID, dateRedeemed) VALUES (?, ?, ?)");
+    $stmt->bind_param("iis", $studentID, $rewardID, $redeemTime);
     $stmt->execute();
     $stmt->close();
 
@@ -217,7 +232,7 @@ footer { width: 100%; background: #1e293b; text-align: center; padding: 20px 10p
       <h2>Redeem Points</h2>
       <p>Select a reward below to redeem it.</p>
     </div>
-    <button class="back-btn" onclick="window.location.href='student_index.php'">⬅ Back to Dashboard</button>
+    <button class="back-btn" onclick="window.location.href='student_index-test.php'">⬅ Back to Dashboard</button>
   </div>
 
   <div class="redeem-section" id="redeemFlow">
@@ -261,7 +276,7 @@ async function redeemReward(rewardID, pointsRequired, btn){
 
     btn.disabled=true; const originalText=btn.innerText; btn.innerText="Redeeming...";
     try{
-        const res=await fetch('redeem.php',{
+        const res=await fetch('redeem-test.php',{ //relative path (try absolute path as well)
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({rewardID, pointsRequired})

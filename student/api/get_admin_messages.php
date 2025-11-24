@@ -8,7 +8,7 @@ if (!isset($_GET['id'])) {
 }
 
 $conversationID = intval($_GET['id']);
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 
 $stmt = $conn->prepare("SELECT * FROM help_messages WHERE conversation_id = ? ORDER BY created_at ASC");
 $stmt->bind_param("i", $conversationID);

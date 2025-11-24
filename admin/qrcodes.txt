@@ -1,8 +1,5 @@
-
-qr_691d9da60e2b54.55098909|unused|200|hamburger
-qr_691d9dac845115.12922880|unused|200|hamburger
-qr_691d9e5bb2dc34.17377682|unused|200|hamburger
-qr_691d9f9678aeb5.35011740|unused|20|hamburger
-qr_691d9fad039b76.93873301|unused|10|hamburger
-qr_691da405656c49.76261277|unused|10|qweweq
-qr_691da4c1c04c95.78840466|unused|10|Hamburger
+8a6216bb577d0e51|2000|sa|used
+231c3de293ed2fed|2000|asdasd|unused
+fc845625caaba6c5|2000|Hehe|unused
+209fae50685394e0|2000|asda|used
+357194bb08f88485|200|good morals|used

@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         file_put_contents($file, "$uniqueCode|unused|$points|$reason\n", FILE_APPEND);
 
-        $serverURL = "http://localhost/SPRS/SPRS-Group1/admin"; //babaguhin sa google cloud
+        $serverURL = "/SPRS-Group1/admin"; //babaguhin sa google cloud
 
         $qrData = "$serverURL/verify_qr.php?qr=$uniqueCode"; //sa admin pero papunta/directory sa student dashboard using unique student IT
 

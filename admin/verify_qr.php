@@ -66,7 +66,7 @@ if ($qrUsed) {
 file_put_contents($filePath, implode("\n", $updatedLines) . "\n");
 
 // ⭐ Add points to the student
-$conn->select_db('sprs_dummydb');
+$conn->select_db('if0_40284661_sprs_dummydb');
 $stmt = $conn->prepare("UPDATE users SET points = points + ? WHERE id = ?");
 $stmt->bind_param("ii", $pointsToAdd, $studentID);
 $stmt->execute();

@@ -17,7 +17,7 @@ if ($message === "") {
     exit();
 }
 
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 
 $stmt = $conn->prepare("
     INSERT INTO help_messages (conversation_id, sender, message, created_at)

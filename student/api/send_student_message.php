@@ -17,7 +17,7 @@ $staffID = isset($data['staffID']) ? intval($data['staffID']) : null;
 $message = isset($data['message']) ? trim($data['message']) : "";
 $conversationID = isset($data['conversation_id']) ? intval($data['conversation_id']) : null;
 
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 
 // -------------------------
 // Step 1: Find or create conversation
@@ -72,7 +72,7 @@ if ($message !== "") {
 
         if ($assignedStaffID) {
             // Switch to dummydb to get phone
-            $conn->select_db('sprs_dummydb');
+            $conn->select_db('if0_40284661_sprs_dummydb');
 
             $getPhone = $conn->prepare("SELECT contact_number, name FROM users WHERE id = ? AND role='admin'");
             $getPhone->bind_param("i", $assignedStaffID);
@@ -83,7 +83,7 @@ if ($message !== "") {
 
             if ($adminPhone) {
                 // Switch back to main DB
-                $conn->select_db('sprs_mainredo');
+                $conn->select_db('if0_40284661_sprs_mainredo');
 
                 // Prepare SMS
                 $api_token = "2ce1d87ab317b026eaf5a91f256d63e628e8306c";

@@ -21,7 +21,7 @@ if (!$rewardID) {
 }
 
 // --- Fetch reward info ---
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 $stmt = $conn->prepare("SELECT rewardName, rewardType FROM rewards WHERE rewardID = ?");
 $stmt->bind_param("i", $rewardID);
 $stmt->execute();
@@ -48,7 +48,7 @@ if($action === 'redeem'){
         exit;
     }
 
-    $conn->select_db('sprs_dummydb');
+    $conn->select_db('if0_40284661_sprs_dummydb');
     $stmt = $conn->prepare("SELECT points FROM users WHERE id=?");
     $stmt->bind_param("i", $studentID);
     $stmt->execute();
@@ -67,7 +67,7 @@ if($action === 'redeem'){
     $stmt->execute();
     $stmt->close();
 
-    $conn->select_db('sprs_mainredo');
+    $conn->select_db('if0_40284661_sprs_mainredo');
     $stmt = $conn->prepare("INSERT INTO student_inventory (studentID, rewardID, dateAdded) VALUES (?, ?, NOW())");
     $stmt->bind_param("ii", $studentID, $rewardID);
     $stmt->execute();
@@ -89,7 +89,7 @@ if($action === 'redeem'){
 
 elseif($action === 'use'){
     // --- Use: remove from inventory and log activity ---
-    $conn->select_db('sprs_mainredo');
+    $conn->select_db('if0_40284661_sprs_mainredo');
 
     $stmt = $conn->prepare("DELETE FROM student_inventory WHERE studentID=? AND rewardID=? LIMIT 1");
     $stmt->bind_param("ii", $studentID, $rewardID);

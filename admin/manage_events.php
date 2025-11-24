@@ -45,6 +45,11 @@ if ($act === 'list') {
 // ----------------------------------------------------------------------
 if ($act === 'get') {
     $id = intval($_GET['id'] ?? 0);
+    if ($id <= 0) {
+        echo json_encode(['error' => 'Invalid ID']);
+        exit;
+    }
+
     $stmt = mysqli_prepare($conn, "SELECT * FROM schoolevents WHERE eventID = ?");
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
@@ -59,11 +64,11 @@ if ($act === 'get') {
 // ----------------------------------------------------------------------
 if ($act === 'save') {
     $id = intval($_POST['eventID'] ?? 0);
-    $title = $_POST['eventName'] ?? '';
-    $description = $_POST['eventDescription'] ?? '';
-    $rewards = $_POST['eventRewards'] ?? '';
-    $type = $_POST['rewardType'] ?? '';
-    $eventDate = $_POST['eventDate'] ?? ''; // new field
+    $title = trim($_POST['eventName'] ?? '');
+    $description = trim($_POST['eventDescription'] ?? '');
+    $rewards = trim($_POST['eventRewards'] ?? '');
+    $type = trim($_POST['rewardType'] ?? '');
+    $eventDate = $_POST['eventDate'] ?? '';
 
     if (!$title || !$description || !$rewards || !$type || !$eventDate) {
         echo json_encode(['message' => 'All fields are required.']);
@@ -89,19 +94,35 @@ if ($act === 'save') {
 }
 
 // ----------------------------------------------------------------------
-// DELETE EVENT
+// DELETE EVENT (with foreign key handling)
 // ----------------------------------------------------------------------
 if ($act === 'delete') {
-    $id = intval($_GET['id'] ?? 0);
+    $id = intval($_POST['id'] ?? $_GET['id'] ?? 0);
+    if ($id <= 0) {
+        echo json_encode(['message' => 'Invalid event ID']);
+        exit;
+    }
+
+    // Delete related registrations and participants first
+    mysqli_query($conn, "DELETE FROM event_registrations WHERE eventID=$id");
+    mysqli_query($conn, "DELETE FROM eventparticipants WHERE eventID=$id");
+
     $stmt = mysqli_prepare($conn, "DELETE FROM schoolevents WHERE eventID=?");
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
-    echo json_encode(['message' => mysqli_stmt_affected_rows($stmt) > 0 ? 'Event deleted successfully!' : 'No event found']);
+
+    if (mysqli_stmt_errno($stmt)) {
+        echo json_encode(['message' => 'MySQL Error: ' . mysqli_stmt_error($stmt)]);
+    } else {
+        echo json_encode([
+            'message' => mysqli_stmt_affected_rows($stmt) > 0 ? 'Event deleted successfully!' : 'No event found'
+        ]);
+    }
     exit;
 }
 
 // ----------------------------------------------------------------------
-// REWARDS MANAGEMENT (unchanged)
+// REWARDS MANAGEMENT
 // ----------------------------------------------------------------------
 if ($act === 'listRewards') {
     $result = mysqli_query($conn, "SELECT * FROM rewards");
@@ -132,10 +153,10 @@ if ($act === 'delReward') {
 
 if ($act === 'saveReward') {
     $id = intval($_POST['rewardID'] ?? 0);
-    $title = $_POST['rewardName'] ?? '';
-    $desc = $_POST['rewardDescription'] ?? '';
+    $title = trim($_POST['rewardName'] ?? '');
+    $desc = trim($_POST['rewardDescription'] ?? '');
     $points = intval($_POST['rewardPointsRequired'] ?? 0);
-    $type = $_POST['rewardType'] ?? '';
+    $type = trim($_POST['rewardType'] ?? '');
 
     if (!$title || !$desc || !$points || !$type) {
         echo json_encode(['message' => 'All fields are required.']);
@@ -158,6 +179,7 @@ if ($act === 'saveReward') {
     exit;
 }
 
+// ----------------------------------------------------------------------
 echo json_encode(['error' => 'Invalid action']);
 exit;
 ?>

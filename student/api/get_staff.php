@@ -2,7 +2,7 @@
 session_start();
 include('../../db_connect.php');
 
-$conn->select_db('sprs_dummydb');
+$conn->select_db('if0_40284661_sprs_dummydb');
 
 $result = $conn->query("SELECT id, name, department, program FROM users WHERE role='admin' ORDER BY name ASC");
 
