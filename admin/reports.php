@@ -199,9 +199,36 @@ footer .contact-row {
           <h2 id="modalTitle"></h2>
           <img id="eventChartImage" src="" style="width:100%; border-radius:10px;">
           <br><br>
-          <button class="back-btn" onclick="closeEventChart()">Close</button>
-      </div>
+          <button class="back-btn" onclick="closeEventChart()">Close</button>      </div>
   </div>
+
+<!-- Points Report Modal -->
+<div id="eventPointsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); justify-content:center; align-items:center; z-index:9999;">
+    <div style="background:#111; padding:20px; border-radius:12px; text-align:left; width:90%; max-width:480px; color:white;">
+        <h2 id="pointsModalTitle"></h2>
+        <div id="eventPointsContent" style="margin-top:10px;"></div>
+        <br>
+        <button class="back-btn" onclick="closePointsModal()">Close</button>
+    </div>
+</div>
+
+<!-- Registered Students Modal -->
+<div id="registeredModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); justify-content:center; align-items:center; z-index:9999;">
+    
+    <div style="background:#111; padding:20px; border-radius:12px; width:90%; max-width:600px; color:white;">
+        <h2>Registered Students</h2>
+
+        <div id="registeredModalBody" style="margin-top:10px;"></div>
+
+        <br>
+        <button class="back-btn" onclick="document.getElementById('registeredModal').style.display='none'">
+            Close
+        </button>
+    </div>
+</div>
+
 
   <h2>Events Overview</h2>
 
@@ -228,6 +255,19 @@ footer .contact-row {
                         )">
                           📊 View Chart
                       </button>
+						
+				      <button class="report-btn" 
+        				onclick="showEventPoints( 
+            				<?= $e['eventID'] ?>,
+            				'<?= htmlspecialchars($e['eventName']) ?>'
+        				)">
+        					📊 View Details
+    				  </button>
+					
+					  <button class="report-btn"
+    					onclick="showRegisteredStudents(<?= $e['eventID'] ?>)">
+    						📝 View Registered
+					  </button>
                   </td>
               </tr>
               <?php endforeach; ?>
@@ -247,7 +287,7 @@ footer .contact-row {
     <div style="margin-top:10px;">© 2025 Student Point-Reward System. All rights reserved.</div>
 </footer>
 
-<script src="reportsVisual.js"></script>
+<script src="reportsVisual.js"></script> 
 
 <script>
 // Event Modal Chart
@@ -282,6 +322,91 @@ function showEventChart(eventName, registered, attended) {
 function closeEventChart() {
     document.getElementById("eventChartModal").style.display = "none";
 }
+
+async function showEventPoints(eventID, eventName) { //It works, list attended/attending students
+    try {
+        const res = await fetch(`detailedEventReport.php?eventID=${eventID}`);
+        const data = await res.json();
+
+        if (!data.success) {
+            alert("Error: " + data.message);
+            return;
+        }
+
+        // Build a simple table for participants + points
+        let participantsHtml = "<table style='width:100%; border-collapse:collapse;'>";
+        participantsHtml += "<tr><th>Student Name</th><th>Points Gained</th></tr>";
+        data.participants.forEach(p => {
+            participantsHtml += `<tr>
+                <td>${p.studentName}</td>
+                <td>${p.pointsGained}</td>
+            </tr>`;
+        });
+        participantsHtml += "</table>";
+
+        // Fill modal
+        document.getElementById("pointsModalTitle").innerText = 
+            `${data.eventName} — Total Points Distributed: ${data.totalDistributedPoints}`;
+        document.getElementById("eventPointsContent").innerHTML = participantsHtml;
+
+        // Show modal
+        document.getElementById("eventPointsModal").style.display = "flex";
+
+    } catch (err) {
+        console.error("Error fetching event report:", err);
+    }
+}
+
+function closePointsModal() {
+    document.getElementById("eventPointsModal").style.display = "none";
+}
+
+async function showRegisteredStudents(eventID) { //list registered students.
+    try {
+        const res = await fetch(`getRegisteredStudents.php?eventID=${eventID}`);
+        const data = await res.json();
+
+        if (!data.success) {
+            alert("Failed: " + data.message);
+            return;
+        }
+
+        const list = data.registered
+            .map(s => `<tr>
+                <td>${s.id}</td>
+                <td>${s.name}</td>
+                <td>${s.program}</td>
+                <td>${s.department}</td>
+            </tr>`)
+            .join("");
+
+        document.getElementById("registeredModalBody").innerHTML = `
+            <h3>Registered Students (${data.registeredCount})</h3>
+
+            <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+                <thead>
+                    <tr>
+                        <th style="width:15%;">ID</th>
+                        <th style="width:30%;">Name</th>
+                        <th style="width:25%;">Program</th>
+                        <th style="width:30%;">Department</th>
+                    </tr>
+                </thead>
+                <tbody>${list}</tbody>
+            </table>
+        `;
+
+        document.getElementById("registeredModal").style.display = "block";
+    }
+    catch(e) {
+        console.error(e);
+        alert("Error fetching data");
+    }
+}
+
+
+
+
 
 // Auto-load charts
 renderPointsChart();

@@ -12,5 +12,9 @@ $conn = new mysqli($host, $user, $pass, $dbname);
 if ($conn->connect_error) {
     die("❌ Connection failed: " . $conn->connect_error);
 }
+
+// --- Set MySQL session timezone to Philippines (UTC+8) ---
+$conn->query("SET time_zone = '+08:00'");
+
 // ✅ No echo here — this file just connects quietly
 ?>
