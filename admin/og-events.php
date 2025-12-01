@@ -4,7 +4,7 @@ session_start();
 include('../db_connect.php');
 
 // set timezone to Manila
-//date_default_timezone_set('Asia/Manila');
+date_default_timezone_set('Asia/Manila');
 
 // --- Ensure admin is logged in ---
 if (!isset($_SESSION['username'])) {
@@ -79,7 +79,7 @@ if (!isset($_SESSION['username'])) {
   .table-container { overflow:auto; max-height:460px; border-radius:10px; }
   table { width:100%; border-collapse:collapse; min-width:800px; }
   th, td { padding:12px 10px; border-bottom:1px solid rgba(255,255,255,0.06); text-align:center; vertical-align:middle; font-size:14px; }
-  th { background: #1e293b; font-weight:700; color:#f8fafc; position:sticky; top:0; z-index:10; }
+  th { background: rgba(255,255,255,0.06); font-weight:700; color:#f8fafc; position:sticky; top:0; z-index:1; }
   td { background: rgba(255,255,255,0.02); color:#e6eef8; }
   td.title-cell, td.description-cell { text-align:left; }
   td.description-cell { color:#cbd5e1; max-width:420px; word-wrap:break-word; white-space:normal; }
@@ -143,11 +143,6 @@ if (!isset($_SESSION['username'])) {
 
       <label for="eventImage">Event Image</label>
 	  <input type="file" id="eventImage" name="eventImage" accept="image/*">
-              <!-- Preview image container  when editing event-->
-        <div id="imagePreviewContainer" style="margin-top:10px; text-align:center; display:none;">
-            <img id="imagePreview" src="" alt="Event Image" 
-                 style="max-width:100%; border-radius:10px; margin-top:10px;">
-        </div>
         
       <button type="submit" class="primary" id="saveBtn">Save Event</button>
     </form>
@@ -171,7 +166,6 @@ if (!isset($_SESSION['username'])) {
             <th style="width:10%;">Event Date</th>
             <th style="width:8%;">Registered</th>
             <th style="width:8%;">Attended</th>
-            <th style="width:10%;">Image</th>  
             <th style="width:12%;">Actions</th>
           </tr>
         </thead>
@@ -218,7 +212,7 @@ const searchBar = el('searchBar');
 const rewardsInput = el('rewards');
 const rewardTypeInput = el('rewardType');
 const saveBtn = el('saveBtn');
-    
+
 /* Keep reward type locked to "Points" */
 rewardTypeInput.value = 'Points';
 rewardTypeInput.setAttribute('readonly', 'readonly');
@@ -253,11 +247,10 @@ function renderEvents(data) {
     const rType = escapeHtml(e.rewardType || 'Points');
     const points = escapeHtml(String(e.eventRewards || ''));
     const date = formatDate(e.eventDate || '');
-    const img = e.eventImage ? `eventImage/${escapeHtml(e.eventImage)}?t=${Date.now()}` : '';
     const registered = Number(e.registeredCount) || 0;
     const attended = Number(e.attendedCount) || 0;
     const id = escapeHtml(String(e.eventID || ''));
-	
+
     tr.innerHTML = `
       <td class="title-cell">${title}</td>
       <td class="description-cell">${desc}</td>
@@ -266,10 +259,6 @@ function renderEvents(data) {
       <td>${date}</td>
       <td>${registered}</td>
       <td>${attended}</td>
-      <td>
-        ${img ? `<img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`
-              : '—'}
-  	  </td>
       <td>
         <button class="btn-action edit-btn" type="button" onclick="editEvent('${id}')">Edit</button>
         <button class="btn-action delete-btn" type="button" onclick="delEvent('${id}')">Delete</button>
@@ -324,14 +313,6 @@ form.addEventListener('submit', async (ev) => {
     form.reset();
     // reset locked rewardType & default value
     rewardTypeInput.value = 'Points';
-
-        // clear image preview
-    imagePreview.src = '';
-    imagePreviewContainer.style.display = 'none';
-    // safely clear file input if present
-    const imageInput = document.getElementById('eventImage');
-    if (imageInput) imageInput.value = '';
-
     loadEvents();
     window.scrollTo({ top:0, behavior:'smooth' });
   } catch (err) {
@@ -360,14 +341,6 @@ async function editEvent(id) {
     el('rewards').value = e.eventRewards ?? '';
     // date -> ensure format yyyy-mm-dd (server may return full datetime)
     el('eventDate').value = e.eventDate ? (e.eventDate.split ? e.eventDate.split(' ')[0] : e.eventDate) : '';
-        // Event Image preview
-    if (e.eventImage) {
-        const imgSrc = 'eventImage/' + e.eventImage + '?t=' + Date.now();
-        el('imagePreview').src = imgSrc;
-        el('imagePreviewContainer').style.display = 'block';
-    } else {
-        el('imagePreviewContainer').style.display = 'none';
-    }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
     el('title').focus();

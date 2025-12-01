@@ -192,7 +192,7 @@
 
     <form id="givePointsForm">
       <label for="points">Points Amount:</label>
-      <input type="number" id="points" name="points" min="1" placeholder="Enter points to give" required>
+      <input type="number" id="points" name="points" min="10" max="50" placeholder="Enter points to give (Minimum of 10, maximum of 50 points)" required>
 
       <label for="reason">Reason / Description:</label>
       <textarea id="reason" name="reason" rows="3" placeholder="e.g. Perfect attendance" required></textarea>
