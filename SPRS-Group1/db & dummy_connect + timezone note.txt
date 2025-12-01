@@ -1,0 +1,3 @@
+SET time_zone = '+08:00';
+
+Added this to the database.php connection files in main folder and dummy folder

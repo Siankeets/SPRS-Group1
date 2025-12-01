@@ -1,0 +1,5 @@
+ABV: 12/1/2025 
+
+LINE 26: added eventImage in query
+LINE 175 : '<?= addslashes($e['eventImage']) ?>' || added eventImage
+LINE 178 -> 181: eventImages
