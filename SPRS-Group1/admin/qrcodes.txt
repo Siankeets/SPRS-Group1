@@ -1,6 +1,0 @@
-8a6216bb577d0e51|2000|sa|used
-231c3de293ed2fed|2000|asdasd|unused
-fc845625caaba6c5|2000|Hehe|unused
-209fae50685394e0|2000|asda|used
-357194bb08f88485|200|good morals|used
-10d3470df7b64553|30|Attendance|used
