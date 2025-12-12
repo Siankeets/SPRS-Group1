@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sql213.infinityfree.com
--- Generation Time: Nov 23, 2025 at 10:23 PM
+-- Generation Time: Dec 12, 2025 at 04:44 AM
 -- Server version: 11.4.7-MariaDB
 -- PHP Version: 7.2.22
 
@@ -46,12 +46,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `role`, `points`, `name`, `department`, `program`, `major`, `contact_number`) VALUES
-(1, 'admin1', 'admin111', 'admin', NULL, 'Alice Dela Cruz', 'IT Department', NULL, NULL, '09151045628'),
+(1, 'admin1', 'admin123', 'admin', NULL, 'Alice Dela Cruz', 'IT Department', NULL, NULL, '09151045628'),
 (2, 'admin2', 'admin456', 'admin', NULL, 'Bob Santos', 'Engineering Department', NULL, NULL, '09284561234'),
-(5, 'student1', 'stud123', 'student', 47187, 'Juan Dela Cruz', 'Computer Science', 'BSCS', 'Software Development', '09562347891'),
-(6, 'student2', 'stud456', 'student', 445, 'Maria Lopez', 'Engineering', 'BSEE', 'Power Systems', '09671239845'),
-(7, 'student3', 'stud789', 'student', 380, 'Jose Lim', 'Business', 'BSBA', 'Marketing', '09782345612'),
-(8, 'student4', 'stud101', 'student', 110, 'Anna Reyes', 'Computer Science', 'BSCS', 'Data Science', '09893214567'),
+(5, 'student1', 'stud123', 'student', 526, 'Juan Dela Cruz', 'Computer Science', 'BSCS', 'Software Development', '09562347891'),
+(6, 'student2', 'stud456', 'student', 1121, 'Maria Lopez', 'Engineering', 'BSEE', 'Power Systems', '09671239845'),
+(7, 'student3', 'stud789', 'student', 881, 'Jose Lim', 'Business', 'BSBA', 'Marketing', '09782345612'),
+(8, 'student4', 'stud101', 'student', 160, 'Anna Reyes', 'Computer Science', 'BSCS', 'Data Science', '09893214567'),
 (9, 'student5', 'stud102', 'student', 75, 'Mark Tan', 'Engineering', 'BSEE', 'Electronics', '09981236745'),
 (10, 'student6', 'stud103', 'student', 90, 'Sofia Cruz', 'Business', 'BSBA', 'Finance', '09183456721'),
 (11, 'student7', 'stud104', 'student', 10, 'Leo Santos', 'Computer Science', 'BSCS', 'AI & Machine Learning', '09276451239'),

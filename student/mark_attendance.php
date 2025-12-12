@@ -60,8 +60,8 @@ if ($rowP = mysqli_fetch_assoc($resP)) {
         exit();
     }
     // update attended = 1
-    $stmtUp = mysqli_prepare($conn, "UPDATE eventparticipants SET attended = 1 WHERE id = ?");
-    mysqli_stmt_bind_param($stmtUp, "i", $rowP['id']);
+    $stmtUp = mysqli_prepare($conn, "UPDATE eventparticipants SET attended = 1 WHERE id = ? AND eventID = ?");
+    mysqli_stmt_bind_param($stmtUp, "ii", $rowP['id'], $eventID);
     mysqli_stmt_execute($stmtUp);
     if (mysqli_stmt_affected_rows($stmtUp) >= 0) { //slot in here the points distribution.
 		//get event
@@ -96,8 +96,8 @@ if ($rowP = mysqli_fetch_assoc($resP)) {
 		//update session points value
 		//$_SESSION['points'] = $pointsAfter; // commented out for now because i think get_points.php or something handles the updates for the front-end.
 		
-		// switch back to main db
-		//mysqli_select_db($conn, "if0_40284661_sprs_mainredo"); this isnt needed since i made the connection switch in the else statement.
+		// switch back to main db // 12/3/2025 test just in case for 1 qr scan multi attendance.
+		mysqli_select_db($conn, "if0_40284661_sprs_mainredo"); //this isnt needed since i made the connection switch in the else statement.
 
         echo json_encode(['success' => true, 'message' => 'Attendance marked successfully.']);
         exit();

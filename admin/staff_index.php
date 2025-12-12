@@ -6,11 +6,10 @@ $admin_name = $_SESSION['name'];
 $admin_user = $_SESSION['username'];
 
 // --- Ensure admin is logged in ---
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }
-
 ?>
 <!doctype html>
 <html lang="en">
