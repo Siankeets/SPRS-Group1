@@ -1,11 +1,12 @@
 <?php
 header('Content-Type: application/json');
 
-
+// Path to store QR records
 $file = __DIR__ . '/qrcodes.txt';
 if (!file_exists($file)) file_put_contents($file, '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // ✅ DELETE QR
     if (isset($_POST['delete'])) {
         $deleteCode = trim($_POST['delete']);
         $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -21,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // ✅ GENERATE NEW QR
     if (isset($_POST['points'])) {
         $uniqueCode = uniqid('qr_', true);
         $points = intval($_POST['points']);
@@ -28,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         file_put_contents($file, "$uniqueCode|unused|$points|$reason\n", FILE_APPEND);
 
-        $serverURL = "http://localhost/SPRS/SPRS-Group1/admin"; //babaguhin sa online deployment
+        $serverURL = "/SPRS-Group1/admin"; //babaguhin sa google cloud
 
         $qrData = "$serverURL/verify_qr.php?qr=$uniqueCode"; //sa admin pero papunta/directory sa student dashboard using unique student IT
 

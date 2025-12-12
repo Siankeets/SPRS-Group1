@@ -202,7 +202,7 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
 
     <form id="givePointsForm">
       <label for="points">Points Amount:</label>
-      <input type="number" id="points" name="points" min="10" max="50" placeholder="Enter points to give (Minimum of 10, maximum of 50 points)" required>
+      <input type="number" id="points" name="points" min="10" max="100" placeholder="Enter points to give:" required>
 
       <label for="reason">Reason / Description:</label>
       <textarea id="reason" name="reason" rows="3" placeholder="e.g. Perfect attendance" required></textarea>
@@ -265,11 +265,12 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
       }
 
       try {
-        const response = await fetch('/SPRS-Group1/admin/generate_qr.php', {
+        const response = await fetch('/SPRS-Group1/admin/generate_qr-test.php', { // set to test ver.
 
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `points=${encodeURIComponent(points)}&reason=${encodeURIComponent(reason)}`
+
         });
 
         const result = await response.json();
@@ -295,11 +296,11 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
       if (!confirm('Are you sure you want to delete this QR code?')) return;
 
       try {
-        const response = await fetch('/SPRS-Group1/admin/generate_qr.php',
+        const response = await fetch('/SPRS-Group1/admin/generate_qr-test.php', // set to test ver.
  {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `delete=${encodeURIComponent(currentCode)}`
+			body: `delete=${encodeURIComponent(currentCode)}`
         });
 
         const result = await response.json();

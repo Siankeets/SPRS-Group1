@@ -3,14 +3,14 @@ session_start();
 include('../db_connect.php');
 
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
 $studentID = $_SESSION['userID'];
 
 // Get student info
-$conn->select_db('sprs_dummydb');
+$conn->select_db('if0_40284661_sprs_dummydb');
 $stmt = $conn->prepare("SELECT name, points FROM users WHERE id = ?");
 $stmt->bind_param("i", $studentID);
 $stmt->execute();
@@ -19,7 +19,7 @@ $stmt->fetch();
 $stmt->close();
 
 // Get student inventory
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 $stmt = $conn->prepare("
     SELECT si.dateRedeemed, r.rewardID, r.rewardName, r.rewardDescription, r.rewardType, r.rewardPointsRequired
     FROM student_inventory si
@@ -37,7 +37,6 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 
 // Get events registered/attended
-$conn->select_db('sprs_mainredo');
 $stmt = $conn->prepare("
     SELECT se.eventName, se.eventDate,
            (er.registered_at IS NOT NULL) AS registered,
@@ -58,22 +57,21 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Build activity log: redeemed/used rewards + events
+// Get activity log from student_activity_log
+$stmt = $conn->prepare("
+    SELECT type, description, logDate
+    FROM student_activity_log
+    WHERE studentID = ?
+    ORDER BY logDate DESC
+");
+$stmt->bind_param("i", $studentID);
+$stmt->execute();
+$result = $stmt->get_result();
 $activityLog = [];
-foreach ($inventory as $item) {
-    $activityLog[] = [
-        'type' => 'Reward Redeemed',
-        'name' => $item['rewardName'],
-        'date' => $item['dateRedeemed']
-    ];
+while ($row = $result->fetch_assoc()) {
+    $activityLog[] = $row;
 }
-foreach ($events as $ev) {
-    if ($ev['registered']) $activityLog[] = ['type'=>'Event Registered','name'=>$ev['eventName'],'date'=>$ev['eventDate']];
-    if ($ev['attended']) $activityLog[] = ['type'=>'Event Attended','name'=>$ev['eventName'],'date'=>$ev['eventDate']];
-}
-
-// Sort activity log by date descending
-usort($activityLog, function($a,$b){ return strtotime($b['date']) - strtotime($a['date']); });
+$stmt->close();
 
 function getInitials($fullName) {
     $parts = explode(' ', $fullName);
@@ -237,12 +235,10 @@ footer .contact svg { vertical-align:middle; }
                         <p>Points: <?= $item['rewardPointsRequired'] ?></p>
                         <p>Redeemed on: <?= date("M d, Y", strtotime($item['dateRedeemed'])) ?></p>
                         <button class="use-btn" 
-        data-rewardid="<?= $item['rewardID'] ?>" 
-        data-name="<?= htmlspecialchars($item['rewardName']) ?>">
-    Use
-</button>
-
-
+                                data-rewardid="<?= $item['rewardID'] ?>" 
+                                data-name="<?= htmlspecialchars($item['rewardName']) ?>">
+                            Use
+                        </button>
                     </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -252,7 +248,7 @@ footer .contact svg { vertical-align:middle; }
                 <h3>Activity Log</h3>
                 <ul>
                     <?php foreach($activityLog as $log): ?>
-                        <li>[<?= date("M d, Y", strtotime($log['date'])) ?>] <?= $log['type'] ?>: <?= htmlspecialchars($log['name']) ?></li>
+                        <li>[<?= date("M d, Y", strtotime($log['logDate'])) ?>] <?= htmlspecialchars($log['type']) ?>: <?= htmlspecialchars($log['description']) ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
@@ -260,24 +256,45 @@ footer .contact svg { vertical-align:middle; }
     </div>
 
     <aside class="sidebar">
-        <h3>Your Events</h3>
-        <ul>
-            <?php if(empty($events)): ?>
-                <li>No events found</li>
-            <?php else: ?>
-                <?php foreach($events as $ev): ?>
-                    <li>
-                        <?= htmlspecialchars($ev['eventName']) ?> — <?= date("M d, Y", strtotime($ev['eventDate'])) ?>
-                        <?php if($ev['attended']): ?> ✅ Attended<?php elseif($ev['registered']): ?> 📝 Registered<?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </ul>
+        <h3>Available Events</h3>
+<ul>
+    <?php if(empty($events)): ?>
+        <li>No events found</li>
+    <?php else: ?>
+        <?php
+        $today = date('Y-m-d');
+        foreach($events as $ev):
+            $eventDate = date('Y-m-d', strtotime($ev['eventDate']));
+            $status = '';
+
+            if($ev['attended']) {
+                $status = '✅ Attended';
+            } elseif($ev['registered']) {
+                if ($eventDate < $today) {
+                    $status = '❌ Event Passed';
+                } else {
+                    $status = '📝 Registered';
+                }
+            } else {
+                if ($eventDate < $today) {
+                    $status = '❌ Event Passed';
+                } else {
+                    $status = ''; // Not registered yet and still upcoming
+                }
+            }
+        ?>
+            <li>
+                <?= htmlspecialchars($ev['eventName']) ?> — <?= date("M d, Y", strtotime($ev['eventDate'])) ?>
+                <?php if($status): ?> <?= $status ?><?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</ul>
+
     </aside>
 </div>
 
 <footer>
-      <div style="font-weight:700; font-size:16px; margin-bottom:12px;">Contact Us:</div>
   <div class="contact">
     📧 sprsystem@gmail.com | 📞 09123456789 |
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#93c5fd" viewBox="0 0 24 24">
@@ -293,6 +310,7 @@ footer .contact svg { vertical-align:middle; }
   </div>
   <div style="font-size:13px;color:#fff;">© 2025 Student Point-Reward System. All rights reserved.</div>
 </footer>
+
 <script>
 const useButtons = document.querySelectorAll('.use-btn');
 
@@ -316,15 +334,11 @@ useButtons.forEach(btn => {
 
             const data = await res.json();
             if(data.success){
-                // Remove the card from UI
                 this.closest('.inventory-card').remove();
-
-                // Update activity log
                 const logBox = document.querySelector('.log-box ul');
                 const li = document.createElement('li');
                 li.textContent = `[${data.date}] Reward Used: ${rewardName}`;
                 logBox.prepend(li);
-
                 alert(data.message);
             } else {
                 alert(data.message);
@@ -338,7 +352,6 @@ useButtons.forEach(btn => {
         }
     });
 });
-
 </script>
 
 </body>

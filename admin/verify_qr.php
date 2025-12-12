@@ -52,20 +52,21 @@ foreach ($lines as $line) {
     $updatedLines[] = $line;
 }
 
-
+// ❌ QR not found
 if (!$qrFound) {
     die("QR code does not exist or has been deleted.");
 }
 
-
+// ❌ QR already used
 if ($qrUsed) {
     die("This QR code has already been redeemed.");
 }
 
-
+// 🔄 Save updated QR list (mark as used)
 file_put_contents($filePath, implode("\n", $updatedLines) . "\n");
 
-$conn->select_db('sprs_dummydb');
+// ⭐ Add points to the student
+$conn->select_db('if0_40284661_sprs_dummydb');
 $stmt = $conn->prepare("UPDATE users SET points = points + ? WHERE id = ?");
 $stmt->bind_param("ii", $pointsToAdd, $studentID);
 $stmt->execute();

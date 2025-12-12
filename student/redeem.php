@@ -4,7 +4,7 @@ include('../db_connect.php'); // DB connection
 
 // --- Ensure student is logged in ---
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Get student's current points
-    $conn->select_db('sprs_dummydb');
+    $conn->select_db('if0_40284661_sprs_dummydb');
     $stmt = $conn->prepare("SELECT points FROM users WHERE id=?");
     $stmt->bind_param("i", $studentID);
     $stmt->execute();
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     // Get reward info
-    $conn->select_db('sprs_mainredo');
+    $conn->select_db('if0_40284661_sprs_mainredo');
     $stmt = $conn->prepare("SELECT rewardName, rewardType FROM rewards WHERE rewardID=?");
     $stmt->bind_param("i", $rewardID);
     $stmt->execute();
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // --- Fetch student's points and name ---
-$conn->select_db('sprs_dummydb');
+$conn->select_db('if0_40284661_sprs_dummydb');
 $stmt = $conn->prepare("SELECT points, name FROM users WHERE id=?");
 $stmt->bind_param("i", $studentID);
 $stmt->execute();
@@ -90,7 +90,7 @@ foreach ($names as $n) {
 }
 
 // --- Fetch rewards ---
-$conn->select_db('sprs_mainredo');
+$conn->select_db('if0_40284661_sprs_mainredo');
 $rewardList = [];
 $result = $conn->query("SELECT * FROM rewards ORDER BY rewardName ASC");
 while ($row = $result->fetch_assoc()) {
@@ -249,20 +249,6 @@ footer { width: 100%; background: #1e293b; text-align: center; padding: 20px 10p
 </div>
 
 <footer>
-    <div style="font-weight:700; font-size:16px; margin-bottom:12px;">Contact Us:</div>
-  <div class="contact">
-    📧 sprsystem@gmail.com | 📞 09123456789 |
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#93c5fd" viewBox="0 0 24 24">
-      <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 
-               3.657 9.128 8.438 9.878v-6.987H8.078v-2.89h2.36V9.797
-               c0-2.337 1.393-3.625 3.52-3.625.996 0 2.04.178 2.04.178v2.25
-               h-1.151c-1.137 0-1.492.705-1.492 1.43v1.716h2.54l-.406 2.89
-               h-2.134V21.9C18.343 21.128 22 16.991 22 12z"/>
-    </svg>
-    <a href="https://www.facebook.com/StudentPointRewardSystem" target="_blank" style="color:#93c5fd; text-decoration:none;">
-      Student Point Reward System
-    </a>
-  </div>
   <div style="font-size:13px;color:#fff;">© 2025 Student Point-Reward System. All rights reserved.</div>
 </footer>
 

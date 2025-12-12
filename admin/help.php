@@ -1,3 +1,18 @@
+<?php
+session_start(); 
+
+include('../db_connect.php'); // connect for the application tables
+
+$admin_name = $_SESSION['name'];
+$admin_user = $_SESSION['username'];
+
+// --- Ensure staff is logged in ---
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login.php");
+    exit();
+}
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -52,6 +67,7 @@ header h1 {
 }
 .back-btn:hover { background: #059669; }
 
+/* LAYOUT */
 #sidebar {
     width: 280px;
     background: var(--sidebar-bg);
@@ -82,8 +98,10 @@ header h1 {
 
 .badge { color: var(--bubble-student); font-weight: bold; margin-right: 5px; }
 
+/* Chat Area */
 #chatHeader { margin-top: 0; margin-bottom: 15px; font-weight: 700; }
 
+/* Messenger-style chat box */
 #chatBox {
     flex: 1;
     overflow-y: auto;
@@ -118,6 +136,7 @@ header h1 {
     border-bottom-right-radius: 4px;
 }
 
+/* Input Box */
 #inputBox {
     display: flex;
     gap: 10px;
@@ -140,6 +159,7 @@ header h1 {
 }
 #sendBtn:hover { background: #059669; }
 
+/* Scrollbars */
 #sidebar::-webkit-scrollbar,
 #chatBox::-webkit-scrollbar {
     width: 6px;
@@ -150,6 +170,7 @@ header h1 {
     border-radius: 3px;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
     #sidebar { display: none; }
     #chatArea { padding: 80px 15px 15px 15px; }
@@ -178,6 +199,7 @@ header h1 {
 </div>
 
 <script>
+// Existing JS kept exactly as-is
 let currentID = null;
 let currentStudent = null;
 let conversationList = [];

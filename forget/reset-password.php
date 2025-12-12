@@ -2,7 +2,7 @@
 session_start();
 
 // Connect directly to sprs_dummydb
-$conn = new mysqli("localhost", "root", "", "sprs_dummydb");
+$conn = new mysqli("sql213.infinityfree.com", "if0_40284661", "UtozBUyverLcMai", "if0_40284661_sprs_dummydb");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }

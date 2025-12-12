@@ -95,4 +95,45 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(err => console.error("Error fetching points distribution:", err));
 });
 
+// WST more detailed reports - GPT Generated // changing points.php to og file, added js modal in points.php instead
+function showEventPointsReport(eventID) {
+    fetch("reportEventPoints.php?eventID=" + eventID)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                alert("Cannot load event points data.");
+                return;
+            }
+
+            let html = `
+                <h2>${data.eventName}</h2>
+                <p>Points Per Attendee: <strong>${data.rewardPoints}</strong></p>
+                <p>Total Participants: <strong>${data.participantsCount}</strong></p>
+                <p>Total Points Distributed: 
+                    <strong style="color:#4ade80">${data.totalDistributedPoints}</strong>
+                </p>
+
+                <h3>Participants:</h3>
+                <ul style="text-align:left;">
+            `;
+
+            data.participants.forEach(p => {
+                html += `<li>${p.studentName} — +${p.pointsGiven} points</li>`;
+            });
+
+            html += `</ul>`;
+
+            // Reuse the modal from reports.php
+            document.getElementById("modalTitle").innerHTML = "Points Report";
+            document.getElementById("eventChartImage").src = ""; // remove chart
+            document.getElementById("eventChartImage").style.display = "none";
+            document.getElementById("modalTitle").innerHTML = data.eventName;
+
+            document.getElementById("eventChartImage").outerHTML =
+              `<div id="eventChartImage" style="color:white; font-size:16px;">${html}</div>`;
+
+            document.getElementById("eventChartModal").style.display = "flex";
+        });
+}
+
 
