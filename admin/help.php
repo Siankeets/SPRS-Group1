@@ -6,8 +6,8 @@ include('../db_connect.php'); // connect for the application tables
 $admin_name = $_SESSION['name'];
 $admin_user = $_SESSION['username'];
 
-// --- Ensure admin is logged in ---
-if (!isset($_SESSION['username'])) {
+// --- Ensure staff is logged in ---
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit();
 }

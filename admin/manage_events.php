@@ -5,9 +5,10 @@ include('../db_connect.php');
 header('Content-Type: application/json');
 
 // Ensure admin is logged in
-if (!isset($_SESSION['username'])) {
-    echo json_encode(['error' => 'Unauthorized']);
-    exit;
+// --- Ensure staff is logged in ---
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login.php");
+    exit();
 }
 
 $act = $_GET['action'] ?? ($_POST['action'] ?? '');
@@ -18,7 +19,7 @@ $act = $_GET['action'] ?? ($_POST['action'] ?? '');
 if ($act === 'list') {
     $query = "
         SELECT 
-            e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType, e.eventDate,
+            e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType, e.eventDate, e.eventImage,
             COUNT(DISTINCT r.id) AS registeredCount,
             COUNT(DISTINCT p.id) AS attendedCount
         FROM schoolevents e
@@ -31,10 +32,20 @@ if ($act === 'list') {
     $result = mysqli_query($conn, $query);
     $events = [];
     while ($row = mysqli_fetch_assoc($result)) {
-        $row['registeredCount'] = (int)$row['registeredCount'];
-        $row['attendedCount'] = (int)$row['attendedCount'];
-        $events[] = $row;
-    }
+    $row['registeredCount'] = (int)$row['registeredCount'];
+    $row['attendedCount'] = (int)$row['attendedCount'];
+	$event['eventImage'] = $row['eventImage'];
+
+    // FIX: prepend correct image path
+    //if (!empty($row['eventImage'])) {
+   //     $row['eventImage'] = 'eventImage/' . $row['eventImage'];
+    //} else {
+    //    $row['eventImage'] = null;
+    //}
+
+    $events[] = $row;
+}
+
 
     echo json_encode($events);
     exit;
@@ -75,16 +86,76 @@ if ($act === 'save') {
         exit;
     }
 
+    // ---------- Handle Image Upload ----------
+    $imageName = null;
+
+    if (!empty($_FILES['eventImage']['name'])) {
+        $uploadDir = "eventImage/";
+
+        // Create folder if missing
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $ext = pathinfo($_FILES['eventImage']['name'], PATHINFO_EXTENSION);
+        $imageName = "event_" . time() . "_" . rand(1000, 9999) . "." . $ext;
+        $target = $uploadDir . $imageName;
+
+        if (!move_uploaded_file($_FILES['eventImage']['tmp_name'], $target)) {
+            echo json_encode(['message' => 'Image upload failed']);
+            exit;
+        }
+    }
+
+    // ---------- UPDATE ----------
     if ($id > 0) {
-        // UPDATE
-        $stmt = mysqli_prepare($conn, "UPDATE schoolevents SET eventName=?, eventDescription=?, eventRewards=?, rewardType=?, eventDate=? WHERE eventID=?");
-        mysqli_stmt_bind_param($stmt, "sssssi", $title, $description, $rewards, $type, $eventDate, $id);
+
+        if ($imageName) {
+            // --- DELETE OLD IMAGE IF EXISTS ---
+            $stmtOld = mysqli_prepare($conn, "SELECT eventImage FROM schoolevents WHERE eventID=?");
+            mysqli_stmt_bind_param($stmtOld, "i", $id);
+            mysqli_stmt_execute($stmtOld);
+            $resOld = mysqli_stmt_get_result($stmtOld);
+            $old = mysqli_fetch_assoc($resOld);
+
+            if (!empty($old['eventImage']) && file_exists("eventImage/" . $old['eventImage'])) {
+                unlink("eventImage/" . $old['eventImage']);
+            }
+            
+            // Update including new image
+            $stmt = mysqli_prepare($conn, "
+                UPDATE schoolevents 
+                SET eventName=?, eventDescription=?, eventRewards=?, rewardType=?, eventDate=?, eventImage=?
+                WHERE eventID=?
+            ");
+            mysqli_stmt_bind_param($stmt, "ssssssi", 
+                $title, $description, $rewards, $type, $eventDate, $imageName, $id
+            );
+        } else {
+            // Update excluding image
+            $stmt = mysqli_prepare($conn, "
+                UPDATE schoolevents 
+                SET eventName=?, eventDescription=?, eventRewards=?, rewardType=?, eventDate=?
+                WHERE eventID=?
+            ");
+            mysqli_stmt_bind_param($stmt, "sssssi", 
+                $title, $description, $rewards, $type, $eventDate, $id
+            );
+        }
+
         mysqli_stmt_execute($stmt);
         $message = "Event updated successfully!";
+
     } else {
-        // INSERT
-        $stmt = mysqli_prepare($conn, "INSERT INTO schoolevents (eventName, eventDescription, eventRewards, rewardType, eventDate) VALUES (?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "sssss", $title, $description, $rewards, $type, $eventDate);
+        // ---------- INSERT ----------
+        $stmt = mysqli_prepare($conn, "
+            INSERT INTO schoolevents 
+            (eventName, eventDescription, eventRewards, rewardType, eventDate, eventImage)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        mysqli_stmt_bind_param($stmt, "ssssss", 
+            $title, $description, $rewards, $type, $eventDate, $imageName
+        );
         mysqli_stmt_execute($stmt);
         $message = "Event added successfully!";
     }
@@ -92,6 +163,7 @@ if ($act === 'save') {
     echo json_encode(['message' => $message]);
     exit;
 }
+
 
 // ----------------------------------------------------------------------
 // DELETE EVENT (with foreign key handling)

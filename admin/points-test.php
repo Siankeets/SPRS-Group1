@@ -1,3 +1,13 @@
+<?php 
+header('Content-Type: text/html; charset=utf-8');
+session_start();
+include('../db_connect.php');
+// --- Ensure staff is logged in ---
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login.php");
+    exit();
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -192,7 +202,7 @@
 
     <form id="givePointsForm">
       <label for="points">Points Amount:</label>
-      <input type="number" id="points" name="points" min="1" placeholder="Enter points to give" required>
+      <input type="number" id="points" name="points" min="10" max="100" placeholder="Enter points to give:" required>
 
       <label for="reason">Reason / Description:</label>
       <textarea id="reason" name="reason" rows="3" placeholder="e.g. Perfect attendance" required></textarea>

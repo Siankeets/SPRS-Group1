@@ -268,7 +268,7 @@ footer .contact svg { vertical-align:middle; }
             $status = '';
 
             if($ev['attended']) {
-                $status = '✅ Available';
+                $status = '✅ Attended';
             } elseif($ev['registered']) {
                 if ($eventDate < $today) {
                     $status = '❌ Event Passed';

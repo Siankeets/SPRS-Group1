@@ -340,7 +340,7 @@ function updateHeaderCredits(newTotal){ const headerCredits=document.getElementB
 // Refresh points from session
 async function refreshPointsHeader(){
     try{
-        const resp=await fetch('get_points_session.php');
+        const resp=await fetch('get_points.php'); // was get_points_session.php
         if(resp.ok){
             const j=await resp.json();
             if(j.success && typeof j.points!=='undefined') updateHeaderCredits(j.points);
