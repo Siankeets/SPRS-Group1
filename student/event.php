@@ -1,7 +1,6 @@
 <?php
 session_start();
 include('../db_connect.php'); // DB connection
-
 // --- Ensure student is logged in ---
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
     header("Location: ../login.php");
@@ -10,8 +9,24 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'student') {
 
 $studentID = $_SESSION['userID'];
 $fullName   = $_SESSION['name'] ?? 'Student';
-$points     = $_SESSION['points'] ?? 0;
 
+    // --- Query the dummy database to get student's points ---
+    $conn->select_db('if0_40284661_sprs_dummydb'); // Switch to the dummy db
+    $points = 0;  // Initialize points
+
+    // Get the student's points
+    $stmt = $conn->prepare("SELECT points FROM users WHERE id = ?");
+    $stmt->bind_param("i", $studentID);
+    $stmt->execute();
+    $stmt->bind_result($points);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Store points in session for future requests
+    $_SESSION['points'] = $points;
+
+	$conn->select_db('if0_40284661_sprs_mainredo');
+	
 // --- Generate initials for avatar ---
 $names = explode(' ', $fullName);
 $initials = '';
@@ -23,7 +38,7 @@ foreach ($names as $n) {
 
 // --- Fetch events with registration and attendance info ---
 $query = "
-    SELECT e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType, e.eventDate,
+    SELECT e.eventID, e.eventName, e.eventDescription, e.eventRewards, e.rewardType, e.eventDate, e.eventImage,
            COUNT(DISTINCT r.id) AS totalRegistered,
            COUNT(DISTINCT p.id) AS totalAttended,
            IF(er.id IS NULL, 0, 1) AS eventRegistered,
@@ -36,6 +51,7 @@ $query = "
     GROUP BY e.eventID
     ORDER BY e.eventID ASC
 ";
+
 
 $stmt = mysqli_prepare($conn, $query);
 if (!$stmt) {
@@ -161,33 +177,39 @@ footer { width:100%; background:#1e293b; text-align:center; padding:20px 10px; m
                 $today = date('Y-m-d');
                 $eventDay = date('Y-m-d', strtotime($e['eventDate']));
             ?>
-                <li class="option-item" onclick="chooseEvent(
-                    <?= (int)$e['eventID'] ?>,
-                    '<?= addslashes($e['eventName']) ?>',
-                    <?= (int)$e['eventRegistered'] ?>,
-                    <?= (int)$e['attended'] ?>,
-                    '<?= addslashes($e['eventDescription']) ?>',
-                    <?= (int)$e['totalRegistered'] ?>,
-                    <?= (int)$e['totalAttended'] ?>,
-                    '<?= addslashes($e['rewardType']) ?>',
-                    '<?= $formattedDate ?>',
-                    '<?= $eventDay ?>'
-                )">
-                    <strong><?= htmlspecialchars($e['eventName']) ?></strong>
-                    <div class="reward-type" style="background: <?= $color ?>;"><?= htmlspecialchars($e['rewardType']) ?></div>
-                    <p style="font-size:14px; margin:6px 0; color:#e0e0e0;"><?= htmlspecialchars($e['eventDescription']) ?></p>
-                    <p style="font-size:13px; margin:2px 0; color:#fbbf24;"><strong>Date:</strong> <?= $formattedDate ?></p>
-                    <?= htmlspecialchars($e['eventRewards']) ?: '0 Points' ?><br>
-                    Registered: <?= (int)$e['totalRegistered'] ?> | Attended: <?= (int)$e['totalAttended'] ?>
+               <li class="option-item" onclick="chooseEvent(
+    <?= (int)$e['eventID'] ?>,
+    '<?= addslashes($e['eventName']) ?>',
+    <?= (int)$e['eventRegistered'] ?>,
+    <?= (int)$e['attended'] ?>,
+    '<?= addslashes($e['eventDescription']) ?>',
+    <?= (int)$e['totalRegistered'] ?>,
+    <?= (int)$e['totalAttended'] ?>,
+    '<?= addslashes($e['rewardType']) ?>',
+    '<?= $formattedDate ?>',
+    '<?= $eventDay ?>',
+	'<?= addslashes($e['eventImage']) ?>'
+)">
+    <strong><?= htmlspecialchars($e['eventName']) ?></strong>
+    <?php if(!empty($e['eventImage'])): ?>
+        <img src="../admin/eventImage/<?= htmlspecialchars($e['eventImage']) ?>" 
+             style="width:100%; max-height:140px; object-fit:cover; border-radius:12px; margin-bottom:10px;">
+    <?php endif; ?>
+    <div class="reward-type" style="background: <?= $color ?>;"><?= htmlspecialchars($e['rewardType']) ?></div>
+    <p style="font-size:14px; margin:6px 0; color:#e0e0e0;"><?= htmlspecialchars($e['eventDescription']) ?></p>
+    <p style="font-size:13px; margin:2px 0; color:#fbbf24;"><strong>Date:</strong> <?= $formattedDate ?></p>
+    <?= htmlspecialchars($e['eventRewards']) ?: '0 Points' ?><br>
+    Registered: <?= (int)$e['totalRegistered'] ?> | Attended: <?= (int)$e['totalAttended'] ?>
 
-                    <?php if($today > $eventDay): ?>
-                        <p style="color:#f87171; font-weight:bold; margin-top:10px;">❗ Event has passed</p>
-                    <?php elseif ($e['eventRegistered'] && !$e['attended']): ?>
-                        <p style="color:#fbbf24; font-weight:bold; margin-top:10px;">📅 Reminder: Come on <?= formatEventDate($e['eventDate']) ?> to attend this event.</p>
-                    <?php elseif($e['attended']): ?>
-                        <p style="color:#4ade80; font-weight:bold; margin-top:10px;">✔ You already attended this event.</p>
-                    <?php endif; ?>
-                </li>
+    <?php if($today > $eventDay): ?>
+        <p style="color:#f87171; font-weight:bold; margin-top:10px;">❗ Event has passed</p>
+    <?php elseif ($e['eventRegistered'] && !$e['attended']): ?>
+        <p style="color:#fbbf24; font-weight:bold; margin-top:10px;">📅 Reminder: Come on <?= formatEventDate($e['eventDate']) ?> to attend this event.</p>
+    <?php elseif($e['attended']): ?>
+        <p style="color:#4ade80; font-weight:bold; margin-top:10px;">✔ You already attended this event.</p>
+    <?php endif; ?>
+</li>
+
             <?php endforeach; ?>
         <?php endif; ?>
         </ul>
@@ -206,16 +228,25 @@ footer { width:100%; background:#1e293b; text-align:center; padding:20px 10px; m
 </footer>
 
 <script>
-function chooseEvent(eventID, eventName, eventRegistered, attended, eventDescription, totalRegistered, totalAttended, rewardType, eventDate, eventDay){
+function chooseEvent(eventID, eventName, eventRegistered, attended, eventDescription, totalRegistered, totalAttended, rewardType, eventDate, eventDay, eventImage){
+	//img
+	let imgHTML = "";
+    if(eventImage){
+        imgHTML = `<img src="../admin/eventImage/${eventImage}" 
+                        style="width:100%; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:15px;">`;
+    }
+
     const flow = document.querySelector('.redeem-section');
     const typeColors = {'Ticket':'#3b82f6','Supplies':'#22c55e','Tshirts':'#f59e0b','IDs':'#a855f7','Points':'#ef4444'};
     let color = typeColors[rewardType] || '#64748b';
-    let html = `<h3>${eventName}</h3>
-                <div class="reward-type" style="background:${color};">${rewardType}</div>
-                <p>${eventDescription}</p>
-                <p><strong>Date:</strong> ${eventDate}</p>
-                <p><strong>Registered:</strong> ${totalRegistered}</p>
-                <p><strong>Attended:</strong> ${totalAttended}</p>`;
+
+      let html = `${imgHTML}
+      			  <h3>${eventName}</h3>
+                  <div class="reward-type" style="background:${color};">${rewardType}</div>
+                  <p>${eventDescription}</p>
+                  <p><strong>Date:</strong> ${eventDate}</p>
+                  <p><strong>Registered:</strong> ${totalRegistered}</p>
+                  <p><strong>Attended:</strong> ${totalAttended}</p>`;
 
     const today = new Date().toISOString().split('T')[0];
 
@@ -251,6 +282,7 @@ async function registerEvent(eventID, eventName){
         alert('Failed to register.');
     }
 }
+
 </script>
 </body>
 </html>
