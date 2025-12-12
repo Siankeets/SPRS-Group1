@@ -114,7 +114,7 @@
   <div class="overlay">
     <h1>Welcome to Student Reward System</h1>
     <p>Track your credits, redeem rewards, and join exciting events easily.</p>
-    <a href="login.php" class="btn">Get Started</a>
+    <a href="login.php" class="btn">Get Started</a> <!--switched href to login-test -->
   </div>
 
   <footer>

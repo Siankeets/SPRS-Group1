@@ -1,3 +1,17 @@
+<?php
+session_start(); 
+include('../db_connect.php'); // connect for the application tables
+
+$admin_name = $_SESSION['name'];
+$admin_user = $_SESSION['username'];
+
+// --- Ensure admin is logged in ---
+if (!isset($_SESSION['username'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -224,8 +238,8 @@
         <div class="profile">
           <div class="avatar">AD</div>
           <div class="meta">
-            <div class="name">Jane Admin</div>
-            <div class="role">Administrator</div>
+            <div class="name"><?php echo htmlspecialchars($admin_name); ?></div> <!-- info based on admin -->
+            <div class="role"><?php echo htmlspecialchars($admin_user); ?></div> <!-- info based on admin -->
           </div>
         </div>
         <nav class="buttons" id="menu"></nav>
@@ -235,7 +249,7 @@
       <section class="content">
         <div class="hero">
           <div class="info">
-            <h2 id="dashboardTitle">Welcome, Admin</h2>
+            <h2 id="dashboardTitle">Welcome, Admin <?php echo htmlspecialchars($admin_name); ?></h2>
             <p id="heroDesc">
               Manage students, rewards, and events from this dashboard. Use the menu to access admin tools.
             </p>
@@ -317,7 +331,7 @@
    function handleMenu(key) {
   switch (key) {
     case 'points':
-      window.location.href = 'points.php';
+      window.location.href = 'points-test.php'; //revert to og after testing.
       break;
 
     case 'rewards':
@@ -338,7 +352,7 @@
 
     case 'logout':
       if (confirm('Logout?')) {
-        window.location.href = '/SPRS/SPRS-Group1/login.php';
+        window.location.href = '/SPRS-Group1/logout.php'; // changed to a dedicated logout.php w/session destruction
       }
       break;
 

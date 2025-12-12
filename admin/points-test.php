@@ -255,11 +255,12 @@
       }
 
       try {
-        const response = await fetch('/SPRS-Group1/admin/generate_qr.php', {
+        const response = await fetch('/SPRS-Group1/admin/generate_qr-test.php', { // set to test ver.
 
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: `points=${encodeURIComponent(points)}&reason=${encodeURIComponent(reason)}`
+
         });
 
         const result = await response.json();
@@ -285,11 +286,11 @@
       if (!confirm('Are you sure you want to delete this QR code?')) return;
 
       try {
-        const response = await fetch('/SPRS-Group1/admin/generate_qr.php',
+        const response = await fetch('/SPRS-Group1/admin/generate_qr-test.php', // set to test ver.
  {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `delete=${encodeURIComponent(currentCode)}`
+			body: `delete=${encodeURIComponent(currentCode)}`
         });
 
         const result = await response.json();

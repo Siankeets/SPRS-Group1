@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2025 at 08:25 AM
+-- Generation Time: Nov 17, 2025 at 12:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,9 +29,53 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `eventparticipants` (
   `eventID` int(11) NOT NULL,
+  `studentID` int(11) NOT NULL,
   `id` int(11) NOT NULL,
   `attended` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_registrations`
+--
+
+CREATE TABLE `event_registrations` (
+  `id` int(11) NOT NULL,
+  `studentID` int(11) NOT NULL,
+  `eventID` int(11) NOT NULL,
+  `registered_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `event_registrations`
+--
+
+INSERT INTO `event_registrations` (`id`, `studentID`, `eventID`, `registered_at`) VALUES
+(15, 5, 8, '2025-11-17 11:28:23');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rewards`
+--
+
+CREATE TABLE `rewards` (
+  `rewardID` int(11) NOT NULL,
+  `rewardName` varchar(255) NOT NULL,
+  `rewardDescription` text DEFAULT NULL,
+  `rewardPointsRequired` int(11) NOT NULL,
+  `rewardType` enum('Ticket','Supplies','Tshirts','IDs','Points') NOT NULL DEFAULT 'Supplies'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `rewards`
+--
+
+INSERT INTO `rewards` (`rewardID`, `rewardName`, `rewardDescription`, `rewardPointsRequired`, `rewardType`) VALUES
+(15, 'test2', 'hamburger', 20, 'Supplies'),
+(16, 'test 3', 'test 3', 30, 'Tshirts'),
+(19, '20% Voucher', 'for any school supply purchases', 200, 'Ticket');
 
 -- --------------------------------------------------------
 
@@ -43,12 +87,50 @@ CREATE TABLE `schoolevents` (
   `eventID` int(11) NOT NULL,
   `eventName` varchar(128) NOT NULL,
   `eventDescription` text DEFAULT NULL,
-  `eventCreatorID` int(11) NOT NULL,
-  `eventMinCap` int(11) NOT NULL,
-  `eventMaxCap` int(11) NOT NULL,
-  `eventStartDate` datetime NOT NULL,
-  `eventEndDate` datetime NOT NULL,
-  `eventCreationDate` datetime DEFAULT current_timestamp()
+  `eventRewards` text DEFAULT NULL,
+  `rewardType` varchar(20) NOT NULL DEFAULT 'Points',
+  `eventDate` date NOT NULL DEFAULT curdate()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `schoolevents`
+--
+
+INSERT INTO `schoolevents` (`eventID`, `eventName`, `eventDescription`, `eventRewards`, `rewardType`, `eventDate`) VALUES
+(8, 'test1', 'test1', '200 points', 'Points', '2025-11-25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_activity_log`
+--
+
+CREATE TABLE `student_activity_log` (
+  `logID` int(11) NOT NULL,
+  `studentID` int(11) NOT NULL,
+  `type` enum('Reward Redeemed','Reward Used','Event Registered','Event Attended') NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `logDate` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_activity_log`
+--
+
+INSERT INTO `student_activity_log` (`logID`, `studentID`, `type`, `description`, `logDate`) VALUES
+(9, 5, 'Reward Used', 'Used \'test 3\'', '2025-11-17 11:32:33');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_inventory`
+--
+
+CREATE TABLE `student_inventory` (
+  `inventoryID` int(11) NOT NULL,
+  `studentID` int(11) DEFAULT NULL,
+  `rewardID` int(11) DEFAULT NULL,
+  `dateRedeemed` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -71,6 +153,14 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `phone`, `role`, `points`, `name`, `department`, `program`, `major`) VALUES
+(1, 'admin_01', 'admin123', NULL, 'admin', 0, 'Jane Admin', 'CICS', NULL, NULL),
+(2, 'student_01', 'pass123', NULL, 'student', 120, 'John Student', 'CICS', 'BSIT', 'Service Management');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -82,11 +172,37 @@ ALTER TABLE `eventparticipants`
   ADD KEY `id` (`id`);
 
 --
+-- Indexes for table `event_registrations`
+--
+ALTER TABLE `event_registrations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `studentID` (`studentID`,`eventID`);
+
+--
+-- Indexes for table `rewards`
+--
+ALTER TABLE `rewards`
+  ADD PRIMARY KEY (`rewardID`);
+
+--
 -- Indexes for table `schoolevents`
 --
 ALTER TABLE `schoolevents`
-  ADD PRIMARY KEY (`eventID`),
-  ADD KEY `eventCreatorID` (`eventCreatorID`);
+  ADD PRIMARY KEY (`eventID`);
+
+--
+-- Indexes for table `student_activity_log`
+--
+ALTER TABLE `student_activity_log`
+  ADD PRIMARY KEY (`logID`);
+
+--
+-- Indexes for table `student_inventory`
+--
+ALTER TABLE `student_inventory`
+  ADD PRIMARY KEY (`inventoryID`),
+  ADD KEY `studentID` (`studentID`),
+  ADD KEY `rewardID` (`rewardID`);
 
 --
 -- Indexes for table `users`
@@ -99,16 +215,40 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `event_registrations`
+--
+ALTER TABLE `event_registrations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `rewards`
+--
+ALTER TABLE `rewards`
+  MODIFY `rewardID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
 -- AUTO_INCREMENT for table `schoolevents`
 --
 ALTER TABLE `schoolevents`
-  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `eventID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `student_activity_log`
+--
+ALTER TABLE `student_activity_log`
+  MODIFY `logID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `student_inventory`
+--
+ALTER TABLE `student_inventory`
+  MODIFY `inventoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -122,10 +262,10 @@ ALTER TABLE `eventparticipants`
   ADD CONSTRAINT `eventparticipants_ibfk_2` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `schoolevents`
+-- Constraints for table `student_inventory`
 --
-ALTER TABLE `schoolevents`
-  ADD CONSTRAINT `schoolevents_ibfk_1` FOREIGN KEY (`eventCreatorID`) REFERENCES `users` (`id`);
+ALTER TABLE `student_inventory`
+  ADD CONSTRAINT `student_inventory_ibfk_2` FOREIGN KEY (`rewardID`) REFERENCES `rewards` (`rewardID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
